@@ -1,4 +1,4 @@
-import re
+import re, pickle
 from model import Data
 
 
@@ -19,11 +19,13 @@ def m2ev(mid0, flag):
         temp0 = mode0.sub('', temp0)
         mode0 = re.compile(r'E0+')
         temp0 = mode0.sub('E', temp0)
+        mode0 = re.compile(r'E-0+')
+        temp0 = mode0.sub('E-', temp0)
         result.append(temp0)
     return result
 
 
-neutron = Data()
+neutron = Data('Transporting')
 with open('test.txt', 'r') as f:
     all_item = f.read()
 
@@ -67,3 +69,5 @@ with open('test.txt', 'r') as f:
         neutron.ene_map.append(temp1)
         # print(neutron.ene_map)
         # print(neutron)
+with open('save', 'wb') as out:
+    pickle.dump(neutron, out)

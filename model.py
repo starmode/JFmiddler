@@ -1,4 +1,6 @@
 class Data(object):
+    name = ''
+
     ele_num = 0
     ele_name = []
     ele_ener = []
@@ -10,8 +12,8 @@ class Data(object):
     # cell_num*ene_num
     ene_map = []
 
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
     def __str__(self):
         m = str(self.ele_num) + 'elements\n' + str(self.cell_num) + 'cells\n' + str(self.ene_num) + 'energy bins'
