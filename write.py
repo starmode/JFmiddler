@@ -1,7 +1,6 @@
 import pickle
 from model import Data
 
-neutron = Data('Transporting')
 with open('save', 'rb') as out:
     neutron = pickle.load(out)
 
@@ -15,7 +14,7 @@ with open('enbins.i', 'w') as f:
     f.write(''.join(ele_inf))
 
 with open('transport.i', 'w') as f:
-    f.write('ATDISPEN %d\n' % (neutron.ele_num))
+    f.write('ATDISPEN %d\n' % neutron.ele_num)
     # 从元素代号获取元素名称
     f.write('FISPACT\n')
     f.write('* ' + neutron.name + '\n')
