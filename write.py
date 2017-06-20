@@ -28,3 +28,4 @@ with open('transport.i', 'w') as f:
     f.write('* ' + neutron.name + '\n')
     f.write('GETDECAY 0\n')
     f.write('GETXS 1 1')
+    
