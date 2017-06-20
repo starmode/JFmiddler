@@ -1,5 +1,5 @@
 import re, pickle
-from model import Data
+from model import Data, ele
 
 
 def m2ev(mid0, flag):
@@ -25,13 +25,20 @@ def m2ev(mid0, flag):
     return result
 
 
+def find_ele(ids):
+    ans = []
+    for eid in ids:
+        ans.append(ele[int(eid[0:-7])])
+    return ans
+
 neutron = Data('Transporting')
 with open('test.txt', 'r') as f:
     all_item = f.read()
 
     # element name提取元素代号
     mode = re.compile(r'\d+.\d{2}c')
-    neutron.ele_name = mode.findall(all_item)
+    mid = mode.findall(all_item)
+    neutron.ele_name = find_ele(mid)
     # print(neutron.ele_name)
 
     # element energy提取元素能量（eV）
@@ -42,6 +49,9 @@ with open('test.txt', 'r') as f:
 
     # element number提取元素总数
     neutron.ele_num = len(neutron.ele_name)
+
+    # 去重
+    neutron.leaveout()
 
     # energy bin/energy number提取能量箱和数量
     mode = re.compile(r'energy_bin[ \de\-,=.]+')
@@ -68,6 +78,6 @@ with open('test.txt', 'r') as f:
             temp1.append(temp[j][15:])
         neutron.ene_map.append(temp1)
         # print(neutron.ene_map)
-        # print(neutron)
+# print(neutron)
 with open('save', 'wb') as out:
     pickle.dump(neutron, out)
