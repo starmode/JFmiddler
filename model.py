@@ -14,6 +14,13 @@ class Data(object):
 
     def __init__(self, name):
         self.name = name
+        self.ele_num = 0
+        self.ele_name = []
+        self.ele_ener = []
+        self.cell_num = 0
+        self.ene_num = 0
+        self.ene_bin = []
+        self.ene_map = []
 
     def __str__(self):
         m = str(self.ele_num) + 'elements\n' + str(self.cell_num) + 'cells\n' + str(self.ene_num) + 'energy bins'
