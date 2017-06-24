@@ -25,3 +25,17 @@
 4.1.17  NOFISS      计算时停止输出array并加速但可能出错    不需要
 4.1.18  PROBTABLE
 //
+
+//Lu 6.24
+//4.2初始条件，位于语句FISPATCT之后
+4.2.1	ATOMS			作为初始条件时打印initial inventory				不需要
+4.2.2	ATWO			？
+4.2.3	BREMSSTRAHLUNG	显示各核素轫致辐射剂量率（？）					大概不需要
+4.2.4	CLEAR			？
+4.2.5	CULTAB			在tab文件前后加空行，保持与前版本一致性			不需要
+4.2.6	DENSITY			指定受辐射材料的密度，若FUEL被指定则为必要			需要？
+4.2.7	DEPLETION		在每一轮 summary output 中输出每种指定核素的损耗	需要？
+4.2.8	DOSE			（放射？）剂量率，默认ndose=1半无限大平板，若ndose=2为距离dist的点源	需要，只能出现一次
+4.2.9	END				文件结束										需要
+4.3.0	ERROR			相对误差，只能用在SENSITIVITY后面				不知道
+4.2.11	FISCHOOSE		影响途径分析中包含的锕系元素的选择				不需要
