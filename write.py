@@ -27,4 +27,6 @@ with open('transport.i', 'w') as f:
     f.write('* ' + neutron.name + '\n')
     f.write('GETDECAY 0\n')
     # 能群数量默认为315，即能量箱数量，实际使用数量储存在enbins.i里
-    f.write('GETXS 1 315')
+    f.write('GETXS 1 315\n')
+    f.write('PROBTABLE 1 0\n')
+    f.write('SPEK\n')
