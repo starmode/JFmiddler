@@ -43,7 +43,7 @@
 //Lu 6.24
 //4.2初始条件，位于语句FISPATCT之后
 4.2.1	ATOMS			作为初始条件时打印initial inventory				不需要
-4.2.2	ATWO			？
+4.2.2	ATWO			？？
 4.2.3	BREMSSTRAHLUNG	显示各核素轫致辐射剂量率（？）					大概不需要
 4.2.4	CLEAR			？
 4.2.5	CULTAB			在tab文件前后加空行，保持与前版本一致性			不需要
