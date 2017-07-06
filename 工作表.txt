@@ -4,7 +4,7 @@
 ......(条目按顺序调研）
 //
 
-//Chen 6.256
+//Chen 7.6
 //术语collapsed library什么意思？
 //decay 衰变
 //输入是否需要有自屏蔽效应？
@@ -37,7 +37,8 @@
 4.1.25  SSFDILUTION SSFCHOOSE的延伸                    如果PROBTABLE不需要那也不需要
 4.1.26  SSFFUEL     自屏蔽设定元素规格？                     大概不需要
 4.1.27  SSFGEOMETRY 使用逻辑曲线减少截面谐振对中子通量影响     大概需要（未实装）
-4.1.28  SSFMASS
+4.1.28  SSFMASS     自屏蔽计算，必须已知丰度                不知道
+4.1.29  XSTHRESHOLD 指定最小横截面                         不需要，使用默认值
 //
 
 //Lu 6.24
@@ -53,3 +54,7 @@
 4.2.9	END				文件结束										需要
 4.2.10	ERROR			相对误差，只能用在SENSITIVITY后面				不知道
 4.2.11	FISCHOOSE		影响途径分析中包含的锕系元素的选择				不需要
+
+//Chen  7.6
+//这一部分用于计算库存方程式？由TIME引导，终止于ZERO，后跟可选的冷却过程
+4.3.1 ATOMS
