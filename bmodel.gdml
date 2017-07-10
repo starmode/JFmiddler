@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd" > 
+ <define> 
+  <constant name="PI" value="3.14159265358979" /> 
+  <constant name="TWOPI" value="6.28318530717959" /> 
+  <constant name="HALFPI" value="1.5707963267949" /> 
+  <position name="center" unit="mm" x="0" y="0" z="0" /> 
+  <rotation name="identity" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_10M1" unit="mm" x="0" y="0" z="-0.51" /> 
+  <rotation name="Rot_Vol_S_10M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_11M1" unit="mm" x="0" y="-12.6" z="2.285" /> 
+  <rotation name="Rot_Vol_S_11M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_12M1" unit="mm" x="0" y="12.6" z="2.285" /> 
+  <rotation name="Rot_Vol_S_12M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_13M1" unit="mm" x="-12.6" y="0" z="2.285" /> 
+  <rotation name="Rot_Vol_S_13M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_14M1" unit="mm" x="12.6" y="0" z="2.285" /> 
+  <rotation name="Rot_Vol_S_14M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_15M1" unit="mm" x="0" y="0" z="5.08" /> 
+  <rotation name="Rot_Vol_S_15M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_130M4" unit="mm" x="0" y="-10.02" z="0.76" /> 
+  <rotation name="Rot_Vol_S_130M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_131M4" unit="mm" x="0" y="10.02" z="0.76" /> 
+  <rotation name="Rot_Vol_S_131M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_132M4" unit="mm" x="-10.02" y="0" z="0.76" /> 
+  <rotation name="Rot_Vol_S_132M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_133M4" unit="mm" x="10.02" y="0" z="0.76" /> 
+  <rotation name="Rot_Vol_S_133M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_80M0" unit="mm" x="0" y="0" z="0.1905" /> 
+  <rotation name="Rot_Vol_S_80M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_81M0" unit="mm" x="0" y="-6.985" z="0.7005" /> 
+  <rotation name="Rot_Vol_S_81M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_82M0" unit="mm" x="0" y="6.985" z="0.7005" /> 
+  <rotation name="Rot_Vol_S_82M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_83M0" unit="mm" x="-6.985" y="0" z="0.7005" /> 
+  <rotation name="Rot_Vol_S_83M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_84M0" unit="mm" x="6.985" y="0" z="0.7005" /> 
+  <rotation name="Rot_Vol_S_84M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_70M2" unit="mm" x="0" y="0" z="0.7005" /> 
+  <rotation name="Rot_Vol_S_70M2" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_71M2" unit="mm" x="0" y="0" z="1.27" /> 
+  <rotation name="Rot_Vol_S_71M2" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_120M4" unit="mm" x="0" y="0" z="1.905" /> 
+  <rotation name="Rot_Vol_S_120M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_110M4" unit="mm" x="0" y="-8.43" z="2.67" /> 
+  <rotation name="Rot_Vol_S_110M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_111M4" unit="mm" x="0" y="8.43" z="2.67" /> 
+  <rotation name="Rot_Vol_S_111M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_112M4" unit="mm" x="-8.43" y="0" z="2.67" /> 
+  <rotation name="Rot_Vol_S_112M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_113M4" unit="mm" x="8.43" y="0" z="2.67" /> 
+  <rotation name="Rot_Vol_S_113M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_60M3" unit="mm" x="0" y="0" z="2.365" /> 
+  <rotation name="Rot_Vol_S_60M3" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_50M0" unit="mm" x="0" y="0" z="2.745" /> 
+  <rotation name="Rot_Vol_S_50M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_100M4" unit="mm" x="0" y="-9.065" z="3.24" /> 
+  <rotation name="Rot_Vol_S_100M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_101M4" unit="mm" x="0" y="9.065" z="3.24" /> 
+  <rotation name="Rot_Vol_S_101M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_102M4" unit="mm" x="-9.065" y="0" z="3.24" /> 
+  <rotation name="Rot_Vol_S_102M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_103M4" unit="mm" x="9.065" y="0" z="3.24" /> 
+  <rotation name="Rot_Vol_S_103M4" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_40M0" unit="mm" x="0" y="0" z="3.2" /> 
+  <rotation name="Rot_Vol_S_40M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_30M1" unit="mm" x="0" y="0" z="3.39" /> 
+  <rotation name="Rot_Vol_S_30M1" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_90M0" unit="mm" x="0" y="-10.02" z="3.685" /> 
+  <rotation name="Rot_Vol_S_90M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_91M0" unit="mm" x="0" y="10.02" z="3.685" /> 
+  <rotation name="Rot_Vol_S_91M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_92M0" unit="mm" x="-10.02" y="0" z="3.685" /> 
+  <rotation name="Rot_Vol_S_92M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_93M0" unit="mm" x="10.02" y="0" z="3.685" /> 
+  <rotation name="Rot_Vol_S_93M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_94M0" unit="mm" x="0" y="-9.065" z="4.255" /> 
+  <rotation name="Rot_Vol_S_94M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_95M0" unit="mm" x="0" y="9.065" z="4.255" /> 
+  <rotation name="Rot_Vol_S_95M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_96M0" unit="mm" x="-9.065" y="0" z="4.255" /> 
+  <rotation name="Rot_Vol_S_96M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_97M0" unit="mm" x="9.065" y="0" z="4.255" /> 
+  <rotation name="Rot_Vol_S_97M0" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_20M2" unit="mm" x="0" y="0" z="3.685" /> 
+  <rotation name="Rot_Vol_S_20M2" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_21M2" unit="mm" x="0" y="0" z="4.255" /> 
+  <rotation name="Rot_Vol_S_21M2" unit="radian" x="0" y="0" z="0" /> 
+ </define> 
+ <materials> 
+  <element Z="8" formula="O" name="Oxygen" > 
+   <atom value="16" /> 
+  </element> 
+  <element Z="7" formula="N" name="Nitrogen" > 
+   <atom value="14.01" /> 
+  </element> 
+  <material name="Air" > 
+   <D value="0.00129" /> 
+   <fraction n="0.3" ref="Oxygen" /> 
+   <fraction n="0.7" ref="Nitrogen" /> 
+  </material> 
+  <material Z="13" name="M00000001_Z013027" > 
+   <D value="0.0602616" /> 
+   <atom value="13" /> 
+  </material> 
+  <element Z="13" formula="013" name="E013027" > 
+   <atom value="200" /> 
+  </element> 
+  <element Z="8" formula="008" name="E008016" > 
+   <atom value="200" /> 
+  </element> 
+  <material name="M00000004" > 
+   <D value="1" /> 
+   <fraction n="0.0437265" ref="E013027" /> 
+   <fraction n="0.0655425" ref="E008016" /> 
+  </material> 
+  <material Z="74" name="M00000002_Z074184" > 
+   <D value="0.0631828" /> 
+   <atom value="74" /> 
+  </material> 
+  <material Z="14" name="M00000003_Z014000" > 
+   <D value="0.0499594" /> 
+   <atom value="14" /> 
+  </material> 
+ </materials> 
+ <solids> 
+  <box aunit="radian" lunit="mm" name="WorldBox" x="10000" y="10000" z="10000" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_10M1" x="26.2" y="26.2" z="1.02" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_11M1" x="26.2" y="1" z="4.57" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_12M1" x="26.2" y="1" z="4.57" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_13M1" x="1" y="24.2" z="4.57" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_14M1" x="1" y="24.2" z="4.57" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_15M1" x="26.2" y="26.2" z="1.02" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_130M4" x="24.2" y="4.16" z="1.52" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_131M4" x="24.2" y="4.16" z="1.52" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_132M4" x="4.16" y="15.88" z="1.52" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_133M4" x="4.16" y="15.88" z="1.52" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_80M0" x="15.88" y="15.88" z="0.381" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_81M0" x="15.88" y="1.91" z="0.639" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_82M0" x="15.88" y="1.91" z="0.639" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_83M0" x="1.91" y="12.06" z="0.639" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_84M0" x="1.91" y="12.06" z="0.639" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_70M2" x="12.06" y="12.06" z="0.639" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_71M2" x="15.88" y="15.88" z="0.5" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_120M4" x="24.2" y="24.2" z="0.77" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_110M4" x="24.2" y="7.34" z="0.76" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_111M4" x="24.2" y="7.34" z="0.76" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_112M4" x="7.34" y="9.52" z="0.76" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_113M4" x="7.34" y="9.52" z="0.76" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_60M3" x="9.52" y="9.52" z="0.15" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_50M0" x="9.52" y="9.52" z="0.61" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_100M4" x="24.2" y="6.07" z="0.38" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_101M4" x="24.2" y="6.07" z="0.38" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_102M4" x="6.07" y="12.06" z="0.38" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_103M4" x="6.07" y="12.06" z="0.38" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_40M0" x="12.06" y="12.06" z="0.3" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_30M1" x="12.06" y="12.06" z="0.08" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_90M0" x="24.2" y="4.16" z="0.51" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_91M0" x="24.2" y="4.16" z="0.51" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_92M0" x="4.16" y="15.88" z="0.51" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_93M0" x="4.16" y="15.88" z="0.51" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_94M0" x="24.2" y="6.07" z="0.63" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_95M0" x="24.2" y="6.07" z="0.63" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_96M0" x="6.07" y="12.06" z="0.63" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_97M0" x="6.07" y="12.06" z="0.63" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_20M2" x="15.88" y="15.88" z="0.51" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_21M2" x="12.06" y="12.06" z="0.63" /> 
+ </solids> 
+ <structure> 
+  <volume name="Vol_S_10M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_10M1" /> 
+  </volume> 
+  <volume name="Vol_S_11M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_11M1" /> 
+  </volume> 
+  <volume name="Vol_S_12M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_12M1" /> 
+  </volume> 
+  <volume name="Vol_S_13M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_13M1" /> 
+  </volume> 
+  <volume name="Vol_S_14M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_14M1" /> 
+  </volume> 
+  <volume name="Vol_S_15M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_15M1" /> 
+  </volume> 
+  <volume name="Vol_S_130M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_130M4" /> 
+  </volume> 
+  <volume name="Vol_S_131M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_131M4" /> 
+  </volume> 
+  <volume name="Vol_S_132M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_132M4" /> 
+  </volume> 
+  <volume name="Vol_S_133M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_133M4" /> 
+  </volume> 
+  <volume name="Vol_S_80M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_80M0" /> 
+  </volume> 
+  <volume name="Vol_S_81M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_81M0" /> 
+  </volume> 
+  <volume name="Vol_S_82M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_82M0" /> 
+  </volume> 
+  <volume name="Vol_S_83M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_83M0" /> 
+  </volume> 
+  <volume name="Vol_S_84M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_84M0" /> 
+  </volume> 
+  <volume name="Vol_S_70M2" > 
+   <materialref ref="M00000002_Z074184" /> 
+   <solidref ref="Sol_S_70M2" /> 
+  </volume> 
+  <volume name="Vol_S_71M2" > 
+   <materialref ref="M00000002_Z074184" /> 
+   <solidref ref="Sol_S_71M2" /> 
+  </volume> 
+  <volume name="Vol_S_120M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_120M4" /> 
+  </volume> 
+  <volume name="Vol_S_110M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_110M4" /> 
+  </volume> 
+  <volume name="Vol_S_111M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_111M4" /> 
+  </volume> 
+  <volume name="Vol_S_112M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_112M4" /> 
+  </volume> 
+  <volume name="Vol_S_113M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_113M4" /> 
+  </volume> 
+  <volume name="Vol_S_60M3" > 
+   <materialref ref="M00000003_Z014000" /> 
+   <solidref ref="Sol_S_60M3" /> 
+  </volume> 
+  <volume name="Vol_S_50M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_50M0" /> 
+  </volume> 
+  <volume name="Vol_S_100M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_100M4" /> 
+  </volume> 
+  <volume name="Vol_S_101M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_101M4" /> 
+  </volume> 
+  <volume name="Vol_S_102M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_102M4" /> 
+  </volume> 
+  <volume name="Vol_S_103M4" > 
+   <materialref ref="M00000004" /> 
+   <solidref ref="Sol_S_103M4" /> 
+  </volume> 
+  <volume name="Vol_S_40M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_40M0" /> 
+  </volume> 
+  <volume name="Vol_S_30M1" > 
+   <materialref ref="M00000001_Z013027" /> 
+   <solidref ref="Sol_S_30M1" /> 
+  </volume> 
+  <volume name="Vol_S_90M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_90M0" /> 
+  </volume> 
+  <volume name="Vol_S_91M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_91M0" /> 
+  </volume> 
+  <volume name="Vol_S_92M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_92M0" /> 
+  </volume> 
+  <volume name="Vol_S_93M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_93M0" /> 
+  </volume> 
+  <volume name="Vol_S_94M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_94M0" /> 
+  </volume> 
+  <volume name="Vol_S_95M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_95M0" /> 
+  </volume> 
+  <volume name="Vol_S_96M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_96M0" /> 
+  </volume> 
+  <volume name="Vol_S_97M0" > 
+   <materialref ref="Air" /> 
+   <solidref ref="Sol_S_97M0" /> 
+  </volume> 
+  <volume name="Vol_S_20M2" > 
+   <materialref ref="M00000002_Z074184" /> 
+   <solidref ref="Sol_S_20M2" /> 
+  </volume> 
+  <volume name="Vol_S_21M2" > 
+   <materialref ref="M00000002_Z074184" /> 
+   <solidref ref="Sol_S_21M2" /> 
+  </volume> 
+  <volume name="World" > 
+   <materialref ref="Air" /> 
+   <solidref ref="WorldBox" /> 
+   <physvol> 
+    <volumeref ref="Vol_S_10M1" /> 
+    <positionref ref="Pos_Vol_S_10M1" /> 
+    <rotationref ref="Rot_Vol_S_10M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_11M1" /> 
+    <positionref ref="Pos_Vol_S_11M1" /> 
+    <rotationref ref="Rot_Vol_S_11M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_12M1" /> 
+    <positionref ref="Pos_Vol_S_12M1" /> 
+    <rotationref ref="Rot_Vol_S_12M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_13M1" /> 
+    <positionref ref="Pos_Vol_S_13M1" /> 
+    <rotationref ref="Rot_Vol_S_13M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_14M1" /> 
+    <positionref ref="Pos_Vol_S_14M1" /> 
+    <rotationref ref="Rot_Vol_S_14M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_15M1" /> 
+    <positionref ref="Pos_Vol_S_15M1" /> 
+    <rotationref ref="Rot_Vol_S_15M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_130M4" /> 
+    <positionref ref="Pos_Vol_S_130M4" /> 
+    <rotationref ref="Rot_Vol_S_130M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_131M4" /> 
+    <positionref ref="Pos_Vol_S_131M4" /> 
+    <rotationref ref="Rot_Vol_S_131M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_132M4" /> 
+    <positionref ref="Pos_Vol_S_132M4" /> 
+    <rotationref ref="Rot_Vol_S_132M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_133M4" /> 
+    <positionref ref="Pos_Vol_S_133M4" /> 
+    <rotationref ref="Rot_Vol_S_133M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_80M0" /> 
+    <positionref ref="Pos_Vol_S_80M0" /> 
+    <rotationref ref="Rot_Vol_S_80M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_81M0" /> 
+    <positionref ref="Pos_Vol_S_81M0" /> 
+    <rotationref ref="Rot_Vol_S_81M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_82M0" /> 
+    <positionref ref="Pos_Vol_S_82M0" /> 
+    <rotationref ref="Rot_Vol_S_82M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_83M0" /> 
+    <positionref ref="Pos_Vol_S_83M0" /> 
+    <rotationref ref="Rot_Vol_S_83M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_84M0" /> 
+    <positionref ref="Pos_Vol_S_84M0" /> 
+    <rotationref ref="Rot_Vol_S_84M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_70M2" /> 
+    <positionref ref="Pos_Vol_S_70M2" /> 
+    <rotationref ref="Rot_Vol_S_70M2" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_71M2" /> 
+    <positionref ref="Pos_Vol_S_71M2" /> 
+    <rotationref ref="Rot_Vol_S_71M2" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_120M4" /> 
+    <positionref ref="Pos_Vol_S_120M4" /> 
+    <rotationref ref="Rot_Vol_S_120M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_110M4" /> 
+    <positionref ref="Pos_Vol_S_110M4" /> 
+    <rotationref ref="Rot_Vol_S_110M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_111M4" /> 
+    <positionref ref="Pos_Vol_S_111M4" /> 
+    <rotationref ref="Rot_Vol_S_111M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_112M4" /> 
+    <positionref ref="Pos_Vol_S_112M4" /> 
+    <rotationref ref="Rot_Vol_S_112M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_113M4" /> 
+    <positionref ref="Pos_Vol_S_113M4" /> 
+    <rotationref ref="Rot_Vol_S_113M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_60M3" /> 
+    <positionref ref="Pos_Vol_S_60M3" /> 
+    <rotationref ref="Rot_Vol_S_60M3" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_50M0" /> 
+    <positionref ref="Pos_Vol_S_50M0" /> 
+    <rotationref ref="Rot_Vol_S_50M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_100M4" /> 
+    <positionref ref="Pos_Vol_S_100M4" /> 
+    <rotationref ref="Rot_Vol_S_100M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_101M4" /> 
+    <positionref ref="Pos_Vol_S_101M4" /> 
+    <rotationref ref="Rot_Vol_S_101M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_102M4" /> 
+    <positionref ref="Pos_Vol_S_102M4" /> 
+    <rotationref ref="Rot_Vol_S_102M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_103M4" /> 
+    <positionref ref="Pos_Vol_S_103M4" /> 
+    <rotationref ref="Rot_Vol_S_103M4" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_40M0" /> 
+    <positionref ref="Pos_Vol_S_40M0" /> 
+    <rotationref ref="Rot_Vol_S_40M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_30M1" /> 
+    <positionref ref="Pos_Vol_S_30M1" /> 
+    <rotationref ref="Rot_Vol_S_30M1" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_90M0" /> 
+    <positionref ref="Pos_Vol_S_90M0" /> 
+    <rotationref ref="Rot_Vol_S_90M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_91M0" /> 
+    <positionref ref="Pos_Vol_S_91M0" /> 
+    <rotationref ref="Rot_Vol_S_91M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_92M0" /> 
+    <positionref ref="Pos_Vol_S_92M0" /> 
+    <rotationref ref="Rot_Vol_S_92M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_93M0" /> 
+    <positionref ref="Pos_Vol_S_93M0" /> 
+    <rotationref ref="Rot_Vol_S_93M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_94M0" /> 
+    <positionref ref="Pos_Vol_S_94M0" /> 
+    <rotationref ref="Rot_Vol_S_94M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_95M0" /> 
+    <positionref ref="Pos_Vol_S_95M0" /> 
+    <rotationref ref="Rot_Vol_S_95M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_96M0" /> 
+    <positionref ref="Pos_Vol_S_96M0" /> 
+    <rotationref ref="Rot_Vol_S_96M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_97M0" /> 
+    <positionref ref="Pos_Vol_S_97M0" /> 
+    <rotationref ref="Rot_Vol_S_97M0" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_20M2" /> 
+    <positionref ref="Pos_Vol_S_20M2" /> 
+    <rotationref ref="Rot_Vol_S_20M2" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_21M2" /> 
+    <positionref ref="Pos_Vol_S_21M2" /> 
+    <rotationref ref="Rot_Vol_S_21M2" /> 
+   </physvol> 
+  </volume> 
+ </structure> 
+ <setup name="Default" version="1.0" > 
+  <world ref="World" /> 
+ </setup> 
+</gdml> 
