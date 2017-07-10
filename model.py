@@ -1,3 +1,4 @@
+# 数据类，来自input文件
 class Data(object):
     name = ''
 
@@ -39,6 +40,29 @@ class Data(object):
         self.ele_num = ele_num_new
         self.ele_name = ele_name_new
         self.ele_ener = ele_ener_new
+
+
+# 栅元类，来自gmdl文件
+class volume:
+    name = ''
+    # 空间信息，大小/位置/旋转，三元字符列表
+    size = []
+    pos = []
+    rot = []
+    # 物质信息，名称/密度
+    matName = ''
+    matD = ''
+    # 物质信息，成分[(元素名称，原子序数，原子质量，比例)，...]
+    matGre = []
+
+    def __init__(self, name):
+        self.name = name
+        self.size = []
+        self.pos = []
+        self.rot = []
+        self.matName = ''
+        self.matD = ''
+        matGre = []
 
 
 ele = ['', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K',
