@@ -61,7 +61,6 @@ newTree = [mat for mat in matTree if len(mat.xpath('@Z')) != 0]
 newName = [new.xpath('@name')[0] for new in newTree]
 newInf = [(new.xpath('@Z')[0], new.xpath('atom/@value')[0]) for new in newTree]
 newEles = dict(zip(newName, newInf))
-print(newEles)
 elements.update(newEles)
 
 # 获取栅元定义
