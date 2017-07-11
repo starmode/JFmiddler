@@ -96,7 +96,7 @@ for sphere in solid.xpath('sphere'):
 for tube in solid.xpath('tube'):
     # 设置通用属性
     name = tube.xpath('@name')[0]
-    newTube = Sphere(name)
+    newTube = Tube(name)
     newTube.aUnit = tube.xpath('@aunit')[0]
     newTube.lUnit = tube.xpath('@lunit')[0]
     # 设置tube属性
