@@ -139,3 +139,5 @@ for key in allStructure.keys():
     print(allStructure[key].__class__.__name__+'\t'+allStructure[key].name+'\t'+allStructure[key].matName+'\t'+allStructure[key].matD)
     print(allStructure[key].pos)
     print(allStructure[key].rot)
+    print(allStructure[key].matGre)
+    print('\n')
