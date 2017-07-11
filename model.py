@@ -43,10 +43,12 @@ class Data(object):
 
 
 # 栅元类，来自gmdl文件
-class volume:
+class Volume(object):
     name = ''
-    # 空间信息，大小/位置/旋转，三元字符列表
-    size = []
+    # 单位信息，角度/长度单位
+    aUnit = ''
+    lUnit = ''
+    # 空间信息，位置/旋转，三元字符列表
     pos = []
     rot = []
     # 物质信息，名称/密度
@@ -57,12 +59,61 @@ class volume:
 
     def __init__(self, name):
         self.name = name
-        self.size = []
+        self.aUnit = ''
+        self.lUnit = ''
         self.pos = []
         self.rot = []
         self.matName = ''
         self.matD = ''
-        matGre = []
+        self.matGre = []
+
+
+# box栅元
+class Box(Volume):
+    x = ''
+    y = ''
+    z = ''
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.x = ''
+        self.y = ''
+        self.z = ''
+
+
+# sphere栅元
+class Sphere(Volume):
+    deltaPhi = ''
+    deltaTheta = ''
+    # 外内半径
+    rMax = ''
+    rMin = ''
+    startPhi = ''
+    startTheta = ''
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.deltaPhi = ''
+        self.deltaTheta = ''
+        self.rMax = ''
+        self.rMin = ''
+        self.startPhi = ''
+        self.startTheta = ''
+
+
+# tube栅元
+class Tube(Volume):
+    rMax = ''
+    rMin = ''
+    startPhi = ''
+    z = ''
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.rMax = ''
+        self.rMin = ''
+        self.startPhi = ''
+        self.z = ''
 
 
 ele = ['', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K',
