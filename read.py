@@ -32,7 +32,7 @@ def find_ele(ids):
     return ans
 
 neutron = Data('Transporting')
-with open('test.txt', 'r') as f:
+with open('test.out', 'r') as f:
     all_item = f.read()
 
     # element name提取元素代号
@@ -65,19 +65,22 @@ with open('test.txt', 'r') as f:
     neutron.ene_num = len(neutron.ene_bin)
     # print(neutron.ene_bin)
 
-    # energy map/cell number提取能谱和几何体数量
-    mode = re.compile('Tally4_0,cell(.+?)huge', re.S)
+    # 几何体相关信息储存
+    mode = re.compile('Tally4_0,cell(.+?)---', re.S)
     mid = mode.findall(all_item)
+    # 储存关心的几何体数量
     neutron.cell_num = len(mid)
-    temp1 = []
     for i in range(neutron.cell_num):
-        mode = re.compile(r'\d.\d+e[+-]\d{2,3} {4}\d.\d+e[+-]\d{2,3}')
+        # 储存每个几何体的中子通量
+        # total           2.35844e-08
+        mode = re.compile(r'total +\d.\d+e[+-]\d{2,3}')
         temp = mode.findall(mid[i])
-        temp1 = []
-        for j in range(neutron.ene_num):
-            temp1.append(temp[j][15:])
-        neutron.ene_map.append(temp1)
-        # print(neutron.ene_map)
+        neutron.cell_ene.append(temp[0][16:])
+        # 储存每个几何体的体积
+        # volume = 9.08924e+06
+        mode = re.compile(r'volume= \d.\d+e[+-]\d{2,3}')
+        temp = mode.findall(mid[i])
+        neutron.cell_vol.append(temp[0][8:])
 # print(neutron)
-with open('save', 'wb') as out:
+with open('neutron', 'wb') as out:
     pickle.dump(neutron, out)

@@ -1,8 +1,12 @@
 from lxml import etree
+import pickle
 from model import Box, Sphere, Tube
 
-def getVal(root,path):
+
+def getVal(root, path):
     return root.xpath(path)[0]
+
+
 # 遇到的问题
 # 1.哪些标签是可选的或者有多种不同格式？(目前已知material的Z标签有两种格式)
 # 2.位置和角度的单位只能是mm和radian吗？
@@ -25,12 +29,12 @@ conVal = [con.xpath('@value')[0] for con in conTree]
 # 获取位置定义
 posTree = root.xpath('./define/position')
 posName = [pos.xpath('@name')[0] for pos in posTree]
-posVal = [(pos.xpath('@unit')[0], pos.xpath('@x')[0], pos.xpath('@y')[0], pos.xpath('@z')[0]) for pos in posTree]
+posVal = [(pos.xpath('@unit')[0], float(pos.xpath('@x')[0]), float(pos.xpath('@y')[0]), float(pos.xpath('@z')[0])) for pos in posTree]
 
 # 获取角度定义
 rotTree = root.xpath('./define/rotation')
 rotName = [rot.xpath('@name')[0] for rot in rotTree]
-rotVal = [(rot.xpath('@unit')[0], rot.xpath('@x')[0], rot.xpath('@y')[0], rot.xpath('@z')[0]) for rot in rotTree]
+rotVal = [(rot.xpath('@unit')[0], float(rot.xpath('@x')[0]), float(rot.xpath('@y')[0]), float(rot.xpath('@z')[0])) for rot in rotTree]
 
 constants = dict(zip(conNames, conVal))
 position = dict(zip(posName, posVal))
@@ -73,9 +77,9 @@ for box in solid.xpath('box'):
     newBox.aUnit = box.xpath('@aunit')[0]
     newBox.lUnit = box.xpath('@lunit')[0]
     # 设置box属性
-    newBox.x = box.xpath('@x')[0]
-    newBox.y = box.xpath('@y')[0]
-    newBox.z = box.xpath('@z')[0]
+    newBox.x = float(box.xpath('@x')[0])
+    newBox.y = float(box.xpath('@y')[0])
+    newBox.z = float(box.xpath('@z')[0])
     solids[name] = newBox
 
 for sphere in solid.xpath('sphere'):
@@ -85,12 +89,12 @@ for sphere in solid.xpath('sphere'):
     newSphere.aUnit = sphere.xpath('@aunit')[0]
     newSphere.lUnit = sphere.xpath('@lunit')[0]
     # 设置sphere属性
-    newSphere.deltaPhi = sphere.xpath('@deltaphi')[0]
-    newSphere.deltaTheta = sphere.xpath('@deltatheta')[0]
-    newSphere.rMax = sphere.xpath('@rmax')[0]
-    newSphere.rMin = sphere.xpath('@rmin')[0]
-    newSphere.startPhi = sphere.xpath('@startphi')[0]
-    newSphere.startTheta = sphere.xpath('@starttheta')[0]
+    newSphere.deltaPhi = float(sphere.xpath('@deltaphi')[0])
+    newSphere.deltaTheta = float(sphere.xpath('@deltatheta')[0])
+    newSphere.rMax = float(sphere.xpath('@rmax')[0])
+    newSphere.rMin = float(sphere.xpath('@rmin')[0])
+    newSphere.startPhi = float(sphere.xpath('@startphi')[0])
+    newSphere.startTheta = float(sphere.xpath('@starttheta')[0])
     solids[name] = newSphere
 
 for tube in solid.xpath('tube'):
@@ -100,10 +104,10 @@ for tube in solid.xpath('tube'):
     newTube.aUnit = tube.xpath('@aunit')[0]
     newTube.lUnit = tube.xpath('@lunit')[0]
     # 设置tube属性
-    newTube.rMax = tube.xpath('@rmax')[0]
-    newTube.rMin = tube.xpath('@rmin')[0]
-    newTube.startPhi = tube.xpath('@startphi')[0]
-    newTube.z = tube.xpath('@z')[0]
+    newTube.rMax = float(tube.xpath('@rmax')[0])
+    newTube.rMin = float(tube.xpath('@rmin')[0])
+    newTube.startPhi = float(tube.xpath('@startphi')[0])
+    newTube.z = float(tube.xpath('@z')[0])
     solids[name] = newTube
 
 # 补充栅元的物质信息和空间信息
@@ -123,12 +127,11 @@ for structure in structures:
         allStructure[name] = volume
     # 空间信息
     else:
-        physvols=structure.xpath('physvol')
+        physvols = structure.xpath('physvol')
         for physvol in physvols:
-            name=physvol.xpath('volumeref/@ref')[0]
-            allStructure[name].pos=position[physvol.xpath('positionref/@ref')[0]]
+            name = physvol.xpath('volumeref/@ref')[0]
+            allStructure[name].pos = position[physvol.xpath('positionref/@ref')[0]]
             allStructure[name].rot = rotation[physvol.xpath('rotationref/@ref')[0]]
-
 
 # print(constants)
 # print(position)
@@ -136,8 +139,13 @@ for structure in structures:
 # print(elements)
 # print(materials)
 for key in allStructure.keys():
-    print(allStructure[key].__class__.__name__+'\t'+allStructure[key].name+'\t'+allStructure[key].matName+'\t'+allStructure[key].matD)
+    print(
+        key+'\t'+allStructure[key].__class__.__name__ + '\t' + allStructure[key].name + '\t' + allStructure[key].matName + '\t' +
+        allStructure[key].matD)
     print(allStructure[key].pos)
     print(allStructure[key].rot)
     print(allStructure[key].matGre)
     print('\n')
+
+with open('structure', 'wb') as out:
+    pickle.dump(allStructure, out)

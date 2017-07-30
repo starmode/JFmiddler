@@ -7,11 +7,12 @@ class Data(object):
     ele_ener = []
 
     cell_num = 0
+    cell_vol = []
+    cell_ene = []
 
     ene_num = 0
     ene_bin = []
     # cell_num*ene_num
-    ene_map = []
 
     def __init__(self, name):
         self.name = name
@@ -19,9 +20,10 @@ class Data(object):
         self.ele_name = []
         self.ele_ener = []
         self.cell_num = 0
+        self.cell_vol = []
+        self.cell_ene = []
         self.ene_num = 0
         self.ene_bin = []
-        self.ene_map = []
 
     def __str__(self):
         m = str(self.ele_num) + 'elements\n' + str(self.cell_num) + 'cells\n' + str(self.ene_num) + 'energy bins'
@@ -51,9 +53,11 @@ class Volume(object):
     # 空间信息，位置/旋转，三元字符列表
     pos = []
     rot = []
-    # 物质信息，名称/密度
+    # 物质信息，名称/密度/体积/质量
     matName = ''
     matD = ''
+    matV = ''
+    matM = ''
     # 物质信息，成分[(元素名称，原子序数，原子质量，比例)，...]
     matGre = []
 
@@ -65,6 +69,8 @@ class Volume(object):
         self.rot = []
         self.matName = ''
         self.matD = ''
+        self.matV = ''
+        self.matM = ''
         self.matGre = []
 
 
@@ -79,6 +85,10 @@ class Box(Volume):
         self.x = ''
         self.y = ''
         self.z = ''
+
+    def calVol(self):
+        self.matV = float(self.x) * float(self.y) * float(self.z)
+        self.matM=float(sel)
 
 
 # sphere栅元
