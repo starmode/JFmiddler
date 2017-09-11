@@ -1,12 +1,17 @@
+# 利用neutron和allStructure生成fispact输入文件
+# 输入：文件地址，neutron，allStructure
+# 输出：无
+
 import pickle
+from model import ele
 
 title = 'transporting'
 
 with open('neutron', 'rb') as f:
     neutron = pickle.load(f)
 
-with open('structure', 'wb') as f:
-    pickle.dump(allStructure, f)
+with open('structure', 'rb') as f:
+    allStructure = pickle.load(f)
 
 
 # with open('spectra', 'w') as f:
@@ -82,7 +87,7 @@ def printlib(title, debug=False):
 printlib(title)
 
 
-def test(num, title, debug=False):
+def test(num, title, cell, debug=False):
     with open('test%d.i' % num, 'w') as f:
         if not debug:
             f.write('NOHEAD\n')
@@ -92,7 +97,27 @@ def test(num, title, debug=False):
         f.write('FISPACT\n')
         f.write('* %s\n' % title)
         # 写入DENSITY
+        # 单位g/cm^3
+        f.write('DENSITY %.5E\n' % float(allStructure[cell].matD))
         # 写入MASS
+        mass = float(allStructure[cell].matD) * float(neutron.cell_info[cell][1])
+        f.write('MASS %.5E %d\n' % (mass, len(allStructure[cell].matGre)))
+        # 这里修改下用原子序数查找元素简称，不要直接读取
+        for element in allStructure[cell].matGre:
+            f.write('%s %.1f\n' % (ele[element[2]], float(element[1]*100)))
         # MIND参数，可能要调整
         f.write('MIND 1.E5\n')
+        f.write('HAZA\n')
+        f.write('ATWO\n')
+        f.write('FLUX %.5E\n' % float(neutron.cell_info[cell][0]))
+        # 这里插入
+        f.write('LEVEL 100 1\n')
+        f.write('ZERO\n')
+        f.write('TIME 1 DAYS ATOMS\n')
+        f.write('END\n')
+        f.write('* %s\n' % title)
 
+i=1
+for cell in neutron.cell_info.keys():
+    test(i,'ok',cell)
+    i=i+1

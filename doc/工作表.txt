@@ -1,0 +1,65 @@
+文件格式：
+//Chen 工作人姓氏
+1.1.1   Word    描述  是否需要
+......(条目按顺序调研）
+//
+
+//Chen 7.6
+//术语collapsed library什么意思？
+//decay 衰变
+//输入是否需要有自屏蔽效应？
+//推荐使用SSFMASS代替SSFFUEL
+//SSFGEOMETRY/PROBTABLE不能同时使用
+//the EAF unit mapping keywords must appear in the files file
+4.1.2   ATDISPEN    储存填充给元素能量                   不需要
+4.1.3   CLOBBER     若存在同名文件是否覆盖同名文件         不需要
+4.1.4   CNVTYPE     入射粒子光谱转换的方法               大概不需要
+4.1.5   COVARIANCE  计算输入文件中协方差                 不需要
+4.1.6   CUMFYLD     修改计算裂变数据时的mt值，默认454     不知道
+4.1.7   FISPACT     读入项目标题                        需要
+4.1.8   FULLXS      储存完整截面数据？                   不知道
+4.1.9   GETDECAY    设为0从库中读取衰变，1指定衰变        大概需要
+4.1.10  GETXS       指定能量箱/能群                      需要
+4.1.11  GRPCONVERT  读取非标准中子能谱并转换为标准         大概不需要
+4.1.12  LIBVERSION  选择要读取的核数据库的格式             需要
+4.1.13  LIMGRP      和GRPCONVERT一起使用，添加通量？       如果GRPCONVERT不需要那也不需要
+4.1.14  LOGLEVEL    错误日志打印级别                     不需要
+4.1.15  MONITOR     是否打印运行进度                     不需要
+4.1.16  NOERROR     不使用不确定数据                     不知道
+4.1.17  NOFISS      计算时停止输出array并加速但可能出错    不需要
+4.1.18  PROBTABLE   设为0时用自屏蔽计算，1从表查         大概不需要
+4.1.19  PROJECTILE  定义活化粒子，默认中子                 不需要
+4.1.20  READGG      伽马源能谱设置为直方图                 不知道
+4.1.21  READSF      对EAF库文件没有影响                     不需要
+4.1.22  SAVELINES   当衰变库被压缩时储存光谱能量和强度？      不知道
+4.1.23  SPEK        没有光谱数据的核素计算近似γ谱             大概需要
+4.1.24  SSFCHOOSE   给出哪些元素需要计算自屏蔽效应         如果PROBTABLE不需要那也不需要
+4.1.25  SSFDILUTION SSFCHOOSE的延伸                    如果PROBTABLE不需要那也不需要
+4.1.26  SSFFUEL     自屏蔽设定元素规格？                     大概不需要
+4.1.27  SSFGEOMETRY 使用逻辑曲线减少截面谐振对中子通量影响     大概需要（未实装）
+4.1.28  SSFMASS     自屏蔽计算，必须已知丰度                不知道
+4.1.29  XSTHRESHOLD 指定最小横截面                         不需要，使用默认值
+//
+
+//Lu 6.24 //Wang 7.10
+//4.2初始条件，位于语句FISPATCT之后
+4.2.1	ATOMS			作为初始条件时打印initial inventory				不需要
+4.2.2	ATWO		  读取合法的输运数据                         应不需要       
+4.2.3	BREMSSTRAHLUNG	显示各核素轫致辐射剂量率（？）					大概不需要
+4.2.4	CLEAR			 输入核素间隙的信息                           ？
+4.2.5	CULTAB			在tab文件前后加空行，保持与前版本一致性			不需要
+4.2.6	DENSITY			指定受辐射材料的密度，若FUEL被指定则为必要			需要？
+4.2.7	DEPLETION		在每一轮 summary output 中输出每种指定核素的损耗	需要？
+4.2.8	DOSE			（放射？）剂量率，默认ndose=1半无限大平板，若ndose=2为距离dist的点源	需要，只能出现一次
+4.2.9	END				文件结束										需要
+4.2.10	ERROR			相对误差，只能用在SENSITIVITY后面				不知道
+4.2.11	FISCHOOSE		影响途径分析中包含的锕系元素的选择				不需要
+
+//Wang 7.10
+4.2.12  FISYIELD    判断锕系元素中哪些元素产生裂变产物         应不需要
+4.2.13  FLUX        将入射通量按特定的时间间隔写入             ？
+
+
+//Chen  7.6
+//这一部分用于计算库存方程式？由TIME引导，终止于ZERO，后跟可选的冷却过程
+4.3.1 ATOMS

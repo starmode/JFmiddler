@@ -1,3 +1,5 @@
+# 定义所使用的数据结构
+
 # 数据类，来自input文件
 class Data(object):
     name = ''
@@ -7,8 +9,7 @@ class Data(object):
     ele_ener = []
 
     cell_num = 0
-    cell_vol = []
-    cell_ene = []
+    cell_info = {}
 
     ene_num = 0
     ene_bin = []
@@ -20,8 +21,7 @@ class Data(object):
         self.ele_name = []
         self.ele_ener = []
         self.cell_num = 0
-        self.cell_vol = []
-        self.cell_ene = []
+        self.cell_info = {}
         self.ene_num = 0
         self.ene_bin = []
 
@@ -69,8 +69,6 @@ class Volume(object):
         self.rot = []
         self.matName = ''
         self.matD = ''
-        self.matV = ''
-        self.matM = ''
         self.matGre = []
 
 
@@ -85,10 +83,6 @@ class Box(Volume):
         self.x = ''
         self.y = ''
         self.z = ''
-
-    def calVol(self):
-        self.matV = float(self.x) * float(self.y) * float(self.z)
-        self.matM=float(sel)
 
 
 # sphere栅元
@@ -125,11 +119,15 @@ class Tube(Volume):
         self.startPhi = ''
         self.z = ''
 
+class energyDis:
+    def __init__(self):
+        self.leftBound = 0.
+        self.rightBound = 0.
+        self.perc = 0.
 
-ele = ['', 'H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K',
-       'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr',
-       'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La',
-       'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os',
-       'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am',
-       'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db', 'Sg', 'Bh', 'Hs', 'Mt', 'Ds', 'Rg', 'Cn', 'Nh', 'Fl',
-       'Mc', 'Lv', 'Ts', 'Og']
+ele = ['', 'H', 'HE', 'LI', 'BE', 'B', 'C', 'N', 'O', 'F', 'NE', 'NA', 'MG', 'AL', 'SI', 'P', 'S', 'CL', 'AR', 'K',
+       'CA', 'SC', 'TI', 'V', 'CR', 'MN', 'FE', 'CO', 'NI', 'CU', 'ZN', 'GA', 'GE', 'AS', 'SE', 'BR', 'KR', 'RB', 'SR',
+       'Y', 'ZR', 'NB', 'MO', 'TC', 'RU', 'RH', 'PD', 'AG', 'CD', 'IN', 'SN', 'SB', 'TE', 'I', 'XE', 'CS', 'BA', 'LA',
+       'CE', 'PR', 'ND', 'PM', 'SM', 'EU', 'GD', 'TB', 'DY', 'HO', 'ER', 'TM', 'YB', 'LU', 'HF', 'TA', 'W', 'RE', 'OS',
+       'IR', 'PT', 'AU', 'HG', 'TL', 'PB', 'BI', 'PO', 'AT', 'RN', 'FR', 'RA', 'AC', 'TH', 'PA', 'U', 'NP', 'PU', 'AM',
+       'CM', 'BK', 'CF', 'ES', 'FM']
