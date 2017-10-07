@@ -1,0 +1,7 @@
+NOHEAD
+AINP
+FISPACT
+* transporting
+PRINTLIB 0
+END
+* END OF RUN
