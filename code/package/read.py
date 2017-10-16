@@ -2,7 +2,6 @@
 # 输入：文件地址
 # 输出：model.Data实例neutron
 
-import pickle
 import re
 
 from .model import Data, ele
@@ -36,6 +35,7 @@ def find_ele(ids):
     for eid in ids:
         ans.append(ele[int(eid[0:-7])])
     return ans
+
 
 def jread(jout):
     neutron = Data('Transporting')
@@ -77,7 +77,7 @@ def jread(jout):
         mode = re.compile('Tally4_\d+,(.+?)---', re.S)
         mid = mode.findall(all_item)
         name = []
-        energy=[]
+        energy = []
         volume = []
         # 储存关心的几何体数量
         neutron.cell_num = len(mid)
@@ -92,12 +92,11 @@ def jread(jout):
             energy.append(temp[0][16:])
             # 储存每个几何体的体积
             # volume = 9.08924e+06
-            print(i,mid[i])
+            print(i, mid[i])
             # \d.\d+(e[+-]\d{2,3})?
             mode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
             temp = mode.findall(mid[i])
             volume.append(temp[0][14:])
-            neutron.cell_info = dict(zip(name,zip(energy,volume)))
+            neutron.cell_info = dict(zip(name, zip(energy, volume)))
         print(neutron.cell_info)
-    return(neutron)
-    
+    return neutron

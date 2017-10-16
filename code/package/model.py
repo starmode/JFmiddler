@@ -13,6 +13,7 @@ class Data(object):
 
     ene_num = 0
     ene_bin = []
+
     # cell_num*ene_num
 
     def __init__(self, name):
@@ -119,11 +120,13 @@ class Tube(Volume):
         self.startPhi = ''
         self.z = ''
 
+
 class energyDis:
     def __init__(self):
         self.leftBound = 0.
         self.rightBound = 0.
         self.perc = 0.
+
 
 ele = ['', 'H', 'HE', 'LI', 'BE', 'B', 'C', 'N', 'O', 'F', 'NE', 'NA', 'MG', 'AL', 'SI', 'P', 'S', 'CL', 'AR', 'K',
        'CA', 'SC', 'TI', 'V', 'CR', 'MN', 'FE', 'CO', 'NI', 'CU', 'ZN', 'GA', 'GE', 'AS', 'SE', 'BR', 'KR', 'RB', 'SR',

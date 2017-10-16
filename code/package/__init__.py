@@ -1,1 +1,1 @@
-__all__ = ["model","read","readGmdl","write","getGamma"]
+__all__ = ["model", "read", "readGmdl", "write", "getGamma"]

@@ -3,7 +3,6 @@
 # 输出：字典allStructure
 
 from lxml import etree
-import pickle
 from .model import Box, Sphere, Tube, Volume
 
 
@@ -35,12 +34,14 @@ def jreadGdml(gdml_path):
     # 获取位置定义
     posTree = root.xpath('./define/position')
     posName = [pos.xpath('@name')[0] for pos in posTree]
-    posVal = [(pos.xpath('@unit')[0], float(pos.xpath('@x')[0]), float(pos.xpath('@y')[0]), float(pos.xpath('@z')[0])) for pos in posTree]
+    posVal = [(pos.xpath('@unit')[0], float(pos.xpath('@x')[0]), float(pos.xpath('@y')[0]), float(pos.xpath('@z')[0]))
+              for pos in posTree]
 
     # 获取角度定义
     rotTree = root.xpath('./define/rotation')
     rotName = [rot.xpath('@name')[0] for rot in rotTree]
-    rotVal = [(rot.xpath('@unit')[0], float(rot.xpath('@x')[0]), float(rot.xpath('@y')[0]), float(rot.xpath('@z')[0])) for rot in rotTree]
+    rotVal = [(rot.xpath('@unit')[0], float(rot.xpath('@x')[0]), float(rot.xpath('@y')[0]), float(rot.xpath('@z')[0]))
+              for rot in rotTree]
 
     constants = dict(zip(conNames, conVal))
     position = dict(zip(posName, posVal))
@@ -61,7 +62,8 @@ def jreadGdml(gdml_path):
     matName = [mat.xpath('@name')[0] for mat in matTree]
     matD = [mat.xpath('D/@value')[0] for mat in matTree]
     matEles = [
-        [(fac.xpath('@ref')[0], float(fac.xpath('@n')[0])) for fac in mat.xpath('fraction')] if len(mat.xpath('@Z')) == 0 else [(
+        [(fac.xpath('@ref')[0], float(fac.xpath('@n')[0])) for fac in mat.xpath('fraction')] if len(
+            mat.xpath('@Z')) == 0 else [(
             mat.xpath('@name')[0], 1.0)] for mat in matTree]
 
     materials = dict(zip(matName, zip(matD, matEles)))
@@ -149,10 +151,11 @@ def jreadGdml(gdml_path):
     # print(materials)
     for key in allStructure.keys():
         print(
-            key+'\t'+allStructure[key].__class__.__name__ + '\t' + allStructure[key].name + '\t' + allStructure[key].matName + '\t' +
+            key + '\t' + allStructure[key].__class__.__name__ + '\t' + allStructure[key].name + '\t' + allStructure[
+                key].matName + '\t' +
             allStructure[key].matD)
         print(allStructure[key].pos)
         print(allStructure[key].rot)
         print(allStructure[key].matGre)
         print('\n')
-    return(allStructure)
+    return (allStructure)
