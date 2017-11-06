@@ -92,11 +92,11 @@ def jread(jout):
             energy.append(temp[0][16:])
             # 储存每个几何体的体积
             # volume = 9.08924e+06
-            print(i, mid[i])
+            # print(i, mid[i])
             # \d.\d+(e[+-]\d{2,3})?
             mode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
             temp = mode.findall(mid[i])
             volume.append(temp[0][14:])
             neutron.cell_info = dict(zip(name, zip(energy, volume)))
-        print(neutron.cell_info)
+        #print(neutron.cell_info)
     return neutron
