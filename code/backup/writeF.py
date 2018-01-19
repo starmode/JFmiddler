@@ -1,39 +1,44 @@
 import pickle
 import re
-with open('dis', 'rb') as f:
-    distributions = pickle.load(f)
+with open('neutron', 'rb') as f:
+    neutron = pickle.load(f)
 
-def Source(distributions, n, args={}):
-    space = ' '*3
-    # particle_type = 2
-    # energy_distribution = “uniform"
-    # y_distri_name{
-    #    distribution_type = “piecewise_uniform_spectrum”    
-    #      segments = left_end_1, right_end_1, … , left_end_n2, right_end_n2
-    #     sample_probability = p_1, … , p_n2
-    # }
-    tips = ['probability', 'particle_type', 'energy_distribution','probability_of_energy_distribution']
-    if args:
-        tips.extend(args.keys())
-    src = '%sSource_%d {\n'%(space*2,n)
-    prob = '%s%-40s= %f\n'%(space*3, tips[0], 1.0)
-    type = '%s%-40s= %d\n'%(space*3, tips[1], 2)
-    tagEneDist = '%s%-40s= "%s"\n'%(space*3, tips[2], 'uniform')
-    tagProbDist = '%s%-40s= %d\n'%(space*3, tips[3], 1.0)
+def Source(path, neutron, allDistributions, pre, split = ' ' * 3):
+    # split 分隔符，str
+    # pre 前缀空格数
+    numOfStus = len(neutron.cell_info.keys())
+    tmp = ['number_of_source = %d\n' % numOfStus]
+    tmp.append('particle_type    = 2\n')
+    for i, cell in enumerate(neutron.cell_info.keys()):
+        segments = []
+        samProb = []
+        distributions = allDistributions[cell][1]
+        possibility = allDistributions[cell][0] * neutron.cell_info[cell][1]
+        for distribution in distributions:
+            segments.append('%f, %f, ' % (distribution.leftBound, distribution.rightBound))
+            samProb += '%f, ' % distribution.perc
+        ''.join(segments)
+        ''.join(samProb)
+        segments = segments[:-1]
+        samProb = samProb[:-1]
 
-    segments = ''
-    samProb = ''
-    for distribution in distributions:
-        segments += '%f, %f, '%(distribution.leftBound, distribution.rightBound)
-        samProb += '%f, '% distribution.perc
-    segments = segments[:-1]
-    samProb = samProb[:-1]
+        tmp.append('%sSource_%d {\n' % (pre, i))
+        tmp.append('%sprobability                        = %e\n' % (pre, possibility))
+        tmp.append('%scell_name                          = \"%s\"\n' % (pre, cell))
+        tmp.append('%sprobability_of_energy_distribution = 1\n' % pre)
+        tmp.append('%senergy_distribution                = \"dist_%d\" {\n' % (pre, i))
+        tmp.append('%sdist_%d {\n' % (pre, i))
+        tmp.append('%s%sdistribution_type  = \"piecewise_uniform_spectrum\"\n' % (pre * 2, split))
+        tmp.append('%s%ssegments           = %s\n' % (pre * 2, split, segments))
+        tmp.append('%s%ssample_probability = %s\n' % (pre * 2, split, samProb))
+        tmp.append('%s%s}\n%s}' % (pre * 2, split, pre))
+        tmp = ''.join(tmp)
 
-    dist = '%suniform {\n%sdistribution_type = "piecewise_uniform_spectrum"' \
-           '\n%ssegments = %s\n%ssample_probability = %s\n%s}\n'%(space*3, space*4, space*4, segments, space*4, samProb, space*3)
-    end = '%s}\n'%(space*2)
-    print(src+prob+type+tagEneDist+tagProbDist+dist+end)
-    return src+prob+type+tagEneDist+tagProbDist+dist+end
+        with open(path) as f:
+            text = f.read()
+            mode = re.compile('{[ \t\n]*source[ \t\n]*}')
+            text = mode.sub(tmp, text)
+            f.write(text)
 
 
 

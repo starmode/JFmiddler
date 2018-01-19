@@ -1,5 +1,5 @@
 # 定义所使用的数据结构
-
+## 有修改
 # 数据类，来自input文件
 class Data(object):
     name = ''
@@ -47,12 +47,7 @@ class Data(object):
 # 栅元类，来自gmdl文件
 class Volume(object):
     name = ''
-    # 单位信息，角度/长度单位
-    aUnit = ''
-    lUnit = ''
-    # 空间信息，位置/旋转，三元字符列表
-    pos = []
-    rot = []
+    property = ''
     # 物质信息，名称/密度/体积/质量
     matName = ''
     matD = ''
@@ -63,61 +58,10 @@ class Volume(object):
 
     def __init__(self, name):
         self.name = name
-        self.aUnit = ''
-        self.lUnit = ''
-        self.pos = []
-        self.rot = []
         self.matName = ''
         self.matD = ''
         self.matGre = []
 
-
-# box栅元
-class Box(Volume):
-    x = ''
-    y = ''
-    z = ''
-
-    def __init__(self, name):
-        super().__init__(name)
-        self.x = ''
-        self.y = ''
-        self.z = ''
-
-
-# sphere栅元
-class Sphere(Volume):
-    deltaPhi = ''
-    deltaTheta = ''
-    # 外内半径
-    rMax = ''
-    rMin = ''
-    startPhi = ''
-    startTheta = ''
-
-    def __init__(self, name):
-        super().__init__(name)
-        self.deltaPhi = ''
-        self.deltaTheta = ''
-        self.rMax = ''
-        self.rMin = ''
-        self.startPhi = ''
-        self.startTheta = ''
-
-
-# tube栅元
-class Tube(Volume):
-    rMax = ''
-    rMin = ''
-    startPhi = ''
-    z = ''
-
-    def __init__(self, name):
-        super().__init__(name)
-        self.rMax = ''
-        self.rMin = ''
-        self.startPhi = ''
-        self.z = ''
 
 class energyDis:
     def __init__(self):
@@ -125,6 +69,7 @@ class energyDis:
         self.rightBound = 0.
         self.perc = 0.
 
+Avogadro = 0.602
 ele = ['', 'H', 'HE', 'LI', 'BE', 'B', 'C', 'N', 'O', 'F', 'NE', 'NA', 'MG', 'AL', 'SI', 'P', 'S', 'CL', 'AR', 'K',
        'CA', 'SC', 'TI', 'V', 'CR', 'MN', 'FE', 'CO', 'NI', 'CU', 'ZN', 'GA', 'GE', 'AS', 'SE', 'BR', 'KR', 'RB', 'SR',
        'Y', 'ZR', 'NB', 'MO', 'TC', 'RU', 'RH', 'PD', 'AG', 'CD', 'IN', 'SN', 'SB', 'TE', 'I', 'XE', 'CS', 'BA', 'LA',

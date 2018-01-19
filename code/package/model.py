@@ -48,12 +48,7 @@ class Data(object):
 # 栅元类，来自gmdl文件
 class Volume(object):
     name = ''
-    # 单位信息，角度/长度单位
-    aUnit = ''
-    lUnit = ''
-    # 空间信息，位置/旋转，三元字符列表
-    pos = []
-    rot = []
+    property = ''
     # 物质信息，名称/密度/体积/质量
     matName = ''
     matD = ''
@@ -64,61 +59,9 @@ class Volume(object):
 
     def __init__(self, name):
         self.name = name
-        self.aUnit = ''
-        self.lUnit = ''
-        self.pos = []
-        self.rot = []
         self.matName = ''
         self.matD = ''
         self.matGre = []
-
-
-# box栅元
-class Box(Volume):
-    x = ''
-    y = ''
-    z = ''
-
-    def __init__(self, name):
-        super().__init__(name)
-        self.x = ''
-        self.y = ''
-        self.z = ''
-
-
-# sphere栅元
-class Sphere(Volume):
-    deltaPhi = ''
-    deltaTheta = ''
-    # 外内半径
-    rMax = ''
-    rMin = ''
-    startPhi = ''
-    startTheta = ''
-
-    def __init__(self, name):
-        super().__init__(name)
-        self.deltaPhi = ''
-        self.deltaTheta = ''
-        self.rMax = ''
-        self.rMin = ''
-        self.startPhi = ''
-        self.startTheta = ''
-
-
-# tube栅元
-class Tube(Volume):
-    rMax = ''
-    rMin = ''
-    startPhi = ''
-    z = ''
-
-    def __init__(self, name):
-        super().__init__(name)
-        self.rMax = ''
-        self.rMin = ''
-        self.startPhi = ''
-        self.z = ''
 
 
 class energyDis:
@@ -127,10 +70,16 @@ class energyDis:
         self.rightBound = 0.
         self.perc = 0.
 
-
+Avogadro = 0.602
 ele = ['', 'H', 'HE', 'LI', 'BE', 'B', 'C', 'N', 'O', 'F', 'NE', 'NA', 'MG', 'AL', 'SI', 'P', 'S', 'CL', 'AR', 'K',
        'CA', 'SC', 'TI', 'V', 'CR', 'MN', 'FE', 'CO', 'NI', 'CU', 'ZN', 'GA', 'GE', 'AS', 'SE', 'BR', 'KR', 'RB', 'SR',
        'Y', 'ZR', 'NB', 'MO', 'TC', 'RU', 'RH', 'PD', 'AG', 'CD', 'IN', 'SN', 'SB', 'TE', 'I', 'XE', 'CS', 'BA', 'LA',
        'CE', 'PR', 'ND', 'PM', 'SM', 'EU', 'GD', 'TB', 'DY', 'HO', 'ER', 'TM', 'YB', 'LU', 'HF', 'TA', 'W', 'RE', 'OS',
        'IR', 'PT', 'AU', 'HG', 'TL', 'PB', 'BI', 'PO', 'AT', 'RN', 'FR', 'RA', 'AC', 'TH', 'PA', 'U', 'NP', 'PU', 'AM',
        'CM', 'BK', 'CF', 'ES', 'FM']
+defaultInput = '''NOHEAD\nMONITOR 1\nAINP\nFISPACT\n{title}\nDENSITY {density}\nMASS {mass} {elements}\nMIND 1.0\nHALF\nGRAPH 2 0 0 1 2\n{flux}
+ATOMS\nLEVEL 100 1\nTIME 1.0\nHALF\nDOSE 1\nATOMS\nNOSTABLE\nLEVEL 20 1\nFLUX 0.\nZERO\nTIME 1.0 HOURS ATOMS
+END\n* END\n/*\n'''
+defaultCollapx = ''
+defaultArrayx = ''
+defaultPrintlib = ''

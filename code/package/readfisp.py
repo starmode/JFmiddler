@@ -3,10 +3,7 @@
 # 输出：list[model.energyDis *24]
 
 import re, os
-from model import energyDis
-
-with open('../fisp/out.o') as f:
-    allItem = f.read()
+from .model import energyDis
 
 def readFisp(path):
     folders = os.listdir(path)

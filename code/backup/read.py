@@ -1,11 +1,11 @@
 # 从jmct输出文件读取栅元信息
 # 输入：文件地址
 # 输出：model.Data实例neutron
-
+# 有修改
 import pickle
 import re
 
-from .model import Data, ele
+from model import Data, ele
 
 
 def m2ev(mid0, flag):
@@ -38,7 +38,7 @@ def find_ele(ids):
     return ans
 
 neutron = Data('Transporting')
-with open('JMCT.out', 'r') as f:
+with open('../jmct/result/neutron.out', 'r') as f:
     all_item = f.read()
 
     # # element name提取元素代号
@@ -82,20 +82,22 @@ with open('JMCT.out', 'r') as f:
     neutron.cell_num = len(mid)
     for i in range(neutron.cell_num):
         mode = re.compile(r'cell: (.+?),', re.S)
-        name.append(mode.findall(mid[i])[0])
-        # 储存每个几何体的中子通量
-        # total           2.35844e-08
-        mode = re.compile(r'total +\d.\d+e[+-]\d{2,3}')
-        temp = mode.findall(mid[i])
-        energy.append(temp[0][16:])
-        # 储存每个几何体的体积
-        # volume = 9.08924e+06
-        print(mid[i])
-        # \d.\d+(e[+-]\d{2,3})?
-        mode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
-        temp = mode.findall(mid[i])
-        volume.append(temp[0][14:])
-        neutron.cell_info = dict(zip(name,zip(energy,volume)))
+        # 此处修改1行
+        if mode.findall(mid[i])[0] != 'World':
+            name.append(mode.findall(mid[i])[0])
+            # 储存每个几何体的中子通量
+            # total           2.35844e-08
+            mode = re.compile(r'total +\d.\d+e[+-]\d{2,3}')
+            temp = mode.findall(mid[i])
+            energy.append(float(temp[0][16:]))
+            # 储存每个几何体的体积
+            # volume = 9.08924e+06
+            # print(mid[i])
+            # \d.\d+(e[+-]\d{2,3})?
+            mode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
+            temp = mode.findall(mid[i])
+            volume.append(float(temp[0][14:]))
+            neutron.cell_info = dict(zip(name,zip(energy,volume)))
     print(neutron.cell_info)
 # print(neutron)
 with open('neutron', 'wb') as out:
