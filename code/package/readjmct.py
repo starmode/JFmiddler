@@ -4,7 +4,7 @@
 
 import re
 
-from .model import Data, ele
+from .model import Data
 
 
 def _m2ev(raw, flag):
