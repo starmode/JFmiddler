@@ -45,7 +45,7 @@ class Data(object):
         self.ele_ener = ele_ener_new
 
 
-# 栅元类，来自gmdl文件
+# 栅元类，来自gdml文件
 class Volume(object):
     name = ''
     property = ''

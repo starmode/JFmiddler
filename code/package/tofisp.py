@@ -9,8 +9,7 @@ def _mkdir(path):
     #
     path = path.strip()
     path = path.rstrip("\\")
-    isExists = os.path.exists(path)
-    if not isExists:
+    if not os.path.exists(path):
         os.makedirs(path)
         return True
     else:

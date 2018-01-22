@@ -9,7 +9,7 @@ def writej(path, neutron, allDistributions, split = ' ' * 3):
         try:
             pos = mode.search(text).start()
         except AttributeError:
-            pass
+            raise
         offset = 0
         while text[pos - offset] != '\n':
             offset += 1
