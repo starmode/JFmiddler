@@ -16,7 +16,7 @@ def _mkdir(path):
     else:
         return False
 
-def collapx(text, cell, path):
+def _collapx(text, cell, path):
     _mkdir(path + '/' + cell)
     with open(path + '/' + cell + '/collapx.i', 'w') as f:
         mode = re.compile('{[ \t\n]*title[ \t\n]*}')
@@ -77,10 +77,10 @@ def _input(text, neutron, allStructure, cell, genRate, path):
         f.write(text)
 
 
-def writef(path, genRate, neutron, allStructure, _input = defaultInput, _collapx = defaultCollapx, _arrayx = defaultArrayx, _printlib = defaultPrintlib):
+def writef(path, genRate, neutron, allStructure, _inputText = defaultInput, _collapxText = defaultCollapx, _arrayxText = defaultArrayx, _printlibText = defaultPrintlib):
     for cell in neutron.cell_info.keys():
-        _input(_input, neutron, allStructure, cell, genRate, path)
-        _collapx(_collapx, cell, path)
-        _arrayx(_arrayx, cell, path)
-        _printlib(_printlib, cell, path)
+        _input(_inputText, neutron, allStructure, cell, genRate, path)
+        _collapx(_collapxText, cell, path)
+        _arrayx(_arrayxText, cell, path)
+        _printlib(_printlibText, cell, path)
 
