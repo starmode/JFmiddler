@@ -5,14 +5,13 @@
 from lxml import etree
 from .model import Volume
 
-
-def getVal(root, path):
-    return root.xpath(path)[0]
-
-
-def jreadGdml(gdml_path):
+def readg(path):
+    # 读取GDML文件并解析出各材料物质信息
+    # path--input--GDML文件位置
+    # allStructure--output--所有材料填充物质信息
+    assert type(path) == str
     try:
-        root = etree.parse(gdml_path)
+        root = etree.parse(path)
     except:
         raise FileNotFoundError
     # 获取常数定义
@@ -90,4 +89,4 @@ def jreadGdml(gdml_path):
             volume.matD = items[0]
             volume.matGre = [item + elements[item[0]] for item in items[1]]
             allStructure[name[6:]] = volume
-    return (allStructure)
+    return allStructure
