@@ -40,36 +40,36 @@ def readj(path):
     assert type(path) == str
     neutron = Data('Transporting')
     with open(path, 'r') as f:
-        all_item = f.read()
+        allItem = f.read()
         mode = re.compile(r'energy_bin[ \de\-,=.]+')
-        mid = mode.findall(all_item)[0]
+        mid = mode.search(allItem).group(0)
         mid = mid.replace(' ', '')
         mid = mid.strip('energy_bin=')
         mode = re.compile(r'^/c+$')
         mid = mode.sub('', mid)
         mid = mid.split(',')
-        neutron.ene_bin = _m2ev(mid, 'e')
-        neutron.ene_num = len(neutron.ene_bin)
+        neutron.eneBin = _m2ev(mid, 'e')
+        neutron.eneNum = len(neutron.eneBin)
 
         # 几何体相关信息储存
         mode = re.compile('Tally4_0,(.+?)---', re.S)
-        mid = mode.findall(all_item)
+        mid = mode.findall(allItem)
         name = []
         energy = []
         volume = []
         # 储存关心的几何体数量
-        neutron.cell_num = len(mid)
-        for i in range(neutron.cell_num):
+        neutron.cellNum = len(mid)
+        for i in range(neutron.cellNum):
             mode = re.compile(r'cell: (.+?),', re.S)
-            if mode.findall(mid[i])[0] != 'World':
-                name.append(mode.findall(mid[i])[0])
+            if mode.search(mid[i]).group(0)[6:-1] != 'World':
+                name.append(mode.search(mid[i]).group(0)[6:-1])
                 # 储存每个几何体的中子通量
                 mode = re.compile(r'total +\d.\d+e[+-]\d{2,3}')
                 temp = mode.findall(mid[i])
                 energy.append(float(temp[0][16:]))
                 # 储存每个几何体的体积
                 mode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
-                temp = mode.findall(mid[i])
-                volume.append(float(temp[0][14:]))
-            neutron.cell_info = dict(zip(name, zip(energy, volume)))
+                temp = mode.search(mid[i]).group(0)
+                volume.append(float(temp[14:]))
+            neutron.cellInfo = dict(zip(name, zip(energy, volume)))
     return neutron

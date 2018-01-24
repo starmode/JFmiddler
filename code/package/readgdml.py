@@ -5,6 +5,25 @@
 from lxml import etree
 from .model import Volume
 
+def _extractVol(structure, solids, materials, elements):
+    # 仅内部调用
+    # structure--input--解析的源文本
+    # solids--input--物体信息
+    # materials--input--材料信息
+    # elements--input--元素信息
+    # volume--output--物质信息
+    solidRef = structure.xpath('solidref/@ref')[0]
+    materialRef = structure.xpath('materialref/@ref')[0]
+    if solids.__contains__(solidRef):
+        volume = solids[solidRef]
+    else:
+        volume = Volume(solidRef)
+    items = materials[materialRef]
+    volume.matName = materialRef
+    volume.matD = items[0]
+    volume.matGre = [item + elements[item[0]] for item in items[1]]
+    return volume
+
 def readg(path):
     # 读取GDML文件并解析出各材料物质信息
     # path--input--GDML文件位置
@@ -14,26 +33,6 @@ def readg(path):
         root = etree.parse(path)
     except:
         raise FileNotFoundError
-    # 获取常数定义
-    conTree = root.xpath('./define/constant')
-    conNames = [con.xpath('@name')[0] for con in conTree]
-    conVal = [con.xpath('@value')[0] for con in conTree]
-
-    # 获取位置定义
-    posTree = root.xpath('./define/position')
-    posName = [pos.xpath('@name')[0] for pos in posTree]
-    posVal = [(pos.xpath('@unit')[0], float(pos.xpath('@x')[0]), float(pos.xpath('@y')[0]), float(pos.xpath('@z')[0]))
-              for pos in posTree]
-
-    # 获取角度定义
-    rotTree = root.xpath('./define/rotation')
-    rotName = [rot.xpath('@name')[0] for rot in rotTree]
-    rotVal = [(rot.xpath('@unit')[0], float(rot.xpath('@x')[0]), float(rot.xpath('@y')[0]), float(rot.xpath('@z')[0]))
-              for rot in rotTree]
-
-    constants = dict(zip(conNames, conVal))
-    position = dict(zip(posName, posVal))
-    rotation = dict(zip(rotName, rotVal))
 
     # 获取元素定义
     eleTree = root.xpath('./materials/element')
@@ -72,21 +71,20 @@ def readg(path):
         solids[name] = newVol
 
     # 补充栅元的物质信息和空间信息
-    allStructure = {}
     structures = root.xpath('./structure/volume')
-    for structure in structures:
-        name = structure.xpath('@name')[0]
-        # 物质信息
-        if name != 'World':
-            solidRef = structure.xpath('solidref/@ref')[0]
-            materialRef = structure.xpath('materialref/@ref')[0]
-            if solids.__contains__(solidRef):
-                volume = solids[solidRef]
-            else:
-                volume = Volume(solidRef)
-            items = materials[materialRef]
-            volume.matName = materialRef
-            volume.matD = items[0]
-            volume.matGre = [item + elements[item[0]] for item in items[1]]
-            allStructure[name[6:]] = volume
+    strucLen = len(structures)
+    solidList = [solids for i in range(strucLen)]
+    matList = [materials for i in range(strucLen)]
+    eleList = [elements for i in range(strucLen)]
+    vols = list(map(_extractVol, structures, solidList, matList, eleList))
+    names = list(map(lambda structure:structure.xpath('@name')[0][6:], structures))
+    deleteInx = -1
+    try:
+        deleteInx = names.index('World')
+    except ValueError:
+        pass
+    if deleteInx > -1:
+        names.pop(deleteInx)
+        vols.pop(deleteInx)
+    allStructure = dict(zip(names, vols))
     return allStructure
