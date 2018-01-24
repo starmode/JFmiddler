@@ -39,6 +39,7 @@ def writej(path, neutron, allDistributions, split):
     try:
         pos = mode.search(text).start()
     except AttributeError:
+        # 这里真的是pass，后期会改为传回一句str
         pass
     offset = pos - text.rfind('\n', 0, pos) - 1
     pre = offset * ' '
