@@ -1,0 +1,8 @@
+MONITOR 1
+COLLAPSE 175
+FISPACT
+* Irradiation of CU
+END
+* END OF RUN
+/*
+ 
