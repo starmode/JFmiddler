@@ -32,7 +32,8 @@ def fisp(_env, _group, _indir, _outdir=''):
     _eaf_gxs = os.path.join(_eaf, 'eaf_' + _group[0] + '_gxs_' + _group[1] + '_' + _group[2] + '_20070')
     if not os.path.isfile(_eaf_gxs):
         print('Cannot find ' + _eaf_gxs)
-        raise FileNotFoundError
+        # raise FileNotFoundError
+        return
     # 验证eaf地址
     if not os.path.exists(_outdir):
         os.mkdir(_outdir)
@@ -74,16 +75,17 @@ def fisp(_env, _group, _indir, _outdir=''):
     os.remove(_outdir + '/output')
 
 
-fisppath = r'G:\大创资料\FISPACT-07\fispact\fisp20070.exe'
-eaf = r'G:\大创资料\FISPACT-07\eaf_data'
-case = r'G:\git\JFmiddler\testcase\compare\fisp\AL6061'
-
-env = ['', '']
-env[0] = fisppath
-env[1] = eaf
-group = ['', '', '']
-group[0] = 'n'
-group[1] = '175'
-group[2] = 'fus'
-
-fisp(env, group, case)
+# 调用举例：
+# fisppath = r'G:\大创资料\FISPACT-07\fispact\fisp20070.exe'
+# eaf = r'G:\大创资料\FISPACT-07\eaf_data'
+# case = r'G:\git\JFmiddler\testcase\compare\fisp\AL6061'
+#
+# env = ['', '']
+# env[0] = fisppath
+# env[1] = eaf
+# group = ['', '', '']
+# group[0] = 'n'
+# group[1] = '175'
+# group[2] = 'fus'
+#
+# fisp(env, group, case)
