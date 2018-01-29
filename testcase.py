@@ -4,6 +4,7 @@ from package.tofisp import writef
 from package.readfisp import readf
 from package.tojmct import writej
 # MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
+
 def one():
     with open('./testcase/photon.OUT') as f:
         text = f.read()

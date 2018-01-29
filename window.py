@@ -1,5 +1,6 @@
 import os
 import re
+import platform
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -46,17 +47,49 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.FPick.clicked.connect(self.openFInstall)
         self.EPick.clicked.connect(self.openEAFDir)
         self.FWorkPick.clicked.connect(self.openFDirRight)
-        self.JPick.clicked.connect(self.openJInstall)
         self.JInPick.clicked.connect(self.openJIn)
         self.ResetR.clicked.connect(self.resetR)
         self.QuitR.clicked.connect(QCoreApplication.instance().quit)
         self.StartR.clicked.connect(self.call)
-        self.UseEnv.clicked.connect(self.envEnable)
 
         self.CallFISP.clicked.connect(self.callF)
         self.CallJMCT.clicked.connect(self.callJ)
         self.allEnableL(True)
         self.allEnableR(True)
+        self.pickPath()
+
+        self.__desktop = QApplication.desktop()
+        self.reSize()
+
+    def closeEvent(self, event):
+        self.savePath()
+        event.accept()
+
+    def pickPath(self):
+        if 'wiz.ini' in os.listdir('.'):
+            with open('./wiz.ini') as f:
+                lines = f.readlines()
+            for line in lines:
+                tmp = line.split('=')
+                if len(tmp) != 2:
+                    continue
+                if tmp[0] == 'FISPACT':
+                    self.FPath.setText(tmp[1])
+                elif tmp[0] == 'EAF':
+                    self.EPath.setText(tmp[1])
+
+    def savePath(self):
+        if self.FPath.text() != '' or self.EPath.text() != '':
+            with open('./wiz.ini', 'w') as f:
+                f.write('FISPACT=%s\n' % self.FPath.text())
+                f.write('EAF=%s' % self.EPath.text())
+
+    def reSize(self):
+        screenRect = self.__desktop.screenGeometry()
+        height = screenRect.height() * 9 // 10
+        weight = round(37 * height / 52)
+        self.resize(weight, height)
+        self.setFixedSize(self.width(), self.height())
 
     def allEnableL(self, flag):
         self.JOutFilePathU.setEnabled(flag)
@@ -92,27 +125,16 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.Particle.setEnabled(flag)
         self.FWorkPathR.setEnabled(flag)
         self.FWorkPick.setEnabled(flag)
+        self.FPath.setEnabled(flag)
+        self.EPath.setEnabled(flag)
+        self.FPick.setEnabled(flag)
+        self.EPick.setEnabled(flag)
 
         self.JInPath.setEnabled(not flag)
         self.JInPick.setEnabled(not flag)
 
-        if not self.UseEnv.isChecked():
-            self.FPath.setEnabled(flag)
-            self.EPath.setEnabled(flag)
-            self.FPick.setEnabled(flag)
-            self.EPick.setEnabled(flag)
-            self.JPick.setEnabled(not flag)
-            self.JPath.setEnabled(not flag)
 
-    def envEnable(self):
-        if self.CallFISP.isChecked():
-            self.FPath.setEnabled(not self.UseEnv.isChecked())
-            self.EPath.setEnabled(not self.UseEnv.isChecked())
-            self.FPick.setEnabled(not self.UseEnv.isChecked())
-            self.EPick.setEnabled(not self.UseEnv.isChecked())
-        else:
-            self.JPath.setEnabled(not self.UseEnv.isChecked())
-            self.JPick.setEnabled(not self.UseEnv.isChecked())
+
 
     def jtoF(self):
         self.allEnableL(True)
@@ -191,7 +213,12 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.FWorkPathR.setText(self._LastRoute)
 
     def openFInstall(self):
-        self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
+        if 'Windows' in platform.system():
+            self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
+                                                          "FISPACT Binary File (*.exe);;All Files (*)")
+        else:
+            self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
+                                                              "FISPACT Binary File (*.bin);;All Files (*)")
         self.FPath.setText(self._LastRoute)
 
     def openEAFDir(self):
@@ -202,9 +229,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
         self.FWorkPathR.setText(self._LastRoute)
 
-    def openJInstall(self):
-        self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
-        self.JPath.setText(self._LastRoute)
 
     def openJIn(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
@@ -318,7 +342,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.JInPath.setText('')
         self.CallFISP.setChecked(True)
         self.allEnableR(True)
-        self.UseEnv.setChecked(False)
         self.envEnable()
 
     def start(self):
@@ -448,44 +471,37 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.info('文件转换完成', 0)
 
     def call(self):
-        if self._ToDoR == False:
+        if self._ToDoR == True:
             # callFISP
             FPath = self.FPath.text()
             EPath = self.EPath.text()
             Case = self.FWorkPathR.text()
 
             tmp = ['69', '100', '172', '175', '211', '315', '351']
-            group = tmp[self.Group.currentIndex()]
-            tmp = ['FLA', 'FIS', 'FUS']
-            weight = tmp[self.Weight.currentIndex()]
+            g = tmp[self.Group.currentIndex()]
+            tmp = ['fla', 'fis', 'fus']
+            w = tmp[self.Weight.currentIndex()]
             tmp = ['n', 'p', 'd']
-            particle = tmp[self.Particle.currentIndex()]
-            if FPath == '' and not self.UseEnv.isChecked():
-                self.info('错误：未指定FISPACT安装目录', 0)
+            p = tmp[self.Particle.currentIndex()]
+
+            if FPath == '':
+                self.info('错误：未指定FISPACT主程序位置', 0)
                 return
-            if EPath == '' and not self.UseEnv.isChecked():
+            if EPath == '':
                 self.info('错误：未指定EAF数据库安装目录', 0)
                 return
             if Case == '':
                 self.info('错误：未指定FISPACT工作目录', 0)
                 return
+            group = [p, g, w]
+            env = [FPath, EPath]
             self.info('调用FISPACT中...', 0)
-            if self.UseEnv.isChecked():
-                pass
-            else:
-                fisp(FPath, EPath, Case)
+            fisp(env, group, Case, Case)
         else:
             # callJMCT
-            JPath = self.JPath.text()
             JInPath = self.JInPath.text()
-            if JPath == '' and not self.UseEnv.isChecked():
-                self.info('错误：未指定JMCT安装目录', 0)
-                return
             if JInPath == '':
                 self.info('错误：未指定JMCT输入文件', 0)
                 return
             self.info('调用JMCT中...', 0)
-            if self.UseEnv.isChecked():
-                jmct(JInPath)
-            else:
-                jmct(JInPath, False, JPath)
+            jmct(JInPath)
