@@ -479,7 +479,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
             tmp = ['69', '100', '172', '175', '211', '315', '351']
             g = tmp[self.Group.currentIndex()]
-            tmp = ['fla', 'fis', 'fus']
+            tmp = ['flt', 'fis', 'fus']
             w = tmp[self.Weight.currentIndex()]
             tmp = ['n', 'p', 'd']
             p = tmp[self.Particle.currentIndex()]
@@ -496,7 +496,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             group = [p, g, w]
             env = [FPath, EPath]
             self.info('调用FISPACT中...', 0)
-            fisp(env, group, Case, Case)
+            try:
+                fisp(self.info, env, group, Case)
+            except BaseException as a:
+                self.info(a)
+            self.info('调用完毕', 0)
         else:
             # callJMCT
             JInPath = self.JInPath.text()
