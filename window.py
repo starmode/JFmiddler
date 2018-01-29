@@ -497,7 +497,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             env = [FPath, EPath]
             self.info('调用FISPACT中...', 0)
             try:
-                fisp(self.info, env, group, Case)
+                fisp(self.info, env, group, Case, Case)
             except BaseException as a:
                 self.info(a)
             self.info('调用完毕', 0)

@@ -109,13 +109,12 @@ def fisp(show, env, group, indir, outdir=''):
 
 
 # 调用举例：
-# case = r'G:\git\JFmiddler\testcase\compare\fisp\AL6061'
-#
-# env = [r'G:\大创资料\FISPACT-07\fispact\fisp20070.exe',
-#        r'G:\大创资料\FISPACT-07\eaf_data']
-# # group = ['n', '211', 'flt']
-# group = ['n',
-#          '175',
-#          'fus']
-#
-# fisp(print, env, group, case, case)
+
+if __name__ == '__main__':
+    case = r'G:\git\JFmiddler\testcase\compare\fisp\AL6061'
+    env = [r'G:\大创资料\FISPACT-07\fispact\fisp20070.exe',
+           r'G:\大创资料\FISPACT-07\eaf_data']
+    group = ['n',
+             '175',
+             'fus']
+    fisp(print, env, group, case, case)
