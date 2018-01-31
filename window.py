@@ -58,6 +58,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.allEnableR(True)
         self.pickPath()
 
+        self.fis = Fis()
+        self.fis.sinOut.connect(self.info)
+
         self.__desktop = QApplication.desktop()
         self.reSize()
 
@@ -238,7 +241,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
     def info(self, text, mode=0):
         # mode=0 -- newline
         # mode=1 -- sameline
-        # mode=3 -- revise
+        # mode=2 -- revise
+        # mode=3 -- newline without empty line
         time = QTime.currentTime()
         if mode == 0:
             if len(self._InfoText) > 0 and self._InfoText[-1] != '\n':
@@ -248,6 +252,10 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self._InfoText += '...%s' % text
         elif mode == 2:
             self._InfoText = re.sub('\d+(/\d+)$', r'%d\1' % text, self._InfoText)
+        elif mode == 3:
+            if len(self._InfoText) > 0 and self._InfoText[-1] != '\n':
+                self._InfoText += '\n'
+            self._InfoText += '[%s] %s' % (time.toString(Qt.DefaultLocaleLongDate), text)
         self.StatusL.setText(self._InfoText)
         self.StatusR.setText(self._InfoText)
         self.StatusL.moveCursor(QTextCursor.End)
@@ -495,12 +503,13 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 return
             group = [p, g, w]
             env = [FPath, EPath]
-            self.info('调用FISPACT中...', 0)
             try:
-                fisp(self.info, env, group, Case, Case)
+                self.fis.env = env
+                self.fis.group = group
+                self.fis.case = Case
+                self.fis.start()
             except BaseException as a:
                 self.info(a)
-            self.info('调用完毕', 0)
         else:
             # callJMCT
             JInPath = self.JInPath.text()
@@ -509,3 +518,15 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 return
             self.info('调用JMCT中...', 0)
             jmct(JInPath)
+
+
+class Fis(QThread):
+    sinOut = pyqtSignal(str, int)
+    case = ''
+    env = ['','']
+    group = ['','','']
+
+    def run(self):
+        self.sinOut.emit('调用Fispact中...', 0)
+        fisp(self.sinOut.emit, self.env, self.group, self.case, self.case)
+        self.sinOut.emit('调用结束', 0)

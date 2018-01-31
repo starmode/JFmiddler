@@ -10,7 +10,9 @@ def jmct(_input, _useEnv=True, _path=''):
     call(['jmct', _input])
 
 
-def fisp(show, env, group, indir, outdir=''):
+def fisp(info, env, group, indir, outdir=''):
+    def show(text):
+        info(text, 3)
     # 传入参数处理
     fisppath = os.path.realpath(env[0].strip())
     if not os.path.isfile(fisppath):
@@ -106,15 +108,3 @@ def fisp(show, env, group, indir, outdir=''):
 
     os.remove(outdir + '/input')
     os.remove(outdir + '/output')
-
-
-# 调用举例：
-
-if __name__ == '__main__':
-    case = r'G:\git\JFmiddler\testcase\compare\fisp\AL6061'
-    env = [r'G:\大创资料\FISPACT-07\fispact\fisp20070.exe',
-           r'G:\大创资料\FISPACT-07\eaf_data']
-    group = ['n',
-             '175',
-             'fus']
-    fisp(print, env, group, case, case)
