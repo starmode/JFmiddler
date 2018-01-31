@@ -62,3 +62,16 @@ defaultCollapx = 'MONITOR 1\nCOLLAPSE 175\nFISPACT\n* {title}\nEND\n* END ' \
 defaultArrayx = 'MONITOR 1\nSPEK\nENFA\n* {title}\nTAPA\nFISPACT\n* WRITE DATA TO ARRAY FILE.\nEND\n* END OF ' \
                 'RUN\n/*\n '
 defaultPrintlib = ''
+
+defaultFILES = '03  <case>\spectra\n05  input\n06  output\n07  <eaf>\eaf_un_20070\n08  <eaf>\eaf_<0>_asscfy_20070\n' \
+               '09  <eaf>\eaf_<0>_fis_20070\n10  graph\n11  <eaf>\eaf_a2_20070\n12  collapx\n13  arrayx\n' \
+               '14  <eaf>\eaf_haz_20070\n15  summaryx\n16  <eaf>\eaf_dec_20070.001\n17  collapx\n' \
+               '18  <eaf>\eaf_index_20070\n19  <eaf>\eaf_<0>_gxs_<1>_<2>_20070\n20  fluxes\n' \
+               '21  <eaf>\eaf_stop_pro_20070\n22  <eaf>\eaf_stop_deu_20070\n23  <eaf>\eaf_stop_alp_20070\n' \
+               '24  <eaf>\eaf_stop_tri_20070\n25  <eaf>\eaf_stop_he3_20070\n26  <eaf>\eaf_xn_pn_20070\n' \
+               '27  <eaf>\eaf_xn_dn_20070\n28  <eaf>\eaf_xn_an_20070\n29  <eaf>\eaf_xn_tn_20070\n' \
+               '30  <eaf>\eaf_xn_hn_20070\n31  <eaf>\eaf_xn_d2n_20070\n32  <eaf>\eaf_xn_t2n_20070\n' \
+               '33  <eaf>\eaf_spec_pt1_20070\n34  <eaf>\eaf_spec_pt2_20070\n35  <eaf>\eaf_spec_pt3_20070\n' \
+               '36  <eaf>\eaf_spec_pt4_20070\n37  <eaf>\eaf_spec_pt5_20070\n38  halfunc\n39  <eaf>\eaf_abs_20070\n' \
+               '40  <eaf>\eaf_clear_20070\n41  <eaf>\eaf_xn_p2n_20070\n42  <eaf>\eaf_xn_a2n_20070\n' \
+               '43  <eaf>\eaf_xn_h2n_20070'

@@ -2,6 +2,7 @@ import os
 from shutil import copy
 from subprocess import call, Popen, PIPE
 from time import sleep
+from .model import defaultFILES
 
 
 # 未测试
@@ -30,8 +31,7 @@ def fisp(info, env, group, indir, outdir=''):
         os.mkdir(outdir)
 
     # 生成FILES文件
-    with open(os.path.dirname(__file__) + '/FILES_prototype', 'r') as f1:
-        files = f1.read()
+    files = defaultFILES
     files = files.replace(r'<case>', indir)
     files = files.replace(r'<eaf>', eaf)
     files = files.replace(r'<0>', group[0])
