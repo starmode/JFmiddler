@@ -14,40 +14,6 @@ def jmct(_input, _useEnv=True, _path=''):
 def fisp(info, env, group, indir, outdir=''):
     def show(text):
         info(text, 3)
-    # 传入参数处理
-    fisppath = os.path.realpath(env[0].strip())
-    if not os.path.isfile(fisppath):
-        show('file not found: %s' % fisppath)
-        return
-    eaf = os.path.realpath(env[1].strip())
-    indir = os.path.realpath(indir.strip())
-
-    # 可选功能：指定输出目录
-    if outdir == '':
-        outdir = os.path.join(indir, 'output')  # 默认为output目录
-    else:
-        outdir = os.path.realpath(outdir)
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
-
-    # 生成FILES文件
-    files = defaultFILES
-    files = files.replace(r'<case>', indir)
-    files = files.replace(r'<eaf>', eaf)
-    files = files.replace(r'<0>', group[0])
-    files = files.replace(r'<1>', group[1])
-    files = files.replace(r'<2>', group[2])
-    # group[0]: 'n','p','d'
-    # group[1]: '69', '100', '172', '175', '211', '315', '351'
-    # group[2]: 'flt', 'fis', 'fus'
-    with open(os.path.join(outdir, 'FILES'), 'w') as f2:
-        f2.write(files)
-
-    # 验证eaf地址,也可以移到window.py里
-    eaf_gxs = r'%s\eaf_%s_gxs_%s_%s_20070' % (eaf, group[0], group[1], group[2])
-    if not os.path.isfile(eaf_gxs):
-        show(r'Cannot find: %s\eaf_%s_gxs_%s_%s_20070' % (eaf, group[0], group[1], group[2]))
-        return
 
     def _copy(_src, _dst):
         if indir != outdir:
@@ -65,6 +31,41 @@ def fisp(info, env, group, indir, outdir=''):
                 continue
             return _p.returncode
 
+    # 传入参数处理
+    fisppath = os.path.realpath(env[0].strip())
+    if not os.path.isfile(fisppath):
+        show('file not found: %s' % fisppath)
+        return
+    eaf = os.path.realpath(env[1].strip())
+    indir = os.path.realpath(indir.strip())
+
+    # 可选功能：指定输出目录
+    if outdir == '':
+        outdir = indir  # 默认为输入目录
+    else:
+        outdir = os.path.realpath(outdir)
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
+
+    # 生成FILES文件
+    files = defaultFILES
+    files = files.replace(r'<case>', indir)
+    files = files.replace(r'<eaf>', eaf)
+    files = files.replace(r'<0>', group[0])
+    files = files.replace(r'<1>', group[1])
+    files = files.replace(r'<2>', group[2])
+    # group[0]: 'n','p','d'
+    # group[1]: '69', '100', '172', '175', '211', '315', '351'
+    # group[2]: 'flt', 'fis', 'fus'
+    with open(os.path.join(outdir, 'FILES'), 'w') as f:
+        f.write(files)
+
+    # 验证eaf地址
+    eaf_gxs = r'%s\eaf_%s_gxs_%s_%s_20070' % (eaf, group[0], group[1], group[2])
+    if not os.path.isfile(eaf_gxs):
+        show(r'Cannot find: %s\eaf_%s_gxs_%s_%s_20070' % (eaf, group[0], group[1], group[2]))
+        return
+
     # 创建空文件
     if os.path.isfile(indir + '/collapx'):
         _copy(indir + '/collapx', outdir + '/collapx')
@@ -81,6 +82,9 @@ def fisp(info, env, group, indir, outdir=''):
         _copy(indir + '/halfunc', outdir + '/halfunc')
     _copy(indir + '/fluxes', outdir + '/fluxes')
 
+    if not os.path.isfile(indir + '/collapx.i'):
+        show('无效目录: %s' % indir)
+        return
     copy(indir + '/collapx.i', outdir + '/input')
     show('正在处理 collapx.i ...')
     if _run() != 0:

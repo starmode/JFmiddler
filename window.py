@@ -11,6 +11,7 @@ from JFTools.read import readj, readg, readf
 from JFTools.write import writef, writej
 from JFTools.call import jmct, fisp
 
+
 class Dynamics(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(Dynamics, self).__init__()
@@ -136,9 +137,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.JInPath.setEnabled(not flag)
         self.JInPick.setEnabled(not flag)
 
-
-
-
     def jtoF(self):
         self.allEnableL(True)
 
@@ -218,7 +216,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
     def openFInstall(self):
         if 'Windows' in platform.system():
             self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
-                                                          "FISPACT Binary File (*.exe);;All Files (*)")
+                                                              "FISPACT Binary File (*.exe);;All Files (*)")
         else:
             self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                               "FISPACT Binary File (*.bin);;All Files (*)")
@@ -231,7 +229,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
     def openFDirRight(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
         self.FWorkPathR.setText(self._LastRoute)
-
 
     def openJIn(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
@@ -503,13 +500,10 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 return
             group = [p, g, w]
             env = [FPath, EPath]
-            try:
-                self.fis.env = env
-                self.fis.group = group
-                self.fis.case = Case
-                self.fis.start()
-            except BaseException as a:
-                self.info(a)
+            self.fis.env = env
+            self.fis.group = group
+            self.fis.case = Case
+            self.fis.start()
         else:
             # callJMCT
             JInPath = self.JInPath.text()
@@ -523,10 +517,13 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 class Fis(QThread):
     sinOut = pyqtSignal(str, int)
     case = ''
-    env = ['','']
-    group = ['','','']
+    env = ['', '']
+    group = ['', '', '']
 
     def run(self):
         self.sinOut.emit('调用Fispact中...', 0)
-        fisp(self.sinOut.emit, self.env, self.group, self.case, self.case)
+        try:
+            fisp(self.sinOut.emit, self.env, self.group, self.case)
+        except BaseException as a:
+            self.sinOut.emit(a, 0)
         self.sinOut.emit('调用结束', 0)
