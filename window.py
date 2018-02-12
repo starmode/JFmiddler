@@ -62,6 +62,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.fis = Fis()
         self.fis.sinOut.connect(self.info)
 
+        self.jmct = Jm()
+        self.jmct.sinOut.connect(self.info)
+
         self.__desktop = QApplication.desktop()
         self.reSize()
 
@@ -71,16 +74,19 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def pickPath(self):
         if 'wiz.ini' in os.listdir('.'):
-            with open('./wiz.ini') as f:
-                lines = f.readlines()
-            for line in lines:
-                tmp = line.split('=')
-                if len(tmp) != 2:
-                    continue
-                if tmp[0] == 'FISPACT':
-                    self.FPath.setText(tmp[1])
-                elif tmp[0] == 'EAF':
-                    self.EPath.setText(tmp[1])
+            try:
+                with open('./wiz.ini') as f:
+                    lines = f.readlines()
+                for line in lines:
+                    tmp = line.split('=')
+                    if len(tmp) != 2:
+                        continue
+                    if tmp[0] == 'FISPACT':
+                        self.FPath.setText(tmp[1])
+                    elif tmp[0] == 'EAF':
+                        self.EPath.setText(tmp[1])
+            except:
+                pass
 
     def savePath(self):
         if self.FPath.text() != '' or self.EPath.text() != '':
@@ -337,17 +343,17 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def resetR(self):
         self.info('右页面重置信息', 0)
-        self.Group.setCurrentIndex(3)
-        self.Weight.setCurrentIndex(0)
-        self.Particle.setCurrentIndex(0)
-        self.FPath.setText('')
-        self.EPath.setText('')
-        self.FWorkPathR.setText('')
-        self.JPath.setText('')
-        self.JInPath.setText('')
-        self.CallFISP.setChecked(True)
-        self.allEnableR(True)
-        self.envEnable()
+        # self.Group.setCurrentIndex(3)
+        # self.Weight.setCurrentIndex(0)
+        # self.Particle.setCurrentIndex(0)
+        # self.FPath.setText('')
+        # self.EPath.setText('')
+        # self.FWorkPathR.setText('')
+        # self.JPath.setText('')
+        # self.JInPath.setText('')
+        # self.CallFISP.setChecked(True)
+        # self.allEnableR(True)
+        # self.envEnable()
 
     def start(self):
         if self._ToDoL == True:
@@ -510,8 +516,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             if JInPath == '':
                 self.info('错误：未指定JMCT输入文件', 0)
                 return
-            self.info('调用JMCT中...', 0)
-            jmct(JInPath)
+            self.jmct.JInPath = JInPath
+            self.jmct.start()
 
 
 class Fis(QThread):
@@ -525,5 +531,18 @@ class Fis(QThread):
         try:
             fisp(self.sinOut.emit, self.env, self.group, self.case)
         except BaseException as a:
+            self.sinOut.emit(a, 0)
+        self.sinOut.emit('调用结束', 0)
+
+
+class Jm(QThread):
+    sinOut = pyqtSignal(str, int)
+    JInPath = ''
+
+    def run(self):
+        self.sinOut.emit('调用Jmct中...', 0)
+        try:
+            jmct(self.sinOut.emit, self.JInPath)
+        except Exception as a:
             self.sinOut.emit(a, 0)
         self.sinOut.emit('调用结束', 0)

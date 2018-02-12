@@ -1,14 +1,32 @@
+# TODO: 终止进程
+
 import os
 from shutil import copy
-from subprocess import call, Popen, PIPE
+from subprocess import Popen, PIPE
 from time import sleep
 from .model import defaultFILES
 
 
-# 未测试
-def jmct(_input, _useEnv=True, _path=''):
+def jmct(info, _input, _gpath=''):
     _input = os.path.realpath(_input)
-    call(['jmct', _input])
+    _gpath = os.path.dirname(_input)
+
+    def _run():
+        _p = Popen('jmct ' + _input, cwd=_gpath, stdout=PIPE, shell=True)
+        while True:
+            line = _p.stdout.readline()
+            if line:
+                info(line.strip().decode('utf-8'), 3)
+                continue
+            sleep(0.01)
+            if _p.poll() is None:
+                continue
+            return _p.returncode
+
+    try:
+        _run()
+    except Exception as a:
+        info(a, 3)
 
 
 def fisp(info, env, group, indir, outdir=''):

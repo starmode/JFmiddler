@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from window import Dynamics
 from PyQt5.QtWidgets import QApplication
 
