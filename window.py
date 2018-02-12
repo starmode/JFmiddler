@@ -21,7 +21,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self._LastRoute = 'C:/'
         self._FISPWork = ''
         self._InfoText = ''
-        self._SavedNeutron = None
         # False--JtoF True--FtoJ
         self._ToDoL = False
         # False--callF True--callJ
@@ -64,6 +63,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
         self.jmct = Jm()
         self.jmct.signal.connect(self.info)
+
+        self.j2f = JtoF()
+        self.j2f.signal1.connect(self.updateBar)
+        self.j2f.signal2.connect(self.getOneProgress)
+        self.j2f.siginfo.connect(self.info)
 
         self.__desktop = QApplication.desktop()
         self.reSize()
@@ -358,63 +362,21 @@ class Dynamics(QMainWindow, Ui_MainWindow):
     def start(self):
         if self._ToDoL == True:
             self._ProgressAll = 0
-            self.info('执行JMCT --> FISPACT', 0)
-            JPathU = self.JOutFilePathU.text()
-            GPath = self.GFilePath.text()
-            FPath = self.FWorkPathU.text()
-            CText = self.CFileEdit.toPlainText()
-            AText = self.AFileEdit.toPlainText()
-            IText = self.IFileEdit.toPlainText()
-            PText = self.PFileEdit.toPlainText()
-            GenRate = self.GenRate.text()
             try:
-                GenRate = float(GenRate)
-            except ValueError:
-                self.info('错误：光子单位时间产额不是有效数据', 0)
-                return
-            except Exception as e:
-                self.info(repr(e))
-                return
+                self.j2f.JPathU = self.JOutFilePathU.text()
+                self.j2f.GPath = self.GFilePath.text()
+                self.j2f.FPath = self.FWorkPathU.text()
+                self.j2f.CText = self.CFileEdit.toPlainText()
+                self.j2f.AText = self.AFileEdit.toPlainText()
+                self.j2f.IText = self.IFileEdit.toPlainText()
+                self.j2f.PText = self.PFileEdit.toPlainText()
+                self.j2f.GenRate = self.GenRate.text()
+                self.j2f.SaveNeu_isChecked = self.SaveNeu.isChecked()
 
-            if self.SaveNeu.isChecked() and self._SavedNeutron:
-                self.info('读取暂存的物质信息', 0)
-                neutron = self._SavedNeutron
-            elif self.SaveNeu.isChecked() and not self._SavedNeutron:
-                self.info('没有暂存的物质信息', 0)
-            self.info('读取JMCT输出文件 %s' % JPathU, 0)
-            if not (self.SaveNeu.isChecked() and self._SavedNeutron):
-                try:
-                    neutron = readj(JPathU, self.updateBar, self.getOneProgress)
-                except FileNotFoundError as e:
-                    self.info('错误：JMCT输出文件位置无效 -> ' + repr(e), 0)
-                    return
-                except AttributeError as e:
-                    self.info('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
-                    return
-                except Exception as e:
-                    self.info(repr(e), 0)
-                    return
-            if self.SaveNeu.isChecked() and not self._SavedNeutron:
-                self.info('储存物质信息', 0)
-                self._SavedNeutron = neutron
-            self.info('读取GDML结构文件 %s' % GPath, 0)
-            try:
-                structure = readg(GPath, self.updateBar, self.getOneProgress)
-            except FileNotFoundError:
-                self.info('错误：GDML结构文件位置无效', 0)
-                return
-            except Exception as e:
-                self.info(repr(e), 0)
-                return
+                self.j2f.start()
 
-            self.info('将FISPACT输入文件写入 %s' % FPath, 0)
-            try:
-                writef(FPath, GenRate, neutron, structure, IText, CText, AText, PText, self.updateBar,
-                       self.getOneProgress)
             except Exception as e:
-                self.info(repr(e), 0)
-                return
-            self.info('文件转换完成', 0)
+                self.info(str(e), 0)
 
         elif self._ToDoL == False:
             self._ProgressAll = 0
@@ -550,3 +512,73 @@ class Jm(QThread):
         except Exception as a:
             self.signal.emit(str(a), 0)
         self.signal.emit('调用结束', 0)
+
+
+class JtoF(QThread):
+    signal1 = pyqtSignal(bool)  # updateBar
+    signal2 = pyqtSignal(int, int)  # getOneProgress
+    siginfo = pyqtSignal(str, int)  # info
+
+    def __init__(self):
+        super(JtoF, self).__init__()
+        self.JPathU = ''
+        self.GPath = ''
+        self.FPath = ''
+        self.CText = ''
+        self.AText = ''
+        self.IText = ''
+        self.PText = ''
+        self.GenRate = ''
+        self._SavedNeutron = None
+
+    def run(self):
+        self.siginfo.emit('执行JMCT --> FISPACT', 0)
+        try:
+            _GenRate = float(self.GenRate)
+        except ValueError:
+            self.siginfo.emit('错误：光子单位时间产额不是有效数据', 0)
+            return
+        except Exception as e:
+            self.siginfo.emit(repr(e))
+            return
+
+        if self.SaveNeu_isChecked and self._SavedNeutron:
+            self.siginfo.emit('读取暂存的物质信息', 0)
+            _neutron = self._SavedNeutron
+        elif self.SaveNeu_isChecked and not self._SavedNeutron:
+            self.siginfo.emit('没有暂存的物质信息', 0)
+
+        self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathU, 0)
+        if not (self.SaveNeu_isChecked and self._SavedNeutron):
+            try:
+                _neutron = readj(self.JPathU, self.signal1.emit, self.signal2.emit)
+            except FileNotFoundError as e:
+                self.siginfo.emit('错误：JMCT输出文件位置无效 -> ' + repr(e), 0)
+                return
+            except AttributeError as e:
+                self.siginfo.emit('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
+                return
+            except Exception as e:
+                self.siginfo.emit(repr(e), 0)
+                return
+        if self.SaveNeu_isChecked and not self._SavedNeutron:
+            self.siginfo.emit('储存物质信息', 0)
+            self._SavedNeutron = _neutron
+        self.siginfo.emit('读取GDML结构文件 %s' % self.GPath, 0)
+        try:
+            _structure = readg(self.GPath, self.signal1.emit, self.signal2.emit)
+        except FileNotFoundError:
+            self.siginfo.emit('错误：GDML结构文件位置无效', 0)
+            return
+        except Exception as e:
+            self.siginfo.emit(repr(e), 0)
+            return
+
+        self.siginfo.emit('将FISPACT输入文件写入 %s' % self.FPath, 0)
+        try:
+            writef(self.FPath, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
+                   self.signal1.emit, self.signal2.emit)
+        except Exception as e:
+            self.siginfo.emit(repr(e), 0)
+            return
+        self.siginfo.emit('文件转换完成', 0)
