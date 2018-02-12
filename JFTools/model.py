@@ -4,7 +4,6 @@
 class Data(object):
     name = ''
 
-
     def __init__(self, name):
         self.name = name
         self.eleNum = 0
@@ -18,6 +17,7 @@ class Data(object):
     def __str__(self):
         m = str(self.eleNum) + ' elements\n' + str(self.cellNum) + ' cells\n' + str(self.eneNum) + ' energy bins'
         return m
+
 
 # 栅元类，来自gmdl文件
 class Volume(object):
@@ -37,12 +37,14 @@ class Volume(object):
         self.matD = ''
         self.matGre = []
 
+
 # 光子分布类
 class energyDis:
     def __init__(self):
         self.leftBound = 0.
         self.rightBound = 0.
         self.perc = 0.
+
 
 # 阿伏伽德罗常数
 Avogadro = 0.602
