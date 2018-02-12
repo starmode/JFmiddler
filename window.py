@@ -60,10 +60,10 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.pickPath()
 
         self.fis = Fis()
-        self.fis.sinOut.connect(self.info)
+        self.fis.signal.connect(self.info)
 
         self.jmct = Jm()
-        self.jmct.sinOut.connect(self.info)
+        self.jmct.signal.connect(self.info)
 
         self.__desktop = QApplication.desktop()
         self.reSize()
@@ -193,7 +193,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def openJModel(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
-                                                          "JMCT Input File (*.in);;All Files (*)")
+                                                          "JMCT Input File (*.input);;All Files (*)")
         self.JModelPath.setText(self._LastRoute)
 
     def openGFile(self):
@@ -521,28 +521,32 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
 
 class Fis(QThread):
-    sinOut = pyqtSignal(str, int)
+    signal = pyqtSignal(str, int)
     case = ''
     env = ['', '']
     group = ['', '', '']
 
     def run(self):
-        self.sinOut.emit('调用Fispact中...', 0)
+        self.signal.emit('调用Fispact中...', 0)
         try:
-            fisp(self.sinOut.emit, self.env, self.group, self.case)
-        except BaseException as a:
-            self.sinOut.emit(str(a), 0)
-        self.sinOut.emit('调用结束', 0)
+            for _dir in os.listdir(self.case):
+                _path = os.path.join(self.case, _dir)
+                self.signal.emit(_path, 0)
+                if os.path.isdir(_path):
+                    fisp(self.signal.emit, self.env, self.group, _path)
+        except Exception as a:
+            self.signal.emit(str(a), 0)
+        self.signal.emit('调用结束', 0)
 
 
 class Jm(QThread):
-    sinOut = pyqtSignal(str, int)
+    signal = pyqtSignal(str, int)
     JInPath = ''
 
     def run(self):
-        self.sinOut.emit('调用Jmct中...', 0)
+        self.signal.emit('调用Jmct中...', 0)
         try:
-            jmct(self.sinOut.emit, self.JInPath)
+            jmct(self.signal.emit, self.JInPath)
         except Exception as a:
-            self.sinOut.emit(str(a), 0)
-        self.sinOut.emit('调用结束', 0)
+            self.signal.emit(str(a), 0)
+        self.signal.emit('调用结束', 0)

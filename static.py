@@ -882,7 +882,7 @@ class Ui_MainWindow(object):
         self.EPick.setText(_translate("MainWindow", "浏览"))
         self.FWorkTipR.setText(_translate("MainWindow", "FISPACT工作目录:"))
         self.FWorkPick.setText(_translate("MainWindow", "浏览"))
-        self.CallJMCT.setText(_translate("MainWindow", "CallFISP"))
+        self.CallJMCT.setText(_translate("MainWindow", "CallJMCT"))
         self.JInTip.setText(_translate("MainWindow", "JMCT输入文件(.in):"))
         self.JInPick.setText(_translate("MainWindow", "浏览"))
         self.QuitR.setText(_translate("MainWindow", "退出"))
