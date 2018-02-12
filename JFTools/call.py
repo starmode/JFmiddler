@@ -7,9 +7,12 @@ from time import sleep
 from .model import defaultFILES
 
 
-def jmct(info, _input, _gpath=''):
-    _input = os.path.realpath(_input)
-    _gpath = os.path.dirname(_input)
+def jmct(info, input, gpath=''):
+    _input = os.path.realpath(input)
+    if gpath == '':
+        _gpath = os.path.dirname(_input)
+    else:
+        _gpath = gpath
 
     def _run():
         _p = Popen('jmct ' + _input, cwd=_gpath, stdout=PIPE, shell=True)
@@ -23,10 +26,18 @@ def jmct(info, _input, _gpath=''):
                 continue
             return _p.returncode
 
-    try:
-        _run()
-    except Exception as a:
-        info(a, 3)
+    def _check():
+        _q = Popen('which jmct', shell=True)
+        _q.wait()
+        return _q.returncode
+
+    if _check():
+        try:
+            _run()
+        except Exception as a:
+            info(str(a), 3)
+    else:
+        info('无环境变量',3)
 
 
 def fisp(info, env, group, indir, outdir=''):

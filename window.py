@@ -531,7 +531,7 @@ class Fis(QThread):
         try:
             fisp(self.sinOut.emit, self.env, self.group, self.case)
         except BaseException as a:
-            self.sinOut.emit(a, 0)
+            self.sinOut.emit(str(a), 0)
         self.sinOut.emit('调用结束', 0)
 
 
@@ -544,5 +544,5 @@ class Jm(QThread):
         try:
             jmct(self.sinOut.emit, self.JInPath)
         except Exception as a:
-            self.sinOut.emit(a, 0)
+            self.sinOut.emit(str(a), 0)
         self.sinOut.emit('调用结束', 0)
