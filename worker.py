@@ -54,7 +54,7 @@ class JtoF(QThread):
     signal1 = pyqtSignal(bool)  # updateBar
     signal2 = pyqtSignal(int, int)  # getOneProgress
     siginfo = pyqtSignal(str, int)  # info
-    sigend = pyqtSignal()
+    sigend = pyqtSignal(Data)
 
     def __init__(self):
         super(JtoF, self).__init__()
@@ -66,7 +66,8 @@ class JtoF(QThread):
         self.IText = ''
         self.PText = ''
         self.GenRate = ''
-        self._SavedNeutron = None
+        self.WheSaveNeu = False
+        self.SavedNeutron = None
 
     def run(self):
         self.siginfo.emit('执行JMCT --> FISPACT', 0)
@@ -74,48 +75,48 @@ class JtoF(QThread):
             _GenRate = float(self.GenRate)
         except ValueError:
             self.siginfo.emit('错误：光子单位时间产额不是有效数据', 0)
-            self.sigend.emit()
+            self.sigend.emit(self.SavedNeutron)
             return
         except Exception as e:
             self.siginfo.emit(repr(e))
-            self.sigend.emit()
+            self.sigend.emit(self.SavedNeutron)
             return
 
-        if self.SaveNeu_isChecked and self._SavedNeutron:
+        if self.WheSaveNeu and self.SavedNeutron:
             self.siginfo.emit('读取暂存的物质信息', 0)
-            _neutron = self._SavedNeutron
-        elif self.SaveNeu_isChecked and not self._SavedNeutron:
+            _neutron = self.SavedNeutron
+        elif self.WheSaveNeu and not self.SavedNeutron:
             self.siginfo.emit('没有暂存的物质信息', 0)
 
         self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathU, 0)
-        if not (self.SaveNeu_isChecked and self._SavedNeutron):
+        if not (self.WheSaveNeu and self.SavedNeutron):
             try:
                 _neutron = readj(self.JPathU, self.signal1.emit, self.signal2.emit)
             except FileNotFoundError as e:
                 self.siginfo.emit('错误：JMCT输出文件位置无效 -> ' + repr(e), 0)
-                self.sigend.emit()
+                self.sigend.emit(self.SavedNeutron)
                 return
             except AttributeError as e:
                 self.siginfo.emit('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
-                self.sigend.emit()
+                self.sigend.emit(self.SavedNeutron)
                 return
             except Exception as e:
                 self.siginfo.emit(repr(e), 0)
-                self.sigend.emit()
+                self.sigend.emit(self.SavedNeutron)
                 return
-        if self.SaveNeu_isChecked and not self._SavedNeutron:
+        if self.WheSaveNeu and not self.SavedNeutron:
             self.siginfo.emit('储存物质信息', 0)
-            self._SavedNeutron = _neutron
+            self.SavedNeutron = _neutron
         self.siginfo.emit('读取GDML结构文件 %s' % self.GPath, 0)
         try:
             _structure = readg(self.GPath, self.signal1.emit, self.signal2.emit)
         except FileNotFoundError:
             self.siginfo.emit('错误：GDML结构文件位置无效', 0)
-            self.sigend.emit()
+            self.sigend.emit(self.SavedNeutron)
             return
         except Exception as e:
             self.siginfo.emit(repr(e), 0)
-            self.sigend.emit()
+            self.sigend.emit(self.SavedNeutron)
             return
 
         self.siginfo.emit('将FISPACT输入文件写入 %s' % self.FPath, 0)
@@ -124,10 +125,10 @@ class JtoF(QThread):
                    self.signal1.emit, self.signal2.emit)
         except Exception as e:
             self.siginfo.emit(repr(e), 0)
-            self.sigend.emit()
+            self.sigend.emit(self.SavedNeutron)
             return
         self.siginfo.emit('文件转换完成', 0)
-        self.sigend.emit()
+        self.sigend.emit(self.SavedNeutron)
 
 
 class FtoJ(QThread):
