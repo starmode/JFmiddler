@@ -11,6 +11,8 @@ from JFTools.read import readj, readg, readf
 from JFTools.write import writef, writej
 from JFTools.call import jmct, fisp
 
+SavedNeutron = None
+
 
 class Dynamics(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -371,7 +373,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info('执行JMCT --> FISPACT', 0)
                 self.j2f.JPathU = self.JOutFilePathU.text()
                 self.j2f.GPath = self.GFilePath.text()
-                self.j2f.FPath = self.FWorkPathU.text()
+                self.j2f.FPathU = self.FWorkPathU.text()
                 self.j2f.CText = self.CFileEdit.toPlainText()
                 self.j2f.AText = self.AFileEdit.toPlainText()
                 self.j2f.IText = self.IFileEdit.toPlainText()
@@ -387,7 +389,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         elif self._ToDoL == False:
             try:
                 self.info('执行FISPACT --> JMCT', 0)
-                self.f2j.FPath = self.FWorkPathD.text()
+                self.f2j.FPathD = self.FWorkPathD.text()
                 self.f2j.JPathD = self.JOutFilePathD.text()
                 self.f2j.JModel = self.JModelPath.text()
                 self.f2j.JText = self.JFileEdit.toPlainText()
@@ -404,7 +406,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.f2j.start()
             except Exception as e:
                 self.info(repr(e), 0)
-
 
     def call(self):
         if self._ToDoR == True:
@@ -486,15 +487,15 @@ class JtoF(QThread):
         super(JtoF, self).__init__()
         self.JPathU = ''
         self.GPath = ''
-        self.FPath = ''
+        self.FPathU = ''
         self.CText = ''
         self.AText = ''
         self.IText = ''
         self.PText = ''
         self.GenRate = ''
-        self._SavedNeutron = None
 
     def run(self):
+        global SavedNeutron
         try:
             _GenRate = float(self.GenRate)
         except ValueError:
@@ -504,14 +505,14 @@ class JtoF(QThread):
             self.siginfo.emit(repr(e))
             return
 
-        if self.SaveNeu_isChecked and self._SavedNeutron:
+        if self.SaveNeu_isChecked and SavedNeutron:
             self.siginfo.emit('读取暂存的物质信息', 0)
-            _neutron = self._SavedNeutron
-        elif self.SaveNeu_isChecked and not self._SavedNeutron:
+            _neutron = SavedNeutron
+        elif self.SaveNeu_isChecked and not SavedNeutron:
             self.siginfo.emit('没有暂存的物质信息', 0)
 
         self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathU, 0)
-        if not (self.SaveNeu_isChecked and self._SavedNeutron):
+        if not (self.SaveNeu_isChecked and SavedNeutron):
             try:
                 _neutron = readj(self.JPathU, self.signal1.emit, self.signal2.emit)
             except FileNotFoundError as e:
@@ -523,9 +524,9 @@ class JtoF(QThread):
             except Exception as e:
                 self.siginfo.emit(repr(e), 0)
                 return
-        if self.SaveNeu_isChecked and not self._SavedNeutron:
+        if self.SaveNeu_isChecked and not SavedNeutron:
             self.siginfo.emit('储存物质信息', 0)
-            self._SavedNeutron = _neutron
+            SavedNeutron = _neutron
         self.siginfo.emit('读取GDML结构文件 %s' % self.GPath, 0)
         try:
             _structure = readg(self.GPath, self.signal1.emit, self.signal2.emit)
@@ -536,9 +537,9 @@ class JtoF(QThread):
             self.siginfo.emit(repr(e), 0)
             return
 
-        self.siginfo.emit('将FISPACT输入文件写入 %s' % self.FPath, 0)
+        self.siginfo.emit('将FISPACT输入文件写入 %s' % self.FPathU, 0)
         try:
-            writef(self.FPath, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
+            writef(self.FPathU, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
                    self.signal1.emit, self.signal2.emit)
         except Exception as e:
             self.siginfo.emit(repr(e), 0)
@@ -550,28 +551,27 @@ class FtoJ(QThread):
     signal1 = pyqtSignal(bool)  # updateBar
     signal2 = pyqtSignal(int, int)  # getOneProgress
     siginfo = pyqtSignal(str, int)  # info
-    sigload = pyqtSignal()
 
     def __init__(self):
         super(FtoJ, self).__init__()
-        self.FPath = ''
+        self.FPathD = ''
         self.JPathD = ''
         self.JModel = ''
         self.JText = ''
         self.maxFlag = ''
-        self._SavedNeutron = None
 
     def run(self):
+        global SavedNeutron
         tmp = [' ' * 3, ' ' * 2, ' ' * 4, '\t']
         split = tmp[self.index]
 
-        if self.SaveNeu_isChecked and self._SavedNeutron:
+        if self.SaveNeu_isChecked and SavedNeutron:
             self.siginfo.emit('读取暂存的物质信息', 0)
-            neutron = self._SavedNeutron
-        elif self.SaveNeu_isChecked and not self._SavedNeutron:
+            neutron = SavedNeutron
+        elif self.SaveNeu_isChecked and not SavedNeutron:
             self.siginfo.emit('没有暂存的物质信息', 0)
         self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathD, 0)
-        if not (self.SaveNeu_isChecked and self._SavedNeutron):
+        if not (self.SaveNeu_isChecked and SavedNeutron):
             try:
                 neutron = readj(self.JPathD, self.signal1.emit, self.signal2.emit)
             except FileNotFoundError:
@@ -583,12 +583,12 @@ class FtoJ(QThread):
             except Exception as e:
                 self.siginfo.emit(repr(e), 0)
                 return
-        if self.SaveNeu_isChecked and not self._SavedNeutron:
+        if self.SaveNeu_isChecked and not SavedNeutron:
             self.siginfo.emit('储存物质信息', 0)
-            self._SavedNeutron = neutron
-        self.siginfo.emit('读取FISPACT输出文件 %s' % self.FPath, 0)
+            SavedNeutron = neutron
+        self.siginfo.emit('读取FISPACT输出文件 %s' % self.FPathD, 0)
         try:
-            distributes = readf(self.FPath, self.maxFlag, self.signal1.emit, self.signal2.emit)
+            distributes = readf(self.FPathD, self.maxFlag, self.signal1.emit, self.signal2.emit)
         except FileNotFoundError as e:
             self.siginfo.emit('错误：FISPACT输出文件位置无效 ->' + repr(e), 0)
             return
