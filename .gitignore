@@ -1,5 +1,4 @@
 JFmiddler.iml
-wiz.ini
-.idea/
-__pycache__/
-JFTools/__pycache__/
+.idea
+__pycache__
+tmp

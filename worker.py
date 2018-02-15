@@ -5,12 +5,16 @@ from JFTools.write import writef, writej
 from JFTools.call import jmct, fisp
 from JFTools.model import Data
 
+
 class Fis(QThread):
     signal = pyqtSignal(str, int)
     sigend = pyqtSignal()
-    case = ''
-    env = ['', '']
-    group = ['', '', '']
+
+    def __init__(self):
+        super(Fis, self).__init__()
+        self.case = ''
+        self.env = ['', '']
+        self.group = ['', '', '']
 
     def run(self):
         self.signal.emit('调用Fispact中...', 0)
@@ -31,7 +35,10 @@ class Fis(QThread):
 class Jm(QThread):
     signal = pyqtSignal(str, int)
     sigend = pyqtSignal()
-    JInPath = ''
+
+    def __init__(self):
+        super(Jm, self).__init__()
+        self.JInPath = ''
 
     def run(self):
         self.signal.emit('调用Jmct中...', 0)
@@ -122,8 +129,8 @@ class JtoF(QThread):
         self.siginfo.emit('文件转换完成', 0)
         self.sigend.emit()
 
-class FtoJ(QThread):
 
+class FtoJ(QThread):
     signal1 = pyqtSignal(bool)  # updateBar
     signal2 = pyqtSignal(int, int)  # getOneProgress
     siginfo = pyqtSignal(str, int)  # info

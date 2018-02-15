@@ -1452,7 +1452,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string>CallFISP</string>
+                <string>CallJMCT</string>
             </property>
             <property name="checked">
              <bool>false</bool>

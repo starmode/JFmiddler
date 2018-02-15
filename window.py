@@ -81,8 +81,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.__desktop = QApplication.desktop()
         self.reSize()
 
-
-
     def cancelJ2F(self):
         self.info('取消', 0)
         self.j2f.terminate()
@@ -128,6 +126,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         event.accept()
 
     def pickPath(self):
+        if not os.path.exists('./tmp'):
+            os.mkdir('./tmp')
         if 'wiz.ini' in os.listdir('./tmp'):
             try:
                 with open('./tmp/wiz.ini') as f:
@@ -141,12 +141,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     elif tmp[0] == 'EAF':
                         self.EPath.setText(tmp[1])
                     elif tmp[0] == 'LOGS':
-
                         try:
                             self._logNum = int(tmp[1])
                         except ValueError as e:
                             self.info('错误：配置文件中LOGS值不为整数，使用默认值1' + repr(e), 0)
-            except:
+            except Exception as e:
                 self.info(repr(e), 0)
 
     def saveAll(self):
@@ -162,14 +161,12 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         logs = [i for i in os.listdir('./tmp') if i[-4:] == '.log']
         sorted(logs)
         if len(logs) > self._logNum:
-            for i in range(0, len(logs)-self._logNum):
+            for i in range(0, len(logs) - self._logNum):
                 os.remove(r'./tmp/%s' % logs[i])
 
-
-
     def reSize(self):
-        screenRect = self.__desktop.screenGeometry()
-        height = screenRect.height() * 9 // 10
+        screenrect = self.__desktop.screenGeometry()
+        height = screenrect.height() * 9 // 10
         weight = round(37 * height / 52)
         self.resize(weight, height)
         self.setFixedSize(self.width(), self.height())
@@ -242,7 +239,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             flag = 1 if self._ToDoL else 0
             self.allEnableL(flag)
 
-
     def allEnableR(self, flag):
         # flag = 0 -- release callF, lock callJ
         # flag = 1 -- release callJ, lock callF
@@ -282,7 +278,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             flag = 1 if self._ToDoR else 0
             self.allEnableR(flag)
 
-
     def jtoF(self):
         self.allEnableL(1)
 
@@ -296,7 +291,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.allEnableR(False)
 
     def getOneProgress(self, t, n):
-        if self._ToDoL == True:
+        if self._ToDoL is True:
             self._Zoom = 1 / 8
         else:
             self._Zoom = 1 / 7
@@ -418,7 +413,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StatusR.moveCursor(QTextCursor.End)
 
     def loadFiles(self):
-        if self._ToDoL == True:
+        if self._ToDoL is True:
             if self._FISPWork == '':
                 self.info('错误：未指定FISPACT工作目录', 0)
             else:
@@ -461,7 +456,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.info('未找到input.i', 1)
                 if not found:
                     self.info('错误：工作目录下没有发现任何有效文件', 0)
-        elif self._ToDoL == False:
+        elif self._ToDoL is False:
             path = self.JModelPath.text()
             if path == '':
                 self.info('错误：未指定JMCT模板文件', 0)
@@ -518,7 +513,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.Bar.setValue(0)
 
     def start(self):
-        if self._ToDoL == True:
+        if self._ToDoL is True:
             self._ProgressAll = 0
             try:
                 self.j2f.JPathU = self.JOutFilePathU.text()
@@ -539,8 +534,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             except Exception as e:
                 self.info(str(e), 0)
 
-
-        elif self._ToDoL == False:
+        elif self._ToDoL is False:
             self._ProgressAll = 0
             try:
                 self.f2j.FPath = self.FWorkPathD.text()
@@ -565,11 +559,21 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info(str(e), 0)
 
     def call(self):
-        if self._ToDoR == True:
+        if self._ToDoR is True:
             # callFISP
-            FPath = self.FPath.text()
-            EPath = self.EPath.text()
-            Case = self.FWorkPathR.text()
+            fpath = self.FPath.text()
+            epath = self.EPath.text()
+            case = self.FWorkPathR.text()
+
+            if fpath == '':
+                self.info('错误：未指定FISPACT主程序位置', 0)
+                return
+            if epath == '':
+                self.info('错误：未指定EAF数据库安装目录', 0)
+                return
+            if case == '':
+                self.info('错误：未指定FISPACT工作目录', 0)
+                return
 
             tmp = ['69', '100', '172', '175', '211', '315', '351']
             g = tmp[self.Group.currentIndex()]
@@ -578,20 +582,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             tmp = ['n', 'p', 'd']
             p = tmp[self.Particle.currentIndex()]
 
-            if FPath == '':
-                self.info('错误：未指定FISPACT主程序位置', 0)
-                return
-            if EPath == '':
-                self.info('错误：未指定EAF数据库安装目录', 0)
-                return
-            if Case == '':
-                self.info('错误：未指定FISPACT工作目录', 0)
-                return
-            group = [p, g, w]
-            env = [FPath, EPath]
-            self.fis.env = env
-            self.fis.group = group
-            self.fis.case = Case
+            self.fis.env = [fpath, epath]
+            self.fis.group = [p, g, w]
+            self.fis.case = case
 
             self.allEnableR(2)
             self.StartR.setText('取消')
@@ -599,16 +592,13 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.fis.start()
         else:
             # callJMCT
-            JInPath = self.JInPath.text()
-            if JInPath == '':
+            jinpath = self.JInPath.text()
+            if jinpath == '':
                 self.info('错误：未指定JMCT输入文件', 0)
                 return
-            self.jmct.JInPath = JInPath
+            self.jmct.JInPath = jinpath
 
             self.allEnableR(2)
             self.StartR.setText('取消')
             self.StartR.clicked.connect(self.cancelCallJ)
             self.jmct.start()
-
-
-

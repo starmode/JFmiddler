@@ -1,5 +1,3 @@
-# TODO: 终止进程
-
 import os
 from shutil import copy
 from subprocess import Popen, PIPE
@@ -7,8 +5,8 @@ from time import sleep
 from .model import defaultFILES
 
 
-def jmct(info, input, gpath=''):
-    _input = os.path.realpath(input)
+def jmct(info, jinput, gpath=''):
+    _input = os.path.realpath(jinput)
     if gpath == '':
         _gpath = os.path.dirname(_input)
     else:
@@ -37,7 +35,7 @@ def jmct(info, input, gpath=''):
         except Exception as a:
             info(str(a), 3)
     else:
-        info('无环境变量',3)
+        info('无环境变量', 3)
 
 
 def fisp(info, env, group, indir, outdir=''):
