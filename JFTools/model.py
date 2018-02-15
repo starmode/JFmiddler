@@ -4,7 +4,8 @@
 class Data(object):
     name = ''
 
-    def __init__(self, name):
+    def __init__(self, name=''):
+        self._notNull = False if name == '' else True
         self.name = name
         self.eleNum = 0
         self.eleName = []
@@ -17,6 +18,9 @@ class Data(object):
     def __str__(self):
         m = str(self.eleNum) + ' elements\n' + str(self.cellNum) + ' cells\n' + str(self.eneNum) + ' energy bins'
         return m
+
+    def __bool__(self):
+        return self._notNull
 
 
 # 栅元类，来自gmdl文件

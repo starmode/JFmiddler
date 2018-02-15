@@ -1,26 +1,26 @@
 import os
 import re
 import platform
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QTime
+from PyQt5.QtCore import QDateTime, QTime, QCoreApplication, Qt
+from JFTools.model import Data, defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
 from static import Ui_MainWindow
-from JFTools.model import defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
-from JFTools.read import readj, readg, readf
-from JFTools.write import writef, writej
-from JFTools.call import jmct, fisp
+from worker import Fis, Jm, JtoF, FtoJ
 
 
 class Dynamics(QMainWindow, Ui_MainWindow):
+
     def __init__(self):
         super(Dynamics, self).__init__()
         self.setupUi(self)
         # 内部变量
         self._Zoom = 0
-        self._LastRoute = 'C:/'
+        self._LastRoute = '.'
         self._FISPWork = ''
         self._InfoText = ''
+        self._logNum = 1
+        self._SavedNeutron = Data()
         # False--JtoF True--FtoJ
         self._ToDoL = False
         # False--callF True--callJ
@@ -54,32 +54,83 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
         self.CallFISP.clicked.connect(self.callF)
         self.CallJMCT.clicked.connect(self.callJ)
-        self.allEnableL(True)
+        self.allEnableL(1)
         self.allEnableR(True)
         self.pickPath()
 
         self.fis = Fis()
         self.fis.signal.connect(self.info)
+        self.fis.sigend.connect(self.cancelCallF)
 
         self.jmct = Jm()
         self.jmct.signal.connect(self.info)
+        self.jmct.sigend.connect(self.cancelCallJ)
 
         self.j2f = JtoF()
         self.j2f.signal1.connect(self.updateBar)
         self.j2f.signal2.connect(self.getOneProgress)
         self.j2f.siginfo.connect(self.info)
+        self.j2f.sigend.connect(self.cancelJ2F)
+
+        self.f2j = FtoJ()
+        self.f2j.signal1.connect(self.updateBar)
+        self.f2j.signal2.connect(self.getOneProgress)
+        self.f2j.siginfo.connect(self.info)
+        self.f2j.sigend.connect(self.cancelF2J)
 
         self.__desktop = QApplication.desktop()
         self.reSize()
 
+
+
+    def cancelJ2F(self):
+        self.info('取消', 0)
+        self.j2f.terminate()
+        while self.j2f.isRunning():
+            pass
+        self.allEnableL(3)
+        self.StartL.setText('开始')
+        self.StartL.clicked.connect(self.start)
+        self.Bar.setValue(0)
+
+    def cancelF2J(self, data):
+        self.info('取消', 0)
+        self.f2j.terminate()
+        while self.f2j.isRunning():
+            pass
+        self.allEnableL(3)
+        self.StartL.setText('开始')
+        self.StartL.clicked.connect(self.start)
+        self.Bar.setValue(0)
+        if data:
+            self._SavedNeutron = data
+
+    def cancelCallJ(self):
+        self.info('取消', 0)
+        self.jmct.terminate()
+        while self.jmct.isRunning():
+            pass
+        self.allEnableR(3)
+        self.StartR.setText('开始')
+        self.StartR.clicked.connect(self.call)
+
+    def cancelCallF(self):
+        self.info('取消', 0)
+        self.fis.terminate()
+        while self.fis.isRunning():
+            pass
+        self.allEnableR(3)
+        self.StartR.setText('开始')
+        self.StartR.clicked.connect(self.call)
+
     def closeEvent(self, event):
-        self.savePath()
+        self.saveAll()
         event.accept()
 
     def pickPath(self):
-        if 'wiz.ini' in os.listdir('.'):
+        if 'wiz.ini' in os.listdir('./tmp'):
             try:
-                with open('./wiz.ini') as f:
+                with open('./tmp/wiz.ini') as f:
                     lines = f.readlines()
                 for line in lines:
                     tmp = line.split('=')
@@ -89,14 +140,32 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                         self.FPath.setText(tmp[1])
                     elif tmp[0] == 'EAF':
                         self.EPath.setText(tmp[1])
-            except:
-                pass
+                    elif tmp[0] == 'LOGS':
 
-    def savePath(self):
-        if self.FPath.text() != '' or self.EPath.text() != '':
-            with open('./wiz.ini', 'w') as f:
-                f.write('FISPACT=%s\n' % self.FPath.text())
-                f.write('EAF=%s' % self.EPath.text())
+                        try:
+                            self._logNum = int(tmp[1])
+                        except ValueError as e:
+                            self.info('错误：配置文件中LOGS值不为整数，使用默认值1' + repr(e), 0)
+            except:
+                self.info(repr(e), 0)
+
+    def saveAll(self):
+        now = QDateTime.currentDateTime()
+        if 'tmp' not in os.listdir('.'):
+            os.mkdir('./tmp')
+        with open('./tmp/log-%s.log' % now.toString('yyyy-MM-dd-hh-mm-ss-zzz'), 'w') as f:
+            f.write(self._InfoText)
+        with open('./tmp/wiz.ini', 'w') as f:
+            f.write('FISPACT=%s\n' % self.FPath.text())
+            f.write('EAF=%s\n' % self.EPath.text())
+            f.write('LOGS=%d\n' % self._logNum)
+        logs = [i for i in os.listdir('./tmp') if i[-4:] == '.log']
+        sorted(logs)
+        if len(logs) > self._logNum:
+            for i in range(0, len(logs)-self._logNum):
+                os.remove(r'./tmp/%s' % logs[i])
+
+
 
     def reSize(self):
         screenRect = self.__desktop.screenGeometry()
@@ -106,52 +175,119 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.setFixedSize(self.width(), self.height())
 
     def allEnableL(self, flag):
-        self.JOutFilePathU.setEnabled(flag)
-        self.GFilePath.setEnabled(flag)
-        self.FWorkPathU.setEnabled(flag)
-        self.JOutFilePickU.setEnabled(flag)
-        self.GFilePick.setEnabled(flag)
-        self.FWorkPickU.setEnabled(flag)
-        self.GenRate.setEnabled(flag)
-        self.Collapx.setEnabled(flag)
-        self.Arrayx.setEnabled(flag)
-        self.Input.setEnabled(flag)
-        self.Printlib.setEnabled(flag)
+        # flag = 0 -- release J2F, lock F2J
+        # flag = 1 -- release F2J, lock J2F
+        # flag = 2 -- lock all but begin
+        # flag = 3 -- release all
+        if flag < 2:
+            flag = True if flag == 1 else False
+            self.JOutFilePathU.setEnabled(flag)
+            self.GFilePath.setEnabled(flag)
+            self.FWorkPathU.setEnabled(flag)
+            self.JOutFilePickU.setEnabled(flag)
+            self.GFilePick.setEnabled(flag)
+            self.FWorkPickU.setEnabled(flag)
+            self.GenRate.setEnabled(flag)
+            self.Collapx.setEnabled(flag)
+            self.Arrayx.setEnabled(flag)
+            self.Input.setEnabled(flag)
+            self.Printlib.setEnabled(flag)
 
-        self._ToDoL = flag
-        self.RetractLen.setEnabled(not flag)
-        self.MaxFlag.setEnabled(not flag)
-        self.JOutFilePathD.setEnabled(not flag)
-        self.FWorkPathD.setEnabled(not flag)
-        self.JModelPath.setEnabled(not flag)
-        self.JOutFilePickD.setEnabled(not flag)
-        self.FWorkPickD.setEnabled(not flag)
-        self.JModelPick.setEnabled(not flag)
-        self.JMCT.setEnabled(not flag)
-        self.RemainJOut.setEnabled(not flag)
+            self._ToDoL = flag
+            self.RetractLen.setEnabled(not flag)
+            self.MaxFlag.setEnabled(not flag)
+            self.JOutFilePathD.setEnabled(not flag)
+            self.FWorkPathD.setEnabled(not flag)
+            self.JModelPath.setEnabled(not flag)
+            self.JOutFilePickD.setEnabled(not flag)
+            self.FWorkPickD.setEnabled(not flag)
+            self.JModelPick.setEnabled(not flag)
+            self.JMCT.setEnabled(not flag)
+            self.RemainJOut.setEnabled(not flag)
 
-        self.FileEdit.setCurrentIndex(0 if flag else 4)
+            self.FileEdit.setCurrentIndex(0 if flag else 4)
+
+        else:
+            flag = True if flag == 3 else False
+            self.JOutFilePathU.setEnabled(flag)
+            self.GFilePath.setEnabled(flag)
+            self.FWorkPathU.setEnabled(flag)
+            self.JOutFilePickU.setEnabled(flag)
+            self.GFilePick.setEnabled(flag)
+            self.FWorkPickU.setEnabled(flag)
+            self.GenRate.setEnabled(flag)
+            self.Collapx.setEnabled(flag)
+            self.Arrayx.setEnabled(flag)
+            self.Input.setEnabled(flag)
+            self.Printlib.setEnabled(flag)
+
+            self.RetractLen.setEnabled(flag)
+            self.MaxFlag.setEnabled(flag)
+            self.JOutFilePathD.setEnabled(flag)
+            self.FWorkPathD.setEnabled(flag)
+            self.JModelPath.setEnabled(flag)
+            self.JOutFilePickD.setEnabled(flag)
+            self.FWorkPickD.setEnabled(flag)
+            self.JModelPick.setEnabled(flag)
+            self.JMCT.setEnabled(flag)
+            self.RemainJOut.setEnabled(flag)
+
+            self.Sync.setEnabled(flag)
+            self.GenCall.setEnabled(flag)
+            self.SaveNeu.setEnabled(flag)
+            self.QuitL.setEnabled(flag)
+            self.ResetL.setEnabled(flag)
+
+        if flag == 3:
+            flag = 1 if self._ToDoL else 0
+            self.allEnableL(flag)
+
 
     def allEnableR(self, flag):
-        self._ToDoR = flag
-        self.Group.setEnabled(flag)
-        self.Weight.setEnabled(flag)
-        self.Particle.setEnabled(flag)
-        self.FWorkPathR.setEnabled(flag)
-        self.FWorkPick.setEnabled(flag)
-        self.FPath.setEnabled(flag)
-        self.EPath.setEnabled(flag)
-        self.FPick.setEnabled(flag)
-        self.EPick.setEnabled(flag)
+        # flag = 0 -- release callF, lock callJ
+        # flag = 1 -- release callJ, lock callF
+        # flag = 2 -- lock all but begin
+        # flag = 3 -- release all
+        if flag < 2:
+            flag = True if flag == 1 else False
+            self._ToDoR = flag
+            self.Group.setEnabled(flag)
+            self.Weight.setEnabled(flag)
+            self.Particle.setEnabled(flag)
+            self.FWorkPathR.setEnabled(flag)
+            self.FWorkPick.setEnabled(flag)
+            self.FPath.setEnabled(flag)
+            self.EPath.setEnabled(flag)
+            self.FPick.setEnabled(flag)
+            self.EPick.setEnabled(flag)
 
-        self.JInPath.setEnabled(not flag)
-        self.JInPick.setEnabled(not flag)
+            self.JInPath.setEnabled(not flag)
+            self.JInPick.setEnabled(not flag)
+        else:
+            flag = True if flag == 3 else False
+            self.Group.setEnabled(flag)
+            self.Weight.setEnabled(flag)
+            self.Particle.setEnabled(flag)
+            self.FWorkPathR.setEnabled(flag)
+            self.FWorkPick.setEnabled(flag)
+            self.FPath.setEnabled(flag)
+            self.EPath.setEnabled(flag)
+            self.FPick.setEnabled(flag)
+            self.EPick.setEnabled(flag)
+
+            self.JInPath.setEnabled(flag)
+            self.JInPick.setEnabled(flag)
+
+        if flag == 3:
+            flag = 1 if self._ToDoR else 0
+            self.allEnableR(flag)
+
 
     def jtoF(self):
-        self.allEnableL(True)
+        self.allEnableL(1)
 
     def ftoJ(self):
-        self.allEnableL(False)
+        self.allEnableL(0)
 
     def callF(self):
         self.allEnableR(True)
@@ -177,51 +313,60 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         else:
             self._ProgressOne += self._OneStep
             self._ProgressAll += self._AllStep
+            if self._ProgressOne > 100.:
+                self._ProgressOne = 100.
             self.info(round((self._ProgressOne * self._Num) // 100), 2)
+        if self._ProgressAll > 100.:
+            self._ProgressAll = 100.
         self.Bar.setValue(round(self._ProgressAll))
-        print(self._ProgressAll, self._Zoom, self._AllStep)
 
     def openJFileUp(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                           "JMCT Output File (*.out);;All Files (*)")
-        self.JOutFilePathU.setText(self._LastRoute)
-        if self.Sync.isChecked():
-            self.JOutFilePathD.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.JOutFilePathU.setText(self._LastRoute)
+            if self.Sync.isChecked():
+                self.JOutFilePathD.setText(self._LastRoute)
 
     def openJFileDown(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                           "JMCT Output File (*.out);;All Files (*)")
-        self.JOutFilePathD.setText(self._LastRoute)
-        if self.Sync.isChecked():
-            self.JOutFilePathU.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.JOutFilePathD.setText(self._LastRoute)
+            if self.Sync.isChecked():
+                self.JOutFilePathU.setText(self._LastRoute)
 
     def openJModel(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
-                                                          "JMCT Input File (*.input);;All Files (*)")
-        self.JModelPath.setText(self._LastRoute)
+                                                          "JMCT Input File (*.in);;All Files (*)")
+        if self._LastRoute != '':
+            self.JModelPath.setText(self._LastRoute)
 
     def openGFile(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                           "GDML Structure File (*.gdml);;All Files (*)")
-        self.GFilePath.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.GFilePath.setText(self._LastRoute)
 
     def openFDirUp(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
-        self._FISPWork = self._LastRoute
-        self.FWorkPathU.setText(self._LastRoute)
-        if self.Sync.isChecked():
-            self.FWorkPathD.setText(self._LastRoute)
-        if self.GenCall.isChecked():
-            self.FWorkPathR.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self._FISPWork = self._LastRoute
+            self.FWorkPathU.setText(self._LastRoute)
+            if self.Sync.isChecked():
+                self.FWorkPathD.setText(self._LastRoute)
+            if self.GenCall.isChecked():
+                self.FWorkPathR.setText(self._LastRoute)
 
     def openFDirDown(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
-        self._FISPWork = self._LastRoute
-        self.FWorkPathD.setText(self._LastRoute)
-        if self.Sync.isChecked():
-            self.FWorkPathU.setText(self._LastRoute)
-        if self.GenCall.isChecked():
-            self.FWorkPathR.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self._FISPWork = self._LastRoute
+            self.FWorkPathD.setText(self._LastRoute)
+            if self.Sync.isChecked():
+                self.FWorkPathU.setText(self._LastRoute)
+            if self.GenCall.isChecked():
+                self.FWorkPathR.setText(self._LastRoute)
 
     def openFInstall(self):
         if 'Windows' in platform.system():
@@ -230,20 +375,24 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         else:
             self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                               "FISPACT Binary File (*.bin);;All Files (*)")
-        self.FPath.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.FPath.setText(self._LastRoute)
 
     def openEAFDir(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
-        self.EPath.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.EPath.setText(self._LastRoute)
 
     def openFDirRight(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
-        self.FWorkPathR.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.FWorkPathR.setText(self._LastRoute)
 
     def openJIn(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                           "JMCT Input File (*.in);;All Files (*)")
-        self.JInPath.setText(self._LastRoute)
+        if self._LastRoute != '':
+            self.JInPath.setText(self._LastRoute)
 
     def info(self, text, mode=0):
         # mode=0 -- newline
@@ -337,27 +486,36 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.IFileEdit.setText(defaultInput)
         self.JOutFilePathU.setText('')
         self.JOutFilePathD.setText('')
+        self.JModelPath.setText('')
         self.GFilePath.setText('')
         self.FWorkPathU.setText('')
         self.FWorkPathD.setText('')
         self.JtoFChose.setChecked(True)
         self.RetractLen.setCurrentIndex(0)
-        self.allEnableL(True)
+        self.allEnableL(1)
         self._FISPWork = ''
+
+        self._InfoText = ''
+        self.StatusL.setText(self._InfoText)
+        self.StatusR.setText(self._InfoText)
+        self.Bar.setValue(0)
 
     def resetR(self):
         self.info('右页面重置信息', 0)
-        # self.Group.setCurrentIndex(3)
-        # self.Weight.setCurrentIndex(0)
-        # self.Particle.setCurrentIndex(0)
-        # self.FPath.setText('')
-        # self.EPath.setText('')
-        # self.FWorkPathR.setText('')
-        # self.JPath.setText('')
-        # self.JInPath.setText('')
-        # self.CallFISP.setChecked(True)
-        # self.allEnableR(True)
-        # self.envEnable()
+        self.Group.setCurrentIndex(3)
+        self.Weight.setCurrentIndex(0)
+        self.Particle.setCurrentIndex(0)
+        self.FPath.setText('')
+        self.EPath.setText('')
+        self.FWorkPathR.setText('')
+        self.JInPath.setText('')
+        self.CallFISP.setChecked(True)
+        self.allEnableR(True)
+
+        self._InfoText = ''
+        self.StatusL.setText(self._InfoText)
+        self.StatusR.setText(self._InfoText)
+        self.Bar.setValue(0)
 
     def start(self):
         if self._ToDoL == True:
@@ -373,75 +531,38 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.j2f.GenRate = self.GenRate.text()
                 self.j2f.SaveNeu_isChecked = self.SaveNeu.isChecked()
 
+                self.allEnableL(2)
+                self.StartL.setText('取消')
+                self.StartL.clicked.connect(self.cancelJ2F)
                 self.j2f.start()
 
             except Exception as e:
                 self.info(str(e), 0)
 
+
         elif self._ToDoL == False:
             self._ProgressAll = 0
-            self.info('执行FISPACT --> JMCT', 0)
-            FPath = self.FWorkPathD.text()
-            JPathD = self.JOutFilePathD.text()
-            JModel = self.JModelPath.text()
-            JText = self.JFileEdit.toPlainText()
-            tmp = [' ' * 3, ' ' * 2, ' ' * 4, '\t']
-            split = tmp[self.RetractLen.currentIndex()]
-            if JText == '':
-                self.info('自动导入JMCT模板文件')
-                self.loadFiles()
-                JText = self.JFileEdit.toPlainText()
             try:
-                maxFlag = float(self.MaxFlag.text())
-            except Exception as e:
-                self.info(repr(e), 0)
-                return
-            if self.SaveNeu.isChecked() and self._SavedNeutron:
-                self.info('读取暂存的物质信息', 0)
-                neutron = self._SavedNeutron
-            elif self.SaveNeu.isChecked() and not self._SavedNeutron:
-                self.info('没有暂存的物质信息', 0)
-            self.info('读取JMCT输出文件 %s' % JPathD, 0)
-            if not (self.SaveNeu.isChecked() and self._SavedNeutron):
-                try:
-                    neutron = readj(JPathD, self.updateBar, self.getOneProgress)
-                except FileNotFoundError:
-                    self.info('错误：JMCT输出文件位置无效', 0)
-                    return
-                except AttributeError as e:
-                    self.info('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
-                    return
-                except Exception as e:
-                    self.info(repr(e), 0)
-                    return
-            if self.SaveNeu.isChecked() and not self._SavedNeutron:
-                self.info('储存物质信息', 0)
-                self._SavedNeutron = neutron
-            self.info('读取FISPACT输出文件 %s' % FPath, 0)
-            try:
-                distributes = readf(FPath, maxFlag, self.updateBar, self.getOneProgress)
-            except FileNotFoundError as e:
-                self.info('错误：FISPACT输出文件位置无效 ->' + repr(e), 0)
-                return
-            except Exception as e:
-                self.info(repr(e), 0)
-                return
-            pos = JPathD.rindex('.')
-            if self.RemainJOut.isChecked():
+                self.f2j.FPath = self.FWorkPathD.text()
+                self.f2j.JPathD = self.JOutFilePathD.text()
+                self.f2j.JModel = self.JModelPath.text()
+                self.f2j.JText = self.JFileEdit.toPlainText()
+                self.f2j.Max = self.MaxFlag.text()
+                self.f2j.Retract = self.RetractLen.currentIndex()
+                self.f2j.WheSaveNeu = self.SaveNeu.isChecked()
+                self.f2j.Remain = self.RemainJOut.isChecked()
+                self.f2j.SavedNeutron = self._SavedNeutron
+                if self.f2j.JText == '':
+                    self.info('自动导入JMCT模板文件')
+                    self.loadFiles()
+                    self.f2j.JText = self.JFileEdit.toPlainText()
 
-                newPath = JPathD[:pos] + '_new' + '.in'
-            else:
-                newPath = JPathD[:pos] + '.in'
-            self.info('将新的JMCT输入文件写入 %s' % newPath, 0)
-            try:
-                writej(JModel, JText, neutron, distributes, split, newPath, self.updateBar, self.getOneProgress)
-            except AttributeError as e:
-                self.info('错误：JMCT模板文件不含有{source}关键字 -> ' + repr(e), 0)
-                return
+                self.allEnableL(2)
+                self.StartL.setText('取消')
+                self.StartL.clicked.connect(self.cancelF2J)
+                self.f2j.start()
             except Exception as e:
-                self.info(repr(e), 0)
-                return
-            self.info('文件转换完成', 0)
+                self.info(str(e), 0)
 
     def call(self):
         if self._ToDoR == True:
@@ -471,6 +592,10 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.fis.env = env
             self.fis.group = group
             self.fis.case = Case
+
+            self.allEnableR(2)
+            self.StartR.setText('取消')
+            self.StartR.clicked.connect(self.cancelCallF)
             self.fis.start()
         else:
             # callJMCT
@@ -479,106 +604,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info('错误：未指定JMCT输入文件', 0)
                 return
             self.jmct.JInPath = JInPath
+
+            self.allEnableR(2)
+            self.StartR.setText('取消')
+            self.StartR.clicked.connect(self.cancelCallJ)
             self.jmct.start()
 
 
-class Fis(QThread):
-    signal = pyqtSignal(str, int)
-    case = ''
-    env = ['', '']
-    group = ['', '', '']
 
-    def run(self):
-        self.signal.emit('调用Fispact中...', 0)
-        try:
-            for _dir in os.listdir(self.case):
-                _path = os.path.join(self.case, _dir)
-                self.signal.emit(_path, 0)
-                if os.path.isdir(_path):
-                    fisp(self.signal.emit, self.env, self.group, _path)
-        except Exception as a:
-            self.signal.emit(str(a), 0)
-        self.signal.emit('调用结束', 0)
-
-
-class Jm(QThread):
-    signal = pyqtSignal(str, int)
-    JInPath = ''
-
-    def run(self):
-        self.signal.emit('调用Jmct中...', 0)
-        try:
-            jmct(self.signal.emit, self.JInPath)
-        except Exception as a:
-            self.signal.emit(str(a), 0)
-        self.signal.emit('调用结束', 0)
-
-
-class JtoF(QThread):
-    signal1 = pyqtSignal(bool)  # updateBar
-    signal2 = pyqtSignal(int, int)  # getOneProgress
-    siginfo = pyqtSignal(str, int)  # info
-
-    def __init__(self):
-        super(JtoF, self).__init__()
-        self.JPathU = ''
-        self.GPath = ''
-        self.FPath = ''
-        self.CText = ''
-        self.AText = ''
-        self.IText = ''
-        self.PText = ''
-        self.GenRate = ''
-        self._SavedNeutron = None
-
-    def run(self):
-        self.siginfo.emit('执行JMCT --> FISPACT', 0)
-        try:
-            _GenRate = float(self.GenRate)
-        except ValueError:
-            self.siginfo.emit('错误：光子单位时间产额不是有效数据', 0)
-            return
-        except Exception as e:
-            self.siginfo.emit(repr(e))
-            return
-
-        if self.SaveNeu_isChecked and self._SavedNeutron:
-            self.siginfo.emit('读取暂存的物质信息', 0)
-            _neutron = self._SavedNeutron
-        elif self.SaveNeu_isChecked and not self._SavedNeutron:
-            self.siginfo.emit('没有暂存的物质信息', 0)
-
-        self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathU, 0)
-        if not (self.SaveNeu_isChecked and self._SavedNeutron):
-            try:
-                _neutron = readj(self.JPathU, self.signal1.emit, self.signal2.emit)
-            except FileNotFoundError as e:
-                self.siginfo.emit('错误：JMCT输出文件位置无效 -> ' + repr(e), 0)
-                return
-            except AttributeError as e:
-                self.siginfo.emit('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
-                return
-            except Exception as e:
-                self.siginfo.emit(repr(e), 0)
-                return
-        if self.SaveNeu_isChecked and not self._SavedNeutron:
-            self.siginfo.emit('储存物质信息', 0)
-            self._SavedNeutron = _neutron
-        self.siginfo.emit('读取GDML结构文件 %s' % self.GPath, 0)
-        try:
-            _structure = readg(self.GPath, self.signal1.emit, self.signal2.emit)
-        except FileNotFoundError:
-            self.siginfo.emit('错误：GDML结构文件位置无效', 0)
-            return
-        except Exception as e:
-            self.siginfo.emit(repr(e), 0)
-            return
-
-        self.siginfo.emit('将FISPACT输入文件写入 %s' % self.FPath, 0)
-        try:
-            writef(self.FPath, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
-                   self.signal1.emit, self.signal2.emit)
-        except Exception as e:
-            self.siginfo.emit(repr(e), 0)
-            return
-        self.siginfo.emit('文件转换完成', 0)
