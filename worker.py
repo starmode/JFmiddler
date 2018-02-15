@@ -20,9 +20,12 @@ class Fis(QThread):
                 self.signal.emit(_path, 0)
                 if os.path.isdir(_path):
                     fisp(self.signal.emit, self.env, self.group, _path)
-        except Exception as a:
-            self.signal.emit(str(a), 0)
+        except Exception as e:
+            self.signal.emit(repr(e), 0)
+            self.sigend.emit()
+            return
         self.signal.emit('调用结束', 0)
+        self.sigend.emit()
 
 
 class Jm(QThread):
@@ -34,9 +37,10 @@ class Jm(QThread):
         self.signal.emit('调用Jmct中...', 0)
         try:
             jmct(self.signal.emit, self.JInPath)
-        except Exception as a:
-            self.signal.emit(str(a), 0)
+        except Exception as e:
+            self.signal.emit(repr(e), 0)
         self.signal.emit('调用结束', 0)
+        self.sigend.emit()
 
 
 class JtoF(QThread):
