@@ -81,8 +81,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.__desktop = QApplication.desktop()
         self.reSize()
 
-    def cancelJ2F(self):
-        self.info('取消', 0)
+    def cancelJ2F(self, data):
+        self.info('结束', 0)
         self.j2f.terminate()
         while self.j2f.isRunning():
             pass
@@ -90,9 +90,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StartL.setText('开始')
         self.StartL.clicked.connect(self.start)
         self.Bar.setValue(0)
+        if data:
+            self._SavedNeutron = data
 
     def cancelF2J(self, data):
-        self.info('取消', 0)
+        self.info('结束', 0)
         self.f2j.terminate()
         while self.f2j.isRunning():
             pass
@@ -104,7 +106,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self._SavedNeutron = data
 
     def cancelCallJ(self):
-        self.info('取消', 0)
+        self.info('结束', 0)
         self.jmct.terminate()
         while self.jmct.isRunning():
             pass
@@ -113,7 +115,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StartR.clicked.connect(self.call)
 
     def cancelCallF(self):
-        self.info('取消', 0)
+        self.info('结束', 0)
         self.fis.terminate()
         while self.fis.isRunning():
             pass
@@ -524,7 +526,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.j2f.IText = self.IFileEdit.toPlainText()
                 self.j2f.PText = self.PFileEdit.toPlainText()
                 self.j2f.GenRate = self.GenRate.text()
-                self.j2f.SaveNeu_isChecked = self.SaveNeu.isChecked()
+                self.j2f.SavedNeutron = self._SavedNeutron
+                self.j2f.WheSaveNeu = self.SaveNeu.isChecked()
 
                 self.allEnableL(2)
                 self.StartL.setText('取消')
