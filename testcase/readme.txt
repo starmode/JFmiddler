@@ -1,10 +1,1 @@
-È¡Öµ ÖÐ×Óµ¥Î»Ê±¼ä²ú¶î7.8E18
-input-ÊäÈëÎÄ¼þ¼Ð
-	fisp-FISPACT¹¤×÷Ä¿Â¼
-	model.In-JMCTÄ£°åÎÄ¼þ
-	Model_test.gdml-GDML½á¹¹ÎÄ¼þ
-	neutron.input-Èë¿ÚJMCTÊä³öÎÄ¼þ
-output-Êä³öÎÄ¼þ¼Ð
-compare-¶ÔÕÕ±ê×¼Êä³öÎÄ¼þ¼Ð
-	fisp-FISPACT¹¤×÷Ä¿Â¼
-	photon.OUT-±ê×¼JMCTÊä³öÎÄ¼þ
+å–å€¼ ä¸­å­å•ä½æ—¶é—´äº§é¢7.8E18
