@@ -69,6 +69,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.j2f.signal2.connect(self.getOneProgress)
         self.j2f.siginfo.connect(self.info)
 
+        self.f2j = FtoJ()
+        self.f2j.signal1.connect(self.updateBar)
+        self.f2j.signal2.connect(self.getOneProgress)
+        self.f2j.siginfo.connect(self.info)
+
         self.__desktop = QApplication.desktop()
         self.reSize()
 
@@ -360,9 +365,10 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         # self.envEnable()
 
     def start(self):
+        self._ProgressAll = 0
         if self._ToDoL == True:
-            self._ProgressAll = 0
             try:
+                self.info('执行JMCT --> FISPACT', 0)
                 self.j2f.JPathU = self.JOutFilePathU.text()
                 self.j2f.GPath = self.GFilePath.text()
                 self.j2f.FPath = self.FWorkPathU.text()
@@ -379,69 +385,26 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info(str(e), 0)
 
         elif self._ToDoL == False:
-            self._ProgressAll = 0
-            self.info('执行FISPACT --> JMCT', 0)
-            FPath = self.FWorkPathD.text()
-            JPathD = self.JOutFilePathD.text()
-            JModel = self.JModelPath.text()
-            JText = self.JFileEdit.toPlainText()
-            tmp = [' ' * 3, ' ' * 2, ' ' * 4, '\t']
-            split = tmp[self.RetractLen.currentIndex()]
-            if JText == '':
-                self.info('自动导入JMCT模板文件')
-                self.loadFiles()
-                JText = self.JFileEdit.toPlainText()
             try:
-                maxFlag = float(self.MaxFlag.text())
-            except Exception as e:
-                self.info(repr(e), 0)
-                return
-            if self.SaveNeu.isChecked() and self._SavedNeutron:
-                self.info('读取暂存的物质信息', 0)
-                neutron = self._SavedNeutron
-            elif self.SaveNeu.isChecked() and not self._SavedNeutron:
-                self.info('没有暂存的物质信息', 0)
-            self.info('读取JMCT输出文件 %s' % JPathD, 0)
-            if not (self.SaveNeu.isChecked() and self._SavedNeutron):
-                try:
-                    neutron = readj(JPathD, self.updateBar, self.getOneProgress)
-                except FileNotFoundError:
-                    self.info('错误：JMCT输出文件位置无效', 0)
-                    return
-                except AttributeError as e:
-                    self.info('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
-                    return
-                except Exception as e:
-                    self.info(repr(e), 0)
-                    return
-            if self.SaveNeu.isChecked() and not self._SavedNeutron:
-                self.info('储存物质信息', 0)
-                self._SavedNeutron = neutron
-            self.info('读取FISPACT输出文件 %s' % FPath, 0)
-            try:
-                distributes = readf(FPath, maxFlag, self.updateBar, self.getOneProgress)
-            except FileNotFoundError as e:
-                self.info('错误：FISPACT输出文件位置无效 ->' + repr(e), 0)
-                return
-            except Exception as e:
-                self.info(repr(e), 0)
-                return
-            pos = JPathD.rindex('.')
-            if self.RemainJOut.isChecked():
+                self.info('执行FISPACT --> JMCT', 0)
+                self.f2j.FPath = self.FWorkPathD.text()
+                self.f2j.JPathD = self.JOutFilePathD.text()
+                self.f2j.JModel = self.JModelPath.text()
+                self.f2j.JText = self.JFileEdit.toPlainText()
+                self.f2j.maxFlag = float(self.MaxFlag.text())
+                self.f2j.SaveNeu_isChecked = self.SaveNeu.isChecked()
+                self.f2j.RemainJOut_isChecked = self.RemainJOut.isChecked()
+                self.f2j.index = self.RetractLen.currentIndex()
 
-                newPath = JPathD[:pos] + '_new' + '.in'
-            else:
-                newPath = JPathD[:pos] + '.in'
-            self.info('将新的JMCT输入文件写入 %s' % newPath, 0)
-            try:
-                writej(JModel, JText, neutron, distributes, split, newPath, self.updateBar, self.getOneProgress)
-            except AttributeError as e:
-                self.info('错误：JMCT模板文件不含有{source}关键字 -> ' + repr(e), 0)
-                return
+                if self.f2j.JText == '':
+                    self.info('自动导入JMCT模板文件', 0)
+                    self.loadFiles()
+                    self.f2j.JText = self.JFileEdit.toPlainText()
+
+                self.f2j.start()
             except Exception as e:
                 self.info(repr(e), 0)
-                return
-            self.info('文件转换完成', 0)
+
 
     def call(self):
         if self._ToDoR == True:
@@ -532,7 +495,6 @@ class JtoF(QThread):
         self._SavedNeutron = None
 
     def run(self):
-        self.siginfo.emit('执行JMCT --> FISPACT', 0)
         try:
             _GenRate = float(self.GenRate)
         except ValueError:
@@ -578,6 +540,72 @@ class JtoF(QThread):
         try:
             writef(self.FPath, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
                    self.signal1.emit, self.signal2.emit)
+        except Exception as e:
+            self.siginfo.emit(repr(e), 0)
+            return
+        self.siginfo.emit('文件转换完成', 0)
+
+
+class FtoJ(QThread):
+    signal1 = pyqtSignal(bool)  # updateBar
+    signal2 = pyqtSignal(int, int)  # getOneProgress
+    siginfo = pyqtSignal(str, int)  # info
+    sigload = pyqtSignal()
+
+    def __init__(self):
+        super(FtoJ, self).__init__()
+        self.FPath = ''
+        self.JPathD = ''
+        self.JModel = ''
+        self.JText = ''
+        self.maxFlag = ''
+        self._SavedNeutron = None
+
+    def run(self):
+        tmp = [' ' * 3, ' ' * 2, ' ' * 4, '\t']
+        split = tmp[self.index]
+
+        if self.SaveNeu_isChecked and self._SavedNeutron:
+            self.siginfo.emit('读取暂存的物质信息', 0)
+            neutron = self._SavedNeutron
+        elif self.SaveNeu_isChecked and not self._SavedNeutron:
+            self.siginfo.emit('没有暂存的物质信息', 0)
+        self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathD, 0)
+        if not (self.SaveNeu_isChecked and self._SavedNeutron):
+            try:
+                neutron = readj(self.JPathD, self.signal1.emit, self.signal2.emit)
+            except FileNotFoundError:
+                self.siginfo.emit('错误：JMCT输出文件位置无效', 0)
+                return
+            except AttributeError as e:
+                self.siginfo.emit('错误：JMCT输出文件不合法 -> ' + repr(e), 0)
+                return
+            except Exception as e:
+                self.siginfo.emit(repr(e), 0)
+                return
+        if self.SaveNeu_isChecked and not self._SavedNeutron:
+            self.siginfo.emit('储存物质信息', 0)
+            self._SavedNeutron = neutron
+        self.siginfo.emit('读取FISPACT输出文件 %s' % self.FPath, 0)
+        try:
+            distributes = readf(self.FPath, self.maxFlag, self.signal1.emit, self.signal2.emit)
+        except FileNotFoundError as e:
+            self.siginfo.emit('错误：FISPACT输出文件位置无效 ->' + repr(e), 0)
+            return
+        except Exception as e:
+            self.siginfo.emit(repr(e), 0)
+            return
+        pos = self.JPathD.rindex('.')
+        if self.RemainJOut_isChecked:
+            newPath = self.JPathD[:pos] + '_new' + '.in'
+        else:
+            newPath = self.JPathD[:pos] + '.in'
+        self.siginfo.emit('将新的JMCT输入文件写入 %s' % newPath, 0)
+        try:
+            writej(self.JModel, self.JText, neutron, distributes, split, newPath, self.signal1.emit, self.signal2.emit)
+        except AttributeError as e:
+            self.siginfo.emit('错误：JMCT模板文件不含有{source}关键字 -> ' + repr(e), 0)
+            return
         except Exception as e:
             self.siginfo.emit(repr(e), 0)
             return
