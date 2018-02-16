@@ -335,7 +335,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def openJModel(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
-                                                          "JMCT Input File (*.in);;All Files (*)")
+                                                          "JMCT Input File (*.input);;All Files (*)")
         if self._LastRoute != '':
             self.JModelPath.setText(self._LastRoute)
 
@@ -387,7 +387,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def openJIn(self):
         self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
-                                                          "JMCT Input File (*.in);;All Files (*)")
+                                                          "JMCT Input File (*.input);;All Files (*)")
         if self._LastRoute != '':
             self.JInPath.setText(self._LastRoute)
 
