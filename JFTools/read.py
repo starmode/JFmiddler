@@ -242,7 +242,7 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     matEles = [
         [(fac.xpath('@ref')[0], float(fac.xpath('@n')[0])) for fac in mat.xpath('fraction')] if len(
             mat.xpath('@Z')) == 0 else [(
-            zElements[int(mat.xpath('@Z')[0])], 1.0)] for mat in matTree]
+            zElements[int(mat.xpath('@Z')[0])], float(mat.xpath('D/@value')[0]))] for mat in matTree]
 
     materials = dict(zip(matName, zip(matD, matEles)))
 
