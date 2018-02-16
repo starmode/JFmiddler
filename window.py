@@ -287,10 +287,10 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.allEnableL(0)
 
     def callF(self):
-        self.allEnableR(True)
+        self.allEnableR(1)
 
     def callJ(self):
-        self.allEnableR(False)
+        self.allEnableR(0)
 
     def getOneProgress(self, t, n):
         if self._ToDoL is True:
