@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 import platform
+import configparser
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QDateTime, QTime, QCoreApplication, Qt
@@ -56,6 +58,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.CallJMCT.clicked.connect(self.callJ)
         self.allEnableL(1)
         self.allEnableR(True)
+
+        self.config = configparser.ConfigParser()
         self.pickPath()
 
         self.fis = Fis()
@@ -132,38 +136,63 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         event.accept()
 
     def pickPath(self):
-        if not os.path.exists('./tmp'):
-            os.mkdir('./tmp')
-        if 'wiz.ini' in os.listdir('./tmp'):
-            try:
-                with open('./tmp/wiz.ini') as f:
-                    lines = f.readlines()
-                for line in lines:
-                    tmp = line.split('=')
-                    if len(tmp) != 2:
-                        continue
-                    if tmp[0] == 'FISPACT':
-                        self.FPath.setText(tmp[1])
-                    elif tmp[0] == 'EAF':
-                        self.EPath.setText(tmp[1])
-                    elif tmp[0] == 'LOGS':
-                        try:
-                            self._logNum = int(tmp[1])
-                        except ValueError as e:
-                            self.info('错误：配置文件中LOGS值不为整数，使用默认值1' + repr(e), 0)
-            except Exception as e:
-                self.info(repr(e), 0)
+        try:
+            if os.path.isfile('./tmp/wiz.ini'):
+                with open('./tmp/wiz.ini', 'r', encoding='utf-8-sig') as f:
+                    self.config.read_file(f)
+                if 'turn' in self.config.sections():
+                    self.JOutFilePathU.setText(self.config['turn']['jpathu'])
+                    self.GFilePath.setText(self.config['turn']['gpathu'])
+                    self.FWorkPathU.setText(self.config['turn']['fpathu'])
+                    self.GenRate.setText(self.config['turn']['genrate'])
+
+                    self.FWorkPathD.setText(self.config['turn']['fpathd'])
+                    self.JOutFilePathD.setText(self.config['turn']['jpathd'])
+                    self.JModelPath.setText(self.config['turn']['jmodel'])
+                if 'call' in self.config.sections():
+                    self.FPath.setText(self.config['call']['fispact'])
+                    self.EPath.setText(self.config['call']['eaf'])
+                    self.FWorkPathR.setText(self.config['call']['case'])
+
+                    self.JInPath.setText(self.config['call']['jpath'])
+                if 'global' in self.config.sections():
+                    self._logNum = int(self.config['global']['logs'])
+        except KeyError:
+            pass
+        except Exception as e:
+            self.info(repr(e), 0)
 
     def saveAll(self):
         now = QDateTime.currentDateTime()
-        if 'tmp' not in os.listdir('.'):
+        if not os.path.exists('./tmp'):
             os.mkdir('./tmp')
         with open('./tmp/log-%s.log' % now.toString('yyyy-MM-dd-hh-mm-ss-zzz'), 'w') as f:
             f.write(self._InfoText)
-        with open('./tmp/wiz.ini', 'w') as f:
-            f.write('FISPACT=%s\n' % self.FPath.text())
-            f.write('EAF=%s\n' % self.EPath.text())
-            f.write('LOGS=%d\n' % self._logNum)
+
+        if 'turn' not in self.config.sections():
+            # self.config.add_section('turn')
+            self.config['turn'] = {}
+        if 'call' not in self.config.sections():
+            self.config['call'] = {}
+        if 'global' not in self.config.sections():
+            self.config['global'] = {}
+        self.config['turn']['jpathu'] = self.JOutFilePathU.text()
+        self.config['turn']['gpathu'] = self.GFilePath.text()
+        self.config['turn']['fpathu'] = self.FWorkPathU.text()
+        self.config['turn']['genrate'] = self.GenRate.text()
+
+        self.config['turn']['fpathd'] = self.FWorkPathD.text()
+        self.config['turn']['jpathd'] = self.JOutFilePathD.text()
+        self.config['turn']['jmodel'] = self.JModelPath.text()
+
+        self.config['call']['fispact'] = self.FPath.text()
+        self.config['call']['eaf'] = self.EPath.text()
+        self.config['call']['case'] = self.FWorkPathR.text()
+        self.config['call']['jpath'] = self.JInPath.text()
+        self.config['global']['logs'] = str(self._logNum)
+        with open('./tmp/wiz.ini', 'w', encoding='utf-8-sig') as f:
+            self.config.write(f)
+
         logs = [i for i in os.listdir('./tmp') if i[-4:] == '.log']
         sorted(logs)
         if len(logs) > self._logNum:

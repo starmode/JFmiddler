@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from PyQt5.QtCore import QThread, pyqtSignal
 from JFTools.read import readj, readg, readf

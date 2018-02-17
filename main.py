@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 from window import Dynamics
 from PyQt5.QtWidgets import QApplication
