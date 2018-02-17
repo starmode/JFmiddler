@@ -40,7 +40,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.FWorkPickD.clicked.connect(self.openFDirDown)
         self.LoadFile.clicked.connect(self.loadFiles)
         self.ResetL.clicked.connect(self.resetL)
-        self.QuitL.clicked.connect(QCoreApplication.instance().quit)
+        self.QuitL.clicked.connect(QCoreApplication.quit)
         self.JtoFChose.clicked.connect(self.jtoF)
         self.FtoJChose.clicked.connect(self.ftoJ)
         self.StartL.clicked.connect(self.start)
@@ -51,7 +51,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.FWorkPick.clicked.connect(self.openFDirRight)
         self.JInPick.clicked.connect(self.openJIn)
         self.ResetR.clicked.connect(self.resetR)
-        self.QuitR.clicked.connect(QCoreApplication.instance().quit)
+        self.QuitR.clicked.connect(QCoreApplication.quit)
         self.StartR.clicked.connect(self.call)
 
         self.CallFISP.clicked.connect(self.callF)
@@ -122,10 +122,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StartR.clicked.connect(self.call)
 
     def cancelCallF(self):
-        self.info('结束', 0)
-        self.fis.terminate()
-        while self.fis.isRunning():
-            pass
+        # self.fis.terminate()
+        self.fis.requestInterruption()
+        self.fis.kill()
+        if self.fis.isRunning():
+            self.fis.wait()
         self.allEnableR(3)
         self.StartR.setText('开始')
         self.StartR.clicked.disconnect()

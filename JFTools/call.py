@@ -39,9 +39,16 @@ def jmct(info, jinput, gpath=''):
         info('无环境变量', 3)
 
 
-def fisp(info, env, group, indir, outdir=''):
+def fisp(info, pid, env, group, indir, outdir=''):
     def show(text):
         info(text, 3)
+
+    def clean():
+        for file in ['input', 'output', 'FILES']:
+            try:
+                os.remove(os.path.join(indir, file))
+            except FileNotFoundError:
+                pass
 
     def _copy(_src, _dst):
         if indir != outdir:
@@ -49,6 +56,7 @@ def fisp(info, env, group, indir, outdir=''):
 
     def _run():
         _p = Popen(fisppath, cwd=outdir, stdout=PIPE)
+        pid[0] = _p.pid
         while True:
             line = _p.stdout.readline()
             if line:
@@ -57,6 +65,7 @@ def fisp(info, env, group, indir, outdir=''):
             sleep(0.01)
             if _p.poll() is None:
                 continue
+            pid[0] = 0
             return _p.returncode
 
     # 传入参数处理
@@ -116,12 +125,14 @@ def fisp(info, env, group, indir, outdir=''):
     copy(indir + '/collapx.i', outdir + '/input')
     show('正在处理 collapx.i ...')
     if _run() != 0:
-        show('失败！')
+        # show('失败！')
+        clean()
         return
     copy(indir + '/arrayx.i', outdir + '/input')
     show('正在处理 arrayx.i ...')
     if _run() != 0:
-        show('失败！')
+        # show('失败！')
+        clean()
         return
 
     # 遍历.i文件，执行程序
@@ -133,10 +144,9 @@ def fisp(info, env, group, indir, outdir=''):
             copy(indir + '/' + _input, outdir + '/input')
             show('正在处理 ' + _input + ' ...')
             if _run() != 0:
-                show('失败！')
+                # show('失败！')
+                clean()
                 return
             copy(outdir + '/output', outdir + '/' + name + '.o')
             show('执行成功，输出：' + os.path.join(outdir, name + '.o'))
-
-    os.remove(outdir + '/input')
-    os.remove(outdir + '/output')
+    clean()
