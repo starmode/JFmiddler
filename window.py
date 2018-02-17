@@ -88,6 +88,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             pass
         self.allEnableL(3)
         self.StartL.setText('开始')
+        self.StartL.clicked.disconnect()
         self.StartL.clicked.connect(self.start)
         self.Bar.setValue(0)
         if data:
@@ -100,6 +101,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             pass
         self.allEnableL(3)
         self.StartL.setText('开始')
+        self.StartL.clicked.disconnect()
         self.StartL.clicked.connect(self.start)
         self.Bar.setValue(0)
         if data:
@@ -112,6 +114,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             pass
         self.allEnableR(3)
         self.StartR.setText('开始')
+        self.StartR.clicked.disconnect()
         self.StartR.clicked.connect(self.call)
 
     def cancelCallF(self):
@@ -121,6 +124,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             pass
         self.allEnableR(3)
         self.StartR.setText('开始')
+        self.StartR.clicked.disconnect()
         self.StartR.clicked.connect(self.call)
 
     def closeEvent(self, event):
@@ -531,6 +535,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
                 self.allEnableL(2)
                 self.StartL.setText('取消')
+                self.StartL.clicked.disconnect()
                 self.StartL.clicked.connect(self.cancelJ2F)
                 self.j2f.start()
 
@@ -556,6 +561,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
                 self.allEnableL(2)
                 self.StartL.setText('取消')
+                self.StartL.clicked.disconnect()
                 self.StartL.clicked.connect(self.cancelF2J)
                 self.f2j.start()
             except Exception as e:
@@ -591,6 +597,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
             self.allEnableR(2)
             self.StartR.setText('取消')
+            self.StartR.clicked.disconnect()
             self.StartR.clicked.connect(self.cancelCallF)
             self.fis.start()
         else:
@@ -603,5 +610,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
             self.allEnableR(2)
             self.StartR.setText('取消')
+            self.StartR.clicked.disconnect()
             self.StartR.clicked.connect(self.cancelCallJ)
             self.jmct.start()
