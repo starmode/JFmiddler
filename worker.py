@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import pathlib
 from PyQt5.QtCore import QThread, pyqtSignal
 from JFTools.read import readj, readg, readf
 from JFTools.write import writef, writej
@@ -18,39 +19,38 @@ class Fis(QThread):
         self.group = ['', '', '']
         self.pid = [0]
 
-
     def run(self):
         count = 0
         self.signal.emit('调用Fispact中...', 0)
         try:
-            _dirs = os.listdir(self.case)
+            p = pathlib.Path(self.case.strip())
+            _dirs = [_ for _ in p.iterdir() if _.is_dir()]
             for _dir in _dirs:
+                _path = p.resolve() / _dir
                 if not self.isInterruptionRequested():
                     count += 1
-                    _path = os.path.join(os.path.realpath(self.case), _dir)
-                    self.signal.emit('[%d/%d]%s' % (count, len(_dirs), _path), 0)
-                    if os.path.isdir(_path):
-                        fisp(self.signal.emit, self.pid, self.env, self.group, _path)
-                        # 清理工作目录
-                        self.clean(_path)
-        except Exception as e:
-            self.signal.emit(repr(e), 0)
+                    self.signal.emit('[%d/%d]%s' % (count, len(_dirs), str(_path)), 0)
+                    fisp(self.signal.emit, self.pid, self.env, self.group, _path)
+                    # 清理工作目录
+                    self.clean(_path)
+        # except Exception as e:
+        #     self.signal.emit(repr(e), 0)
+        finally:
+            self.signal.emit('调用结束', 0)
             self.sigend.emit()
-            return
-        self.signal.emit('调用结束', 0)
-        self.sigend.emit()
 
     def kill(self):
         if self.pid[0] != 0:
             os.kill(self.pid[0], 9)
 
     def clean(self, path, flag=0):
-        for file in os.listdir(path):
-            if file in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (flag == 1 and file[-2:] == '.o'):
-                os.remove(os.path.join(path, file))
+        for file in path.glob('*'):
+            if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (flag == 1 and file.name == '.o'):
+                (path / file).unlink()
 
     def cleanall(self, path):
         self.clean(path, 1)
+
 
 class Jm(QThread):
     signal = pyqtSignal(str, int)

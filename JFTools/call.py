@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
-import os
-from shutil import copy
+from pathlib import Path
+import shutil
 from subprocess import Popen, PIPE
 from time import sleep
 from .model import defaultFILES
 
 
+def copy(src: Path, dst: Path):
+    shutil.copy(str(src), str(dst))
+
+
 def jmct(info, jinput, gpath=''):
-    _input = os.path.realpath(jinput)
-    if gpath == '':
-        _gpath = os.path.dirname(_input)
-    else:
-        _gpath = gpath
+    _input = Path(jinput).resolve()
+    # if gpath == '':
+    #     _gpath = _input.parent
+    # else:
+    #     _gpath = gpath
+    _gpath = _input.parent
 
     def _run():
-        _p = Popen('jmct ' + _input, cwd=_gpath, stdout=PIPE, shell=True)
+        _p = Popen('jmct ' + str(_input), cwd=_gpath, stdout=PIPE, shell=True)
         while True:
             line = _p.stdout.readline()
             if line:
@@ -34,19 +39,19 @@ def jmct(info, jinput, gpath=''):
         try:
             _run()
         except Exception as a:
-            info(str(a), 3)
+            info(repr(a), 3)
     else:
         info('无环境变量', 3)
 
 
-def fisp(info, pid, env, group, indir, outdir=''):
+def fisp(info, pid, env, group, indir: Path, _outdir=None):
     def show(text):
         info(text, 3)
 
     def clean():
         for file in ['input', 'output', 'FILES']:
             try:
-                os.remove(os.path.join(indir, file))
+                (indir / file).unlink()
             except FileNotFoundError:
                 pass
 
@@ -55,7 +60,7 @@ def fisp(info, pid, env, group, indir, outdir=''):
             copy(_src, _dst)
 
     def _run():
-        _p = Popen(fisppath, cwd=outdir, stdout=PIPE)
+        _p = Popen(str(fisppath), cwd=outdir, stdout=PIPE)
         pid[0] = _p.pid
         while True:
             line = _p.stdout.readline()
@@ -69,66 +74,65 @@ def fisp(info, pid, env, group, indir, outdir=''):
             return _p.returncode
 
     # 传入参数处理
-    fisppath = os.path.realpath(env[0].strip())
-    if not os.path.isfile(fisppath):
+    fisppath = Path(env[0].strip()).resolve()
+    if not fisppath.is_file():
         show('file not found: %s' % fisppath)
         return
-    eaf = os.path.realpath(env[1].strip())
-    indir = os.path.realpath(indir.strip())
+    eaf = Path(env[1].strip()).resolve()
+    # indir = Path(indir).resolve()
 
     # 可选功能：指定输出目录
-    if outdir == '':
+    if _outdir is None:
         outdir = indir  # 默认为输入目录
     else:
-        outdir = os.path.realpath(outdir)
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
+        outdir = Path(_outdir).resolve()
+        if not outdir.exists():
+            outdir.mkdir()
 
     # 生成FILES文件
     files = defaultFILES
-    files = files.replace(r'<case>', indir)
-    files = files.replace(r'<eaf>', eaf)
+    files = files.replace(r'<case>', str(indir))
+    files = files.replace(r'<eaf>', str(eaf))
     files = files.replace(r'<0>', group[0])
     files = files.replace(r'<1>', group[1])
     files = files.replace(r'<2>', group[2])
     # group[0]: 'n','p','d'
     # group[1]: '69', '100', '172', '175', '211', '315', '351'
     # group[2]: 'flt', 'fis', 'fus'
-    with open(os.path.join(outdir, 'FILES'), 'w') as f:
+    with (outdir / 'FILES').open('w') as f:
         f.write(files)
 
     # 验证eaf地址
-    eaf_gxs = r'%s\eaf_%s_gxs_%s_%s_20070' % (eaf, group[0], group[1], group[2])
-    if not os.path.isfile(eaf_gxs):
-        show(r'Cannot find: %s\eaf_%s_gxs_%s_%s_20070' % (eaf, group[0], group[1], group[2]))
+    eaf_gxs = r'eaf_%s_gxs_%s_%s_20070' % (group[0], group[1], group[2])
+    if not Path(eaf / eaf_gxs).is_file():
+        show(r'Cannot find: %s' % (eaf / eaf_gxs))
         return
-
     # 创建空文件
-    if os.path.isfile(indir + '/collapx'):
-        _copy(indir + '/collapx', outdir + '/collapx')
+    if (indir / 'collapx').is_file():
+        _copy(indir / 'collapx', outdir / 'collapx')
     else:
-        open(outdir + '/collapx', 'w').close()
-    if os.path.isfile(indir + '/arrayx'):
-        _copy(indir + '/arrayx', outdir + '/arrayx')
+        (outdir / 'collapx').touch()
+    if (indir / 'arrayx').is_file():
+        _copy(indir / 'arrayx', outdir / 'arrayx')
     else:
-        open(outdir + '/arrayx', 'w').close()
+        (outdir / 'arrayx').touch()
     # 预执行程序
-    if os.path.isfile(indir + '/summaryx'):
-        _copy(indir + '/summaryx', outdir + '/summaryx')
-    if os.path.isfile(indir + '/halfunc'):
-        _copy(indir + '/halfunc', outdir + '/halfunc')
-    _copy(indir + '/fluxes', outdir + '/fluxes')
+    if (indir / 'summaryx').is_file():
+        _copy(indir / 'summaryx', outdir / 'summaryx')
+    if (indir / 'halfunc').is_file():
+        _copy(indir / 'halfunc', outdir / 'halfunc')
+    _copy(indir / 'fluxes', outdir / 'fluxes')
 
-    if not os.path.isfile(indir + '/collapx.i'):
+    if not (indir / 'collapx.i').is_file():
         show('无效目录: %s' % indir)
         return
-    copy(indir + '/collapx.i', outdir + '/input')
+    copy(indir / 'collapx.i', outdir / 'input')
     show('正在处理 collapx.i ...')
     if _run() != 0:
         # show('失败！')
         clean()
         return
-    copy(indir + '/arrayx.i', outdir + '/input')
+    copy(indir / 'arrayx.i', outdir / 'input')
     show('正在处理 arrayx.i ...')
     if _run() != 0:
         # show('失败！')
@@ -136,17 +140,17 @@ def fisp(info, pid, env, group, indir, outdir=''):
         return
 
     # 遍历.i文件，执行程序
-    _list = os.listdir(indir)
+    _list = list(indir.glob('*'))
     for i in range(0, len(_list)):
         _input = _list[i]
-        if _input[-2:] == '.i' and not (_input == 'collapx.i' or _input == 'arrayx.i'):
-            name = _input[:-2]
-            copy(indir + '/' + _input, outdir + '/input')
-            show('正在处理 ' + _input + ' ...')
+        if _input.suffix == '.i' and not (_input.name == 'collapx.i' or _input.name == 'arrayx.i'):
+            name = _input.stem
+            copy(indir / _input, outdir / 'input')
+            show('正在处理 ' + str(_input) + ' ...')
             if _run() != 0:
                 # show('失败！')
                 clean()
                 return
-            copy(outdir + '/output', outdir + '/' + name + '.o')
-            show('执行成功，输出：' + os.path.join(outdir, name + '.o'))
+            copy(outdir / 'output', outdir.joinpath(name + '.o'))
+            show('执行成功，输出：' + str(outdir.joinpath(name + '.o')))
     clean()
