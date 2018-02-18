@@ -5,7 +5,7 @@ import platform
 import configparser
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QDateTime, QTime, QCoreApplication, Qt
+from PyQt5.QtCore import QDateTime, QTime, Qt
 from JFTools.model import Data, defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
 from static import Ui_MainWindow
 from worker import Fis, Jm, JtoF, FtoJ
@@ -40,7 +40,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.FWorkPickD.clicked.connect(self.openFDirDown)
         self.LoadFile.clicked.connect(self.loadFiles)
         self.ResetL.clicked.connect(self.resetL)
-        self.QuitL.clicked.connect(QCoreApplication.quit)
+        self.QuitL.clicked.connect(self.close)
         self.JtoFChose.clicked.connect(self.jtoF)
         self.FtoJChose.clicked.connect(self.ftoJ)
         self.StartL.clicked.connect(self.start)
@@ -51,7 +51,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.FWorkPick.clicked.connect(self.openFDirRight)
         self.JInPick.clicked.connect(self.openJIn)
         self.ResetR.clicked.connect(self.resetR)
-        self.QuitR.clicked.connect(QCoreApplication.quit)
+        self.QuitR.clicked.connect(self.close)
         self.StartR.clicked.connect(self.call)
 
         self.CallFISP.clicked.connect(self.callF)
