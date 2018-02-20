@@ -44,7 +44,10 @@ def jmct(info, jinput, gpath=''):
         info('无环境变量', 3)
 
 
-def fisp(info, pid, env, group, indir: Path, _outdir=None):
+def fisp(self, info, env, group, indir: Path, _outdir=None):
+    # info = self.siginfo.emit
+    # env = self.env
+    # group = self.group
     def show(text):
         info(text, 3)
 
@@ -61,7 +64,7 @@ def fisp(info, pid, env, group, indir: Path, _outdir=None):
 
     def _run():
         _p = Popen(str(fisppath), cwd=outdir, stdout=PIPE)
-        pid[0] = _p.pid
+        self.pid = _p.pid
         while True:
             line = _p.stdout.readline()
             if line:
@@ -70,7 +73,7 @@ def fisp(info, pid, env, group, indir: Path, _outdir=None):
             sleep(0.01)
             if _p.poll() is None:
                 continue
-            pid[0] = 0
+            self.pid = 0
             return _p.returncode
 
     # 传入参数处理
@@ -140,7 +143,7 @@ def fisp(info, pid, env, group, indir: Path, _outdir=None):
         return
 
     # 遍历.i文件，执行程序
-    _list = list(indir.glob('*'))
+    _list = list(indir.iterdir())
     for i in range(0, len(_list)):
         _input = _list[i]
         if _input.suffix == '.i' and not (_input.name == 'collapx.i' or _input.name == 'arrayx.i'):

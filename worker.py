@@ -9,7 +9,7 @@ from JFTools.model import Data
 
 
 class Fis(QThread):
-    signal = pyqtSignal(str, int)
+    siginfo = pyqtSignal(str, int)
     sigend = pyqtSignal()
 
     def __init__(self):
@@ -17,11 +17,12 @@ class Fis(QThread):
         self.case = ''
         self.env = ['', '']
         self.group = ['', '', '']
-        self.pid = [0]
+        self.pid = 0
+        self.fisp = fisp
 
     def run(self):
         count = 0
-        self.signal.emit('调用Fispact中...', 0)
+        self.siginfo.emit('调用Fispact中...', 0)
         try:
             p = pathlib.Path(self.case.strip())
             _dirs = [_ for _ in p.iterdir() if _.is_dir()]
@@ -29,22 +30,22 @@ class Fis(QThread):
                 _path = p.resolve() / _dir
                 if not self.isInterruptionRequested():
                     count += 1
-                    self.signal.emit('[%d/%d]%s' % (count, len(_dirs), str(_path)), 0)
-                    fisp(self.signal.emit, self.pid, self.env, self.group, _path)
+                    self.siginfo.emit('[%d/%d]%s' % (count, len(_dirs), str(_path)), 0)
+                    self.fisp(self, self.siginfo.emit, self.env, self.group, _path)
                     # 清理工作目录
                     self.clean(_path)
-        # except Exception as e:
-        #     self.signal.emit(repr(e), 0)
+        except Exception as e:
+            self.siginfo.emit('异常：' + repr(e), 0)
         finally:
-            self.signal.emit('调用结束', 0)
+            self.siginfo.emit('调用结束', 0)
             self.sigend.emit()
 
     def kill(self):
-        if self.pid[0] != 0:
-            os.kill(self.pid[0], 9)
+        if self.pid != 0:
+            os.kill(self.pid, 9)
 
     def clean(self, path, flag=0):
-        for file in path.glob('*'):
+        for file in path.iterdir():
             if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (flag == 1 and file.name == '.o'):
                 (path / file).unlink()
 
@@ -53,7 +54,7 @@ class Fis(QThread):
 
 
 class Jm(QThread):
-    signal = pyqtSignal(str, int)
+    siginfo = pyqtSignal(str, int)
     sigend = pyqtSignal()
 
     def __init__(self):
@@ -61,12 +62,12 @@ class Jm(QThread):
         self.JInPath = ''
 
     def run(self):
-        self.signal.emit('调用Jmct中...', 0)
+        self.siginfo.emit('调用Jmct中...', 0)
         try:
-            jmct(self.signal.emit, self.JInPath)
+            jmct(self.siginfo.emit, self.JInPath)
         except Exception as e:
-            self.signal.emit(repr(e), 0)
-        self.signal.emit('调用结束', 0)
+            self.siginfo.emit(repr(e), 0)
+        self.siginfo.emit('调用结束', 0)
         self.sigend.emit()
 
 

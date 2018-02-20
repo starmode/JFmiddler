@@ -63,11 +63,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.pickPath()
 
         self.fis = Fis()
-        self.fis.signal.connect(self.info)
+        self.fis.siginfo.connect(self.info)
         self.fis.sigend.connect(self.cancelCallF)
 
         self.jmct = Jm()
-        self.jmct.signal.connect(self.info)
+        self.jmct.siginfo.connect(self.info)
         self.jmct.sigend.connect(self.cancelCallJ)
 
         self.j2f = JtoF()
