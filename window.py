@@ -122,11 +122,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StartR.clicked.connect(self.call)
 
     def cancelCallF(self):
-        # self.fis.terminate()
         self.fis.requestInterruption()
         self.fis.kill()
         if self.fis.isRunning():
-            self.fis.wait()
+            if not self.fis.wait(msecs=100):
+                self.fis.terminate()
         self.allEnableR(3)
         self.StartR.setText('开始')
         self.StartR.clicked.disconnect()
