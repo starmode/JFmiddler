@@ -1,9 +1,9 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 
-from window import Dynamics
-from PyQt5.QtWidgets import QApplication
 import cgitb
+from PyQt5.QtWidgets import QApplication
+from window import Dynamics
 
 if __name__ == "__main__":
     import sys
