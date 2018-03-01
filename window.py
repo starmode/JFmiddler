@@ -124,9 +124,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
     def cancelCallF(self):
         self.fis.requestInterruption()
         self.fis.kill()
-        if self.fis.isRunning():
-            if not self.fis.wait(msecs=100):
-                self.fis.terminate()
+        if not self.fis.wait(msecs=2500):
+            self.fis.terminate()
+            self.info('运行被终止，可能存在异常')
         self.allEnableR(3)
         self.StartR.setText('开始')
         self.StartR.clicked.disconnect()
@@ -456,6 +456,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info('从 %s 读取FISPACT输入文件' % self._FISPWork, 0)
                 dirs = os.listdir(self._FISPWork)
                 tmp = list(filter(lambda name: name[-2:] == '.i', dirs))
+                # TODO: BUG HERE
                 # 是否找到至少一个文件
                 found = False
                 if 'collapx.i' in tmp:

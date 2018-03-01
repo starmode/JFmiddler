@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-import shutil
+from shutil import copy
 from subprocess import Popen, PIPE
 from time import sleep
 from .model import defaultFILES
-
-
-def copy(src: Path, dst: Path):
-    shutil.copy(str(src), str(dst))
 
 
 def jmct(info, jinput, gpath=''):
@@ -58,23 +54,27 @@ def fisp(self, info, env, group, indir: Path, _outdir=None):
             except FileNotFoundError:
                 pass
 
-    def _copy(_src, _dst):
+    def _copy(_src: Path, _dst: Path):
         if indir != outdir:
             copy(_src, _dst)
 
-    def _run():
-        _p = Popen(str(fisppath), cwd=outdir, stdout=PIPE)
-        self.pid = _p.pid
-        while True:
-            line = _p.stdout.readline()
-            if line:
-                show(line.strip().decode('utf-8'))
-                continue
-            sleep(0.01)
-            if _p.poll() is None:
-                continue
-            self.pid = 0
-            return _p.returncode
+    def _run(msg):
+        if not self.isInterruptionRequested():
+            show(msg)
+            _p = Popen(str(fisppath), cwd=outdir, stdout=PIPE)
+            self.pid = _p.pid
+            while True:
+                line = _p.stdout.readline()
+                if line:
+                    show(line.strip().decode('utf-8'))
+                    continue
+                sleep(0.01)
+                if _p.poll() is None:
+                    continue
+                self.pid = 0
+                return _p.returncode
+        else:
+            return -1
 
     # 传入参数处理
     fisppath = Path(env[0].strip()).resolve()
@@ -130,14 +130,12 @@ def fisp(self, info, env, group, indir: Path, _outdir=None):
         show('无效目录: %s' % indir)
         return
     copy(indir / 'collapx.i', outdir / 'input')
-    show('正在处理 collapx.i ...')
-    if _run() != 0:
+    if _run('正在处理 collapx.i ...') != 0:
         # show('失败！')
         clean()
         return
     copy(indir / 'arrayx.i', outdir / 'input')
-    show('正在处理 arrayx.i ...')
-    if _run() != 0:
+    if _run('正在处理 arrayx.i ...') != 0:
         # show('失败！')
         clean()
         return
@@ -149,8 +147,7 @@ def fisp(self, info, env, group, indir: Path, _outdir=None):
         if _input.suffix == '.i' and not (_input.name == 'collapx.i' or _input.name == 'arrayx.i'):
             name = _input.stem
             copy(indir / _input, outdir / 'input')
-            show('正在处理 ' + str(_input) + ' ...')
-            if _run() != 0:
+            if _run('正在处理 ' + str(_input) + ' ...') != 0:
                 # show('失败！')
                 clean()
                 return

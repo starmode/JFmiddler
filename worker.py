@@ -46,7 +46,8 @@ class Fis(QThread):
 
     def clean(self, path, flag=0):
         for file in path.iterdir():
-            if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (flag == 1 and file.name == '.o'):
+            if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (
+                    flag == 1 and file.suffix == '.o'):
                 (path / file).unlink()
 
     def cleanall(self, path):
