@@ -6,7 +6,7 @@ import configparser
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import QDateTime, QTime, Qt
-from JFTools.model import Data, defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
+from JFlink.model import Data, defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
 from static import Ui_MainWindow
 from worker import Fis, Jm, JtoF, FtoJ
 

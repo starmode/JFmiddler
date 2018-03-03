@@ -2,10 +2,10 @@
 import os
 import pathlib
 from PyQt5.QtCore import QThread, pyqtSignal
-from JFTools.read import readj, readg, readf
-from JFTools.write import writef, writej
-from JFTools.call import jmct, fisp
-from JFTools.model import Data
+from JFlink.read import readj, readg, readf
+from JFlink.write import writef, writej
+from JFlink.call import jmct, fisp
+from JFlink.model import Data
 
 
 class Fis(QThread):
