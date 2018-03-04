@@ -225,7 +225,7 @@ class FtoJ(QThread):
             newPath = self.JPathD[:pos] + '.in'
         self.siginfo.emit('将新的JMCT输入文件写入 %s' % newPath, 0)
         try:
-            writej(self.JModel, self.JText, neutron, distributes, split, newPath, self.signal1.emit, self.signal2.emit)
+            writej(newPath, self.JText, neutron, distributes, split, self.signal1.emit, self.signal2.emit)
         except AttributeError as e:
             self.siginfo.emit('错误：JMCT模板文件不含有{source}关键字 -> ' + repr(e), 0)
             self.sigend.emit(self.SavedNeutron)
