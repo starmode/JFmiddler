@@ -65,7 +65,7 @@ pip install jflink
 pip install pyqt5
 ```
 
-linux:
+<h4>linux:</h4>
 
 ```shell
 sudo apt install pip3
@@ -129,12 +129,12 @@ pip3 install pyqt5
 这里的设置与JMCT-FISP完全相同，参见"二、运行耦合程序-JMCTtoFISP-JMCT输出文件位置"。
 如在连续的计算中，提前选中了"复用文件同步"，则此项会自动设置完成。
 
-- <h3 id='6>'**FISPACT工作目录：**</h3>
+- <h3 id='6'>**FISPACT工作目录：**</h3>
 
 这里的设置与JMCT-FISP完全相同，参见"二、运行耦合程序-JMCTtoFISP-FISPACT工作目录。
 如在连续的计算中，提前选中了"复用文件同步"，则此项会自动设置完成。
 
-- <h3 id='7>'**JMCT模板文件位置：**</h3>
+- <h3 id='7'>**JMCT模板文件位置：**</h3>
 
 这里需要设置JMCT模板文件的位置，进入其所在的目录并选中JMCT模板文件(文件格式：.in)即可，设置好的目录形如"C:/JMCT-FISPACT/JFmiddler-master/testcase/input/model.In"
 
@@ -144,7 +144,7 @@ JMCT模板文件记录了粒子输运模型的几何信息，将在接下来的�
 
 光子无穷大等效值用于从fispact到jmct的计算中.fispact输出的光谱最高能量为14—+∝，但是jmct中光谱输入值必须为有限值，所以正无穷必须用某个等效值代替，默认值为20.
 
-- ××导入模板文件：
+- **导入模板文件：**
 
 此模式下，点击"导入模板文件"，JMCT输入文件模板就被导入，然后将显示在下方的文本框中jmct标签内，可以方便地编辑和修改。
 
@@ -199,10 +199,10 @@ __此选项选中时，程序运行过程中只会计算第一次物质信息，
 ###1、调用FISPACT
 点击"CallFISP"，并进行相关设置：
 
- - <h3 id='8>**FISPACT执行文件：**</h3>
+ - <h3 id='8'>**FISPACT执行文件：**</h3>
 这里应设置为FISPACT可执行文件的位置。进入FISPACT程序的工作目录，选中它的可执行文件即可。
 
-- <h3 id='9‘>**EAF数据库目录：**</h3>
+- <h3 id='9'>**EAF数据库目录：**</h3>
 这里应设置为FISPACT运行所需要的EAF数据库所在的目录，进入目录并选中即可。
 
 - <h3 id='10'>**FISPACT工作目录：** </h3>
@@ -223,7 +223,7 @@ __此选项选中时，程序运行过程中只会计算第一次物质信息，
 
 点击"CallJMCT",并进行相关设置：
 
-- <h3 id='10'>**JMCT输入文件：**</h3>
+- <h3 id='11'>**JMCT输入文件：**</h3>
 这里需要设置JMCT的输入文件，文件格式为.in.
 
 点击"开始"即可调用JMCT。
@@ -486,13 +486,38 @@ _此部分对于软件包的二次开发有一定帮助_
 
 Q：如何在启动时不显示cmd终端？
 
-A：将程序运行方式由python修改为pythonw
+A：将程序运行方式由python修改为pythonw。
 
 
 
 Q：FISPACT工作目录指的是哪一级？
 
+指最顶层包含所有材料的一级目录。
 
+如以下结构中，FISPACT工作目录指的是fisp。
+
+```
+.
++-- fisp
+|   +-- AL6061
+	|   +-- arrayx.i
+	|   +-- collapx.i
+	|   +-- input.i
+	|   +-- printlib.i
+	|   +-- fluxes
+|   +-- CU
+	|   +-- arrayx.i
+	|   +-- collapx.i
+	|   +-- input.i
+	|   +-- printlib.i
+	|   +-- fluxes
+|   +-- SS316
+	|   +-- arrayx.i
+	|   +-- collapx.i
+	|   +-- input.i
+	|   +-- printlib.i
+	|   +-- fluxes
+```
 
 
 
