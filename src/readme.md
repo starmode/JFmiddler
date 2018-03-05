@@ -44,7 +44,7 @@ _您也可以使用Anaconda虚拟环境，Anaconda教程查看[这里](https://c
 
 pip是Python官方推荐的包管理工具。某些编译环境（如Visual Studio）也内置有便捷的包管理工具，从那里安装也可以取得同样的效果。
 
-**pip安装**：
+<span id='12'>**pip安装：**</span>
 
 在python3.6以上的版本里，pip包已包含在其中并被安装好。
 在终端中键入"pip"命令，即可查看到pip命令的简要用法。
@@ -58,7 +58,7 @@ pip install somepackage
 即可安装所需要的包，其中"somepackage"是所需要的包的名称。
 在这里，我们需要的包是pyqt5和JFlink，所以需要分别键入命令：
 
-<span id='12'>**windows:**</span>
+**windows:**
 
 ```shell
 pip install JFlink
@@ -208,7 +208,7 @@ JMCT模板文件记录了粒子输运模型的几何信息，将在接下来的�
   权函数和能群一起描述粒子群的性质，有FLA/FLT、FIS、FUS三种权函数供选择。
 
 - **粒子类型：**
-  这里选取的是粒子的类型，有光子（p）、中子（n） 和（d）三种粒子选项。
+   这里选取的是粒子的类型，有光子（p）、中子（n） 和（d）三种粒子选项。
 
 配置完成后，点击"开始"即可调用FISPACT程序。
 
@@ -246,7 +246,7 @@ JMCT模板文件记录了粒子输运模型的几何信息，将在接下来的�
 | {flux}     | input.i      | 计算出的中字通量，一般用于输运过程的FLUX标签      |
 | {elements} | input.i      | 计算出的元素信息，一般用于MASS标签，在{mass} 之后 |
 
-###3、ini文件
+### 3、ini文件
 
 wiz.ini为程序记录的某些可能需要多次使用的信息，所在位置应为"./tmp/wiz.ini"，在程序启动时读取，程序关闭时储存，一个典型的wiz.ini文件如下所示：
 
@@ -517,6 +517,6 @@ Q：源代码丢失了怎么办？
 
 A：JFwizard和JFlink均为开源软件，可以从[github](https://github.com)或pypi获取
 
-​	[JFwizard主页](https://github.com/starmode/JFwizard) 				[JFlink主页](https://github.com/starmode/JFlink/archive/master.zip)
-
-​	JFlink可以[如此](#12)从pypi获取
+* [JFwizard主页](https://github.com/starmode/JFwizard) 				
+* [JFlink主页](https://github.com/starmode/JFlink/archive/master.zip)
+* JFlink可以[如此](#12)从pypi获取
