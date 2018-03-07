@@ -15,11 +15,11 @@ def _extractDis(allItem, maxFlag, modeF, modeS, modeT, modeL, func=None, call=Fa
     # allItem--input--某FISPACT文件内容
     # maxFlag--input--光子分布无穷大等效值
     # distributes--output--提取出的一种材料的光谱类
-    assert type(allItem) == str
-    assert type(maxFlag) == float
+    assert type(allItem) == str, 'FISPACT文件内容不合法'
+    assert type(maxFlag) == float, '光子无穷大等效值不合法'
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -46,10 +46,10 @@ def _extractGamma(allItem, modeF, modeS, func=None, call=False, clear=False):
     # 从FISPACT输出文件特定的文本中解析出光子产额
     # allItem--input--某FISPACT文件内容
     # gamma--output--光子产额总量
-    assert type(allItem) == str
+    assert type(allItem) == str, 'FISPACT文件内容不合法'
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -65,17 +65,17 @@ def _getAllItem(path, dir, func=None, call=False, clear=False):
     # path--input(list)--FISPACT工作目录
     # dir--input(list)--材料对应目录
     # *--output--所有output文件内容
-    assert type(path) == str
-    assert type(dir) == str
+    assert type(path) == str, 'FISPACT工作目录路径不合法'
+    assert type(dir) == str, '材料目录不合法'
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
     files = os.listdir(path + '/' + dir)
     files = list(filter(lambda name: name[-2:] == '.o', files))
-    assert len(files) == 1
+    assert len(files) == 1, '%s + '/' + %s下存在多个.o文件，请清理无关文件' % (path, dir)
     with open(path + '/' + dir + '/' + files[0]) as f:
         return f.read()
 
@@ -88,8 +88,8 @@ def _extractVol(structure, solids, materials, elements, func=None, call=False, c
     # elements--input--list--元素信息
     # volume--output--list--物质信息
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -110,8 +110,8 @@ def _defineVol(name, volume, func=None, call=False, clear=False):
     # 仅内部调用
     # 用于map操作
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -125,8 +125,8 @@ def _m2ev(raw, flag):
     # raw--input--list，原始数据集合
     # flag--input--str，'e'或'E'，科学记数法的表示方式
     # result--output--list，处理后的数据集合
-    assert type(raw) == list
-    assert type(flag) == str
+    assert type(raw) == list, '内部异常，请重新下载软件包'
+    assert type(flag) == str, '内部异常，请重新下载软件包'
     result = []
     for i in range(len(raw)):
         tmp = raw[i].split(flag)
@@ -147,24 +147,24 @@ def _m2ev(raw, flag):
 
 def _getName(mode, mid, i, func=None, call=False, clear=False):
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
     return mode.search(mid[i]).group(0)[6:-1]
 
 def _getEnergy(mode, mid, i, func=None, call=False, clear=False):
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
     return float(mode.search(mid[i]).group(0)[16:])
 
 def _getVolume(mode, mid, i, func=None, call=False, clear=False):
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
     return float(mode.search(mid[i]).group(0)[14:])
@@ -293,7 +293,7 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
     # 读取JMCT输出文件并解析出各材料物质信息
     # path--input--JMCT输出文件位置
     # neutron--output--所有材料物质信息
-    assert type(path) == str
+    assert type(path) == str, 'JMCT输出文件路径不合法'
     neutron = Data('Transporting')
     with open(path, 'r') as f:
         allItem = f.read()

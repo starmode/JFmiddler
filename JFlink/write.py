@@ -13,7 +13,7 @@ def _mkdir(path):
     # 在完整路径处新建文件夹
     # path--input--建立文件夹位置
     # *--output--bool,是否成功建立文件夹
-    assert type(path) == str
+    assert type(path) == str, '%s路径不合法' % path
     path = path.strip()
     path = path.rstrip("\\")
     if not os.path.exists(path):
@@ -28,12 +28,12 @@ def _collapx(text, cell, path, func=None, call=False, clear=False):
     # text--input--初始化文件内容
     # cell--input--材料名称
     # path--input--FISPACT输入文件顶层路径
-    assert type(text) == str
-    assert type(cell) == str
-    assert type(path) == str
+    assert type(text) == str, 'FISPACT文件内容不合法'
+    assert type(cell) == str, '材料名称不合法'
+    assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -49,12 +49,12 @@ def _arrayx(text, cell, path, func=None, call=False, clear=False):
     # text--input--初始化文件内容
     # cell--input--材料名称
     # path--input--FISPACT输入文件顶层路径
-    assert type(text) == str
-    assert type(cell) == str
-    assert type(path) == str
+    assert type(text) == str, 'FISPACT文件内容不合法'
+    assert type(cell) == str, '材料名称不合法'
+    assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -70,12 +70,12 @@ def _printlib(text, cell, path, func=None, call=False, clear=False):
     # text--input--初始化文件内容
     # cell--input--材料名称
     # path--input--FISPACT输入文件顶层路径
-    assert type(text) == str
-    assert type(cell) == str
-    assert type(path) == str
+    assert type(text) == str, 'FISPACT文件内容不合法'
+    assert type(cell) == str, '材料名称不合法'
+    assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
 
@@ -94,15 +94,16 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     # cell--input--材料名称
     # genRate--input--光子产生速度
     # path--input--FISPACT输入文件顶层路径
-    assert type(text) == str
-    assert type(neutron) == Data
-    assert type(allStructure) == dict
-    assert type(cell) == str
-    assert type(path) == str
-    assert type(genRate) == float or type(genRate) == int
+    assert type(neutron) == Data, '物质信息不合法'
+    assert type(allStructure) == dict, '结构信息不合法'
+    assert type(genRate) == float or type(genRate) == int, '光子产生速度不合法'
+
+    assert type(text) == str, 'FISPACT文件内容不合法'
+    assert type(cell) == str, '材料名称不合法'
+    assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
     _mkdir(path + '/' + cell)
@@ -147,8 +148,8 @@ def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=F
     # 仅内部调用
     # 用于map操作
     if func:
-        assert type(call) == bool
-        assert type(clear) == bool
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
         if call:
             func(clear)
 
@@ -215,12 +216,13 @@ def writef(path, genRate, neutron, allStructure, _inputText = defaultInput, _col
             printlibList = [_printlibText] * length
             list(map(_printlib, printlibList, keys, pathList))
 
-def writej(path, text, neutron, allDistributions, split, funcTime=None, funcOne=None, interval=100):
+def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, interval=100):
     # 生成JMCT输入文件
     # path--input--JMCT输入文件位置
     # neutron--input--由JMCT输出文件读取的所有材料物质信息
     # allStructure--input--由GDML文件读取的所有材料物质信息
     # split--input--括号缩进
+    split = ' ' * 3
     mode = re.compile('{[ \t\n]*source[ \t\n]*}')
 
     try:

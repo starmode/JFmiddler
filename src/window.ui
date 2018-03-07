@@ -52,11 +52,23 @@
         <string>文件转换</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_7">
+        <property name="spacing">
+         <number>8</number>
+        </property>
         <property name="leftMargin">
          <number>13</number>
         </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
          <layout class="QVBoxLayout" name="LeftUpF1">
+          <property name="spacing">
+           <number>5</number>
+          </property>
           <item>
            <layout class="QHBoxLayout" name="LeftUpS1">
             <property name="spacing">
@@ -113,7 +125,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>光子单位时间产额(小数/科学记数法):</string>
+                 <string>光子单位时间产额:</string>
                 </property>
                </widget>
               </item>
@@ -136,8 +148,14 @@
             <property name="leftMargin">
              <number>15</number>
             </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
             <property name="rightMargin">
              <number>15</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
             </property>
             <item>
              <widget class="QLabel" name="JOutFIleTipU">
@@ -154,7 +172,7 @@
                </size>
               </property>
               <property name="text">
-               <string>JMCT输出文件位置(.out):</string>
+               <string>JMCT输出文件位置:</string>
               </property>
              </widget>
             </item>
@@ -198,13 +216,13 @@
              <number>15</number>
             </property>
             <property name="topMargin">
-             <number>0</number>
+             <number>2</number>
             </property>
             <property name="rightMargin">
              <number>15</number>
             </property>
             <property name="bottomMargin">
-             <number>0</number>
+             <number>2</number>
             </property>
             <item>
              <widget class="QLabel" name="GFileTip">
@@ -221,7 +239,7 @@
                </size>
               </property>
               <property name="text">
-               <string>GDML文件位置(.gdml):</string>
+               <string>GDML文件位置:</string>
               </property>
              </widget>
             </item>
@@ -261,8 +279,14 @@
             <property name="leftMargin">
              <number>15</number>
             </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
             <property name="rightMargin">
              <number>15</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
             </property>
             <item>
              <widget class="QLabel" name="FWorkTipU">
@@ -273,7 +297,7 @@
                </size>
               </property>
               <property name="text">
-               <string>FISPACT工作目录(folder):</string>
+               <string>FISPACT工作目录:</string>
               </property>
              </widget>
             </item>
@@ -323,6 +347,12 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="LeftUpS5">
+            <property name="leftMargin">
+             <number>10</number>
+            </property>
+            <property name="rightMargin">
+             <number>10</number>
+            </property>
             <item>
              <widget class="QRadioButton" name="FtoJChose">
               <property name="sizePolicy">
@@ -343,88 +373,47 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="LeftUpT2">
+             <layout class="QHBoxLayout" name="LeftUpL1">
               <property name="leftMargin">
-               <number>50</number>
+               <number>110</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>15</number>
+              </property>
+              <property name="bottomMargin">
+               <number>5</number>
               </property>
               <item>
-               <widget class="QLabel" name="RetractTip">
+               <widget class="QLabel" name="MaxFlagTip">
                 <property name="text">
-                 <string>文本缩进:</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <string>光谱无穷大等效值:</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="RetractLen">
+               <widget class="QLineEdit" name="MaxFlag">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="editable">
-                 <bool>false</bool>
+                <property name="maximumSize">
+                 <size>
+                  <width>160</width>
+                  <height>16777215</height>
+                 </size>
                 </property>
-                <property name="currentText">
-                 <string>Space*3</string>
+                <property name="text">
+                 <string>20.0</string>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Space*3</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Space*2</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Space*4</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Tab</string>
-                 </property>
-                </item>
+                <property name="placeholderText">
+                 <string/>
+                </property>
                </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="LeftUpL1">
-                <property name="leftMargin">
-                 <number>50</number>
-                </property>
-                <property name="rightMargin">
-                 <number>15</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="MaxFlagTip">
-                  <property name="text">
-                   <string>光谱无穷大等效值:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="MaxFlag">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>20.0</string>
-                  </property>
-                  <property name="placeholderText">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
               </item>
              </layout>
             </item>
@@ -435,13 +424,19 @@
             <property name="leftMargin">
              <number>15</number>
             </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
             <property name="rightMargin">
              <number>15</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
             </property>
             <item>
              <widget class="QLabel" name="JModelTip">
               <property name="text">
-               <string>JMCT模板文件位置(.out):</string>
+               <string>JMCT模板文件位置:</string>
               </property>
              </widget>
             </item>
@@ -481,13 +476,19 @@
             <property name="leftMargin">
              <number>15</number>
             </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
             <property name="rightMargin">
              <number>15</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
             </property>
             <item>
              <widget class="QLabel" name="FWorkTipD">
               <property name="text">
-               <string>FISPACT工作目录(folder):</string>
+               <string>FISPACT工作目录:</string>
               </property>
              </widget>
             </item>
@@ -527,13 +528,19 @@
             <property name="leftMargin">
              <number>15</number>
             </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
             <property name="rightMargin">
              <number>15</number>
+            </property>
+            <property name="bottomMargin">
+             <number>2</number>
             </property>
             <item>
              <widget class="QLabel" name="JOutFIleTipD">
               <property name="text">
-               <string>JMCT输出文件位置(.out):</string>
+               <string>JMCT输出文件位置:</string>
               </property>
              </widget>
             </item>
@@ -579,38 +586,6 @@
             <property name="rightMargin">
              <number>30</number>
             </property>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="LoadFile">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>119</width>
-                <height>34</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>导入模板文件</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
          </layout>
@@ -630,7 +605,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="Collapx">
            <property name="enabled">
@@ -646,6 +621,18 @@
             <string>collapx.i</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QTextEdit" name="CFileEdit">
               <property name="enabled">
@@ -680,6 +667,18 @@ p, li { white-space: pre-wrap; }
             <string>arrayx.i</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QTextEdit" name="AFileEdit">
               <property name="sizePolicy">
@@ -723,6 +722,18 @@ p, li { white-space: pre-wrap; }
             <string>input.i</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QTextEdit" name="IFileEdit">
               <property name="html">
@@ -751,7 +762,8 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;LEVEL 20 1&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;FLUX 0.&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;ZERO&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TIME 1.0 HOURS ATOMSEND&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;TIME 1.0 HOURS ATOMS&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;END&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* END&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;/*&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -777,6 +789,18 @@ p, li { white-space: pre-wrap; }
             <string>printlib.i</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_5">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QTextEdit" name="PFileEdit">
               <property name="html">
@@ -807,6 +831,18 @@ p, li { white-space: pre-wrap; }
             <string>jmct</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_6">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QTextEdit" name="JFileEdit">
               <property name="acceptRichText">
@@ -821,10 +857,16 @@ p, li { white-space: pre-wrap; }
         <item>
          <widget class="QTextBrowser" name="StatusL">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>160</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -852,53 +894,6 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="checked">
              <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="GenCall">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>190</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>生成调用语句</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="SaveNeu">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>190</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>物质信息存留</string>
             </property>
            </widget>
           </item>
@@ -960,19 +955,19 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QHBoxLayout" name="LeftDown2">
           <property name="spacing">
-           <number>70</number>
+           <number>80</number>
           </property>
           <property name="leftMargin">
-           <number>70</number>
+           <number>40</number>
           </property>
           <property name="topMargin">
-           <number>5</number>
+           <number>2</number>
           </property>
           <property name="rightMargin">
-           <number>70</number>
+           <number>40</number>
           </property>
           <property name="bottomMargin">
-           <number>5</number>
+           <number>0</number>
           </property>
           <item>
            <widget class="QPushButton" name="QuitL">
@@ -994,7 +989,7 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="ResetL">
+           <widget class="QPushButton" name="Load">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -1008,7 +1003,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string>重置</string>
+             <string>读取模板</string>
             </property>
            </widget>
           </item>
@@ -1040,6 +1035,15 @@ p, li { white-space: pre-wrap; }
         <string>程序调用</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_8">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" name="RightUp1">
           <property name="leftMargin">
@@ -1452,7 +1456,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-                <string>CallJMCT</string>
+             <string>CallJMCT</string>
             </property>
             <property name="checked">
              <bool>false</bool>
@@ -1557,16 +1561,16 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_21">
           <property name="spacing">
-           <number>70</number>
+           <number>80</number>
           </property>
           <property name="leftMargin">
-           <number>70</number>
+           <number>40</number>
           </property>
           <property name="topMargin">
            <number>5</number>
           </property>
           <property name="rightMargin">
-           <number>70</number>
+           <number>40</number>
           </property>
           <property name="bottomMargin">
            <number>5</number>
@@ -1591,7 +1595,7 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="ResetR">
+           <widget class="QPushButton" name="Clear">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -1605,7 +1609,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string>重置</string>
+             <string>清屏</string>
             </property>
            </widget>
           </item>

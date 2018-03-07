@@ -19,10 +19,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         # 内部变量
         self._Zoom = 0
         self._LastRoute = '.'
-        self._FISPWork = ''
         self._InfoText = ''
         self._logNum = 1
-        self._SavedNeutron = Data()
         # False--JtoF True--FtoJ
         self._ToDoL = False
         # False--callF True--callJ
@@ -38,8 +36,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.GFilePick.clicked.connect(self.openGFile)
         self.FWorkPickU.clicked.connect(self.openFDirUp)
         self.FWorkPickD.clicked.connect(self.openFDirDown)
-        self.LoadFile.clicked.connect(self.loadFiles)
-        self.ResetL.clicked.connect(self.resetL)
+        self.Load.clicked.connect(self.loadFiles)
         self.QuitL.clicked.connect(self.close)
         self.JtoFChose.clicked.connect(self.jtoF)
         self.FtoJChose.clicked.connect(self.ftoJ)
@@ -50,7 +47,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.EPick.clicked.connect(self.openEAFDir)
         self.FWorkPick.clicked.connect(self.openFDirRight)
         self.JInPick.clicked.connect(self.openJIn)
-        self.ResetR.clicked.connect(self.resetR)
+        self.Clear.clicked.connect(self.reset)
         self.QuitR.clicked.connect(self.close)
         self.StartR.clicked.connect(self.call)
 
@@ -85,7 +82,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.__desktop = QApplication.desktop()
         self.reSize()
 
-    def cancelJ2F(self, data):
+    def cancelJ2F(self):
         self.info('结束', 0)
         self.j2f.terminate()
         while self.j2f.isRunning():
@@ -95,10 +92,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StartL.clicked.disconnect()
         self.StartL.clicked.connect(self.start)
         self.Bar.setValue(0)
-        if data:
-            self._SavedNeutron = data
 
-    def cancelF2J(self, data):
+    def cancelF2J(self):
         self.info('结束', 0)
         self.f2j.terminate()
         while self.f2j.isRunning():
@@ -108,8 +103,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.StartL.clicked.disconnect()
         self.StartL.clicked.connect(self.start)
         self.Bar.setValue(0)
-        if data:
-            self._SavedNeutron = data
 
     def cancelCallJ(self):
         self.info('结束', 0)
@@ -227,7 +220,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.Printlib.setEnabled(flag)
 
             self._ToDoL = flag
-            self.RetractLen.setEnabled(not flag)
             self.MaxFlag.setEnabled(not flag)
             self.JOutFilePathD.setEnabled(not flag)
             self.FWorkPathD.setEnabled(not flag)
@@ -254,7 +246,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.Input.setEnabled(flag)
             self.Printlib.setEnabled(flag)
 
-            self.RetractLen.setEnabled(flag)
             self.MaxFlag.setEnabled(flag)
             self.JOutFilePathD.setEnabled(flag)
             self.FWorkPathD.setEnabled(flag)
@@ -266,10 +257,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.RemainJOut.setEnabled(flag)
 
             self.Sync.setEnabled(flag)
-            self.GenCall.setEnabled(flag)
-            self.SaveNeu.setEnabled(flag)
             self.QuitL.setEnabled(flag)
-            self.ResetL.setEnabled(flag)
 
         if flag == 3:
             flag = 1 if self._ToDoL else 0
@@ -382,21 +370,18 @@ class Dynamics(QMainWindow, Ui_MainWindow):
     def openFDirUp(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
         if self._LastRoute != '':
-            self._FISPWork = self._LastRoute
             self.FWorkPathU.setText(self._LastRoute)
             if self.Sync.isChecked():
                 self.FWorkPathD.setText(self._LastRoute)
-            if self.GenCall.isChecked():
                 self.FWorkPathR.setText(self._LastRoute)
+
 
     def openFDirDown(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
         if self._LastRoute != '':
-            self._FISPWork = self._LastRoute
             self.FWorkPathD.setText(self._LastRoute)
             if self.Sync.isChecked():
                 self.FWorkPathU.setText(self._LastRoute)
-            if self.GenCall.isChecked():
                 self.FWorkPathR.setText(self._LastRoute)
 
     def openFInstall(self):
@@ -450,7 +435,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def loadFiles(self):
         if self._ToDoL is True:
-            if self._FISPWork == '':
+            _FISPWork = self.FWorkPathU.text()
+            if _FISPWork == '':
                 self.info('错误：未指定FISPACT工作目录', 0)
             else:
                 self.info('从 %s 读取FISPACT输入文件' % self._FISPWork, 0)
@@ -461,7 +447,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 found = False
                 if 'collapx.i' in tmp:
                     self.info('更新collapx.i', 1)
-                    with open(self._FISPWork + '/collapx.i') as f:
+                    with open(_FISPWork + '/collapx.i') as f:
                         text = f.read()
                     self.CFileEdit.setText(text)
                     found = True
@@ -469,7 +455,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.info('未找到collapx.i', 1)
                 if 'arrayx.i' in tmp:
                     self.info('更新arrayx.i', 1)
-                    with open(self._FISPWork + '/arrayx.i') as f:
+                    with open(_FISPWork + '/arrayx.i') as f:
                         text = f.read()
                     self.AFileEdit.setText(text)
                     found = True
@@ -477,7 +463,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.info('未找到arrayx.i', 1)
                 if 'printlib.i' in tmp:
                     self.info('更新printlib.i', 1)
-                    with open(self._FISPWork + '/arrayx.i') as f:
+                    with open(_FISPWork + '/arrayx.i') as f:
                         text = f.read()
                     self.PFileEdit.setText(text)
                     found = True
@@ -485,7 +471,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.info('未找到printlib.i', 1)
                 if 'input.i' in tmp:
                     self.info('更新input.i', 1)
-                    with open(self._FISPWork + '/input.i') as f:
+                    with open(_FISPWork + '/input.i') as f:
                         text = f.read()
                     self.IFileEdit.setText(text)
                     found = True
@@ -510,39 +496,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.info(repr(e))
                     return
 
-    def resetL(self):
-        self.info('左页面重置信息', 0)
-        self.CFileEdit.setText(defaultCollapx)
-        self.AFileEdit.setText(defaultArrayx)
-        self.PFileEdit.setText(defaultPrintlib)
-        self.IFileEdit.setText(defaultInput)
-        self.JOutFilePathU.setText('')
-        self.JOutFilePathD.setText('')
-        self.JModelPath.setText('')
-        self.GFilePath.setText('')
-        self.FWorkPathU.setText('')
-        self.FWorkPathD.setText('')
-        self.JtoFChose.setChecked(True)
-        self.RetractLen.setCurrentIndex(0)
-        self.allEnableL(1)
-        self._FISPWork = ''
-
-        self._InfoText = ''
-        self.StatusL.setText(self._InfoText)
-        self.StatusR.setText(self._InfoText)
-        self.Bar.setValue(0)
-
-    def resetR(self):
-        self.info('右页面重置信息', 0)
-        self.Group.setCurrentIndex(3)
-        self.Weight.setCurrentIndex(0)
-        self.Particle.setCurrentIndex(0)
-        self.FPath.setText('')
-        self.EPath.setText('')
-        self.FWorkPathR.setText('')
-        self.JInPath.setText('')
-        self.CallFISP.setChecked(True)
-        self.allEnableR(True)
+    def reset(self):
+        self.info('清屏', 0)
 
         self._InfoText = ''
         self.StatusL.setText(self._InfoText)
@@ -561,8 +516,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.j2f.IText = self.IFileEdit.toPlainText()
                 self.j2f.PText = self.PFileEdit.toPlainText()
                 self.j2f.GenRate = self.GenRate.text()
-                self.j2f.SavedNeutron = self._SavedNeutron
-                self.j2f.WheSaveNeu = self.SaveNeu.isChecked()
 
                 self.allEnableL(2)
                 self.StartL.setText('取消')
@@ -574,6 +527,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info(str(e), 0)
 
         elif self._ToDoL is False:
+            if self.JFileEdit.toPlainText() == '':
+                self.info('JMCT模板文件为空', 0)
+                return
             self._ProgressAll = 0
             try:
                 self.f2j.FPath = self.FWorkPathD.text()
@@ -581,14 +537,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.f2j.JModel = self.JModelPath.text()
                 self.f2j.JText = self.JFileEdit.toPlainText()
                 self.f2j.Max = self.MaxFlag.text()
-                self.f2j.Retract = self.RetractLen.currentIndex()
-                self.f2j.WheSaveNeu = self.SaveNeu.isChecked()
-                self.f2j.Remain = self.RemainJOut.isChecked()
-                self.f2j.SavedNeutron = self._SavedNeutron
-                if self.f2j.JText == '':
-                    self.info('自动导入JMCT模板文件')
-                    self.loadFiles()
-                    self.f2j.JText = self.JFileEdit.toPlainText()
 
                 self.allEnableL(2)
                 self.StartL.setText('取消')
