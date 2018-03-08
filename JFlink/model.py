@@ -11,11 +11,19 @@ class Data(object):
         self.eleName = []
         self.eleEner = []
         self.cellInfo = {}
+        self.cellNum = 0
         self.eneNum = 0
         self.eneBin = []
 
+    def __setattr__(self, key, value):
+        object.__setattr__(self, key, value)
+        if key == 'cellInfo':
+            self.cellNum = len(self.cellInfo)
+            print(len(self.cellInfo))
+            print(self.cellNum)
+
     def __str__(self):
-        m = str(self.eleNum) + ' elements\n' + str(len(self.cellInfo)) + ' cells\n' + str(self.eneNum) + ' energy bins'
+        m = str(self.eleNum) + ' elements\n' + str(self.cellNum) + ' cells\n' + str(self.eneNum) + ' energy bins'
         return m
 
     def __bool__(self):
