@@ -19,8 +19,6 @@ class Data(object):
         object.__setattr__(self, key, value)
         if key == 'cellInfo':
             self.cellNum = len(self.cellInfo)
-            print(len(self.cellInfo))
-            print(self.cellNum)
 
     def __str__(self):
         m = str(self.eleNum) + ' elements\n' + str(self.cellNum) + ' cells\n' + str(self.eneNum) + ' energy bins'

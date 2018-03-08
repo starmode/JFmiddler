@@ -189,9 +189,9 @@ class FtoJ(QThread):
             return
         pos = self.JPathD.rindex('.')
         if self.Remain:
-            newPath = self.JPathD[:pos] + '_new' + '.in'
+            newPath = self.JModel[:pos] + '_new' + '.input'
         else:
-            newPath = self.JPathD[:pos] + '.in'
+            newPath = self.JModel[:pos] + '.input'
         self.siginfo.emit('将新的JMCT输入文件写入 %s' % newPath, 0)
         try:
             writej(newPath, self.JText, neutron, distributes, self.signal1.emit, self.signal2.emit)
@@ -199,7 +199,7 @@ class FtoJ(QThread):
             self.siginfo.emit('错误：JMCT模板文件不含有{source}关键字 -> ' + repr(e), 0)
             self.sigend.emit()
             return
-        except Exception as e:
+        except Exception:
             self.siginfo.emit(traceback.format_exc(), 0)
             self.sigend.emit()
             return
