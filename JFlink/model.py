@@ -7,6 +7,7 @@ class Data(object):
     def __init__(self, name=''):
         self._notNull = False if name == '' else True
         self.name = name
+        self.eleNum = 0
         self.eleName = []
         self.eleEner = []
         self.cellNum = 0
