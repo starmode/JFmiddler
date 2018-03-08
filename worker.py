@@ -187,11 +187,11 @@ class FtoJ(QThread):
             self.siginfo.emit(traceback.format_exc(), 0)
             self.sigend.emit()
             return
-        pos = self.JPathD.rindex('.')
+        tmp = pathlib.Path(self.JModel)
         if self.Remain:
-            newPath = self.JModel[:pos] + '_new' + '.input'
+            newPath = tmp.with_name(tmp.stem + '_new.input')
         else:
-            newPath = self.JModel[:pos] + '.input'
+            newPath = tmp.with_name(tmp.stem + '.input')
         self.siginfo.emit('将新的JMCT输入文件写入 %s' % newPath, 0)
         try:
             writej(newPath, self.JText, neutron, distributes, self.signal1.emit, self.signal2.emit)
