@@ -312,7 +312,6 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
     mode = re.compile('Tally4_0,(.+?)---', re.S)
     mid = mode.findall(allItem)
     # 储存关心的几何体数量
-    neutron.cellNum = len(mid)
     midList = [mid] * neutron.cellNum
     iList = [i for i in range(neutron.cellNum)]
     nameMode = re.compile(r'cell: (.+?),', re.S)
