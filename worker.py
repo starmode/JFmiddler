@@ -5,21 +5,18 @@ import pathlib
 from PyQt5.QtCore import QThread, pyqtSignal
 from JFlink.read import readj, readg, readf
 from JFlink.write import writef, writej
-from JFlink.call import jmct, fisp
-from JFlink.model import Data
+from JFlink.call import jmct, CallFis
 
 
-class Fis(QThread):
+class Fis(QThread, CallFis):
     siginfo = pyqtSignal(str, int)
     sigend = pyqtSignal()
 
     def __init__(self):
-        super(Fis, self).__init__()
+        super().__init__()
         self.case = ''
-        self.env = ['', '']
-        self.group = ['', '', '']
         self.pid = 0
-        self.fisp = fisp
+        self.workalone = False
 
     def run(self):
         count = 0
@@ -32,9 +29,9 @@ class Fis(QThread):
                 if not self.isInterruptionRequested():
                     count += 1
                     self.siginfo.emit('[%d/%d]%s' % (count, len(_dirs), str(_path)), 0)
-                    self.fisp(self, self.siginfo.emit, self.env, self.group, _path)
+                    self.fisp(_path, info=self.siginfo.emit)
                     # 清理工作目录
-                    self.clean(_path)
+                    self.clean2(_path)
         except Exception as e:
             self.siginfo.emit(traceback.format_exc(), 0)
         finally:
@@ -45,14 +42,13 @@ class Fis(QThread):
         if self.pid != 0:
             os.kill(self.pid, 9)
 
-    def clean(self, path, flag=0):
+    def clean2(self, path, flag=0):
         for file in path.iterdir():
-            if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (
-                    flag == 1 and file.suffix == '.o'):
+            if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (flag and file.suffix == '.o'):
                 (path / file).unlink()
 
-    def cleanall(self, path):
-        self.clean(path, 1)
+    # def cleanall(self, path):
+    #     self.clean2(path, 1)
 
 
 class Jm(QThread):
