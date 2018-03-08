@@ -246,7 +246,7 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
         funcOne(length // callTime, neutron.cellNum)
         funList = [funcTime] * length
         callList = [True if i % callTime == 0 or i == 0 else False for i in range(length)]
-        clearList = [False] * neutron.cellNum
+        clearList = [False] * length
         clearList[0] = True
         # 每次回调告知进度
         tmp.extend(list(map(_genSource, neutron.cellInfo.keys(), numList, neutronList, allDisList, preList, splitList, funList, callList, clearList)))
