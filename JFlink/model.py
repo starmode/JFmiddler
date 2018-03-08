@@ -10,7 +10,6 @@ class Data(object):
         self.eleNum = 0
         self.eleName = []
         self.eleEner = []
-        self.cellNum = 0
         self.cellInfo = {}
         self.eneNum = 0
         self.eneBin = []
