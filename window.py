@@ -439,8 +439,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             if _FISPWork == '':
                 self.info('错误：未指定FISPACT工作目录', 0)
             else:
-                self.info('从 %s 读取FISPACT输入文件' % self._FISPWork, 0)
-                dirs = os.listdir(self._FISPWork)
+                self.info('从 %s 读取FISPACT输入文件' % _FISPWork, 0)
+                dirs = os.listdir(_FISPWork)
                 tmp = list(filter(lambda name: name[-2:] == '.i', dirs))
                 # TODO: BUG HERE
                 # 是否找到至少一个文件
