@@ -7,7 +7,6 @@ class Data(object):
     def __init__(self, name=''):
         self._notNull = False if name == '' else True
         self.name = name
-        self.eleNum = 0
         self.eleName = []
         self.eleEner = []
         self.cellNum = 0
@@ -16,7 +15,7 @@ class Data(object):
         self.eneBin = []
 
     def __str__(self):
-        m = str(self.eleNum) + ' elements\n' + str(self.cellNum) + ' cells\n' + str(self.eneNum) + ' energy bins'
+        m = str(self.eleNum) + ' elements\n' + str(len(self.cellInfo)) + ' cells\n' + str(self.eneNum) + ' energy bins'
         return m
 
     def __bool__(self):
