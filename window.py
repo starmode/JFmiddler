@@ -62,6 +62,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.fis = Fis()
         self.fis.siginfo.connect(self.info)
         self.fis.sigend.connect(self.cancelCallF)
+        self.Weight.setCurrentIndex(2)
 
         self.jmct = Jm()
         self.jmct.siginfo.connect(self.info)
@@ -106,9 +107,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def cancelCallJ(self):
         self.info('结束', 0)
-        self.jmct.terminate()
-        while self.jmct.isRunning():
-            pass
+        self.jmct.kill()
+        if not self.jmct.wait(msecs=2500):
+            self.jmct.terminate()
         self.allEnableR(3)
         self.StartR.setText('开始')
         self.StartR.clicked.disconnect()
@@ -442,7 +443,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info('从 %s 读取FISPACT输入文件' % _FISPWork, 0)
                 dirs = os.listdir(_FISPWork)
                 tmp = list(filter(lambda name: name[-2:] == '.i', dirs))
-                # TODO: BUG HERE
                 # 是否找到至少一个文件
                 found = False
                 if 'collapx.i' in tmp:
@@ -518,7 +518,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.j2f.GenRate = self.GenRate.text()
 
                 self.allEnableL(2)
-                self.StartL.setText('取消')
+                self.StartL.setText('中止')
                 self.StartL.clicked.disconnect()
                 self.StartL.clicked.connect(self.cancelJ2F)
                 self.j2f.start()
@@ -539,7 +539,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.f2j.Max = self.MaxFlag.text()
 
                 self.allEnableL(2)
-                self.StartL.setText('取消')
+                self.StartL.setText('中止')
                 self.StartL.clicked.disconnect()
                 self.StartL.clicked.connect(self.cancelF2J)
                 self.f2j.start()
@@ -575,7 +575,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.fis.case = case
 
             self.allEnableR(2)
-            self.StartR.setText('取消')
+            self.StartR.setText('中止')
             self.StartR.clicked.disconnect()
             self.StartR.clicked.connect(self.cancelCallF)
             self.fis.start()
@@ -588,7 +588,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
             self.jmct.JInPath = jinpath
 
             self.allEnableR(2)
-            self.StartR.setText('取消')
+            self.StartR.setText('中止')
             self.StartR.clicked.disconnect()
             self.StartR.clicked.connect(self.cancelCallJ)
             self.jmct.start()

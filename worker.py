@@ -5,7 +5,7 @@ import pathlib
 from PyQt5.QtCore import QThread, pyqtSignal
 from JFlink.read import readj, readg, readf
 from JFlink.write import writef, writej
-from JFlink.call import jmct, CallFis
+from JFlink.call import CallJm, CallFis
 
 
 class Fis(QThread, CallFis):
@@ -51,7 +51,7 @@ class Fis(QThread, CallFis):
     #     self.clean2(path, 1)
 
 
-class Jm(QThread):
+class Jm(QThread, CallJm):
     siginfo = pyqtSignal(str, int)
     sigend = pyqtSignal()
 
@@ -62,11 +62,15 @@ class Jm(QThread):
     def run(self):
         self.siginfo.emit('调用Jmct中...', 0)
         try:
-            jmct(self.siginfo.emit, self.JInPath)
+            self.jmct(self.JInPath, info=self.siginfo.emit)
         except Exception as e:
             self.siginfo.emit(traceback.format_exc(), 0)
         self.siginfo.emit('调用结束', 0)
         self.sigend.emit()
+
+    def kill(self):
+        if self.pid != 0:
+            os.kill(self.pid, 9)
 
 
 class JtoF(QThread):

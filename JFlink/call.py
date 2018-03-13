@@ -10,38 +10,38 @@ def copy(src: Path, dst: Path):
     shutil.copy(src, dst)
 
 
-def jmct(info, jinput, gpath=''):
-    _input = Path(jinput).resolve()
-    # if gpath == '':
-    #     _gpath = _input.parent
-    # else:
-    #     _gpath = gpath
-    _gpath = _input.parent
+class CallJm:
+    def jmct(self, jinput, gpath='', info=print):
+        _input = Path(jinput).resolve()
+        # if gpath == '':
+        #     _gpath = _input.parent
+        # else:
+        #     _gpath = gpath
+        _gpath = _input.parent
 
-    def _run():
-        _p = Popen('jmct ' + str(_input), cwd=_gpath, stdout=PIPE, shell=True)
-        while True:
-            line = _p.stdout.readline()
-            if line:
-                info(line.strip().decode('utf-8'), 3)
-                continue
-            sleep(0.01)
-            if _p.poll() is None:
-                continue
-            return _p.returncode
+        def _run():
+            _p = Popen(['jmct', str(_input)], cwd=str(_gpath), stdout=PIPE)
+            self.pid = _p.pid
+            while True:
+                line = _p.stdout.readline()
+                if line:
+                    info(line.strip().decode('utf-8'), 3)
+                    continue
+                sleep(0.01)
+                if _p.poll() is None:
+                    continue
+                self.pid = 0
+                return _p.returncode
 
-    def _check():
-        _q = Popen('which jmct', shell=True)
-        _q.wait()
-        return _q.returncode
+        def _check():
+            _q = Popen('which jmct', shell=True)
+            _q.wait()
+            return _q.returncode
 
-    if _check():
-        try:
+        if _check() == 0:
             _run()
-        except Exception as a:
-            info(repr(a), 3)
-    else:
-        info('无环境变量', 3)
+        else:
+            info('jmct环境变量未设置', 3)
 
 
 class CallFis:
