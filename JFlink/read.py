@@ -40,6 +40,7 @@ def _extractDis(allItem, maxFlag, modeF, modeS, modeT, modeL, func=None, call=Fa
         distributes.append(distribute)
     return distributes
 
+
 def _extractGamma(allItem, modeF, modeS, func=None, call=False, clear=False):
     # 仅内部调用
     # 用于map操作
@@ -58,6 +59,7 @@ def _extractGamma(allItem, modeF, modeS, func=None, call=False, clear=False):
     gamma = float(modeS.search(tmp).group(0))
     return gamma
 
+
 def _getAllItem(path, dir, func=None, call=False, clear=False):
     # 仅内部调用
     # 用于map操作
@@ -75,9 +77,10 @@ def _getAllItem(path, dir, func=None, call=False, clear=False):
 
     files = os.listdir(path + '/' + dir)
     files = list(filter(lambda name: name[-2:] == '.o', files))
-    assert len(files) == 1, '%s + '/' + %s下存在多个.o文件，请清理无关文件' % (path, dir)
+    assert len(files) == 1, '%s + ' / ' + %s下存在多个.o文件，请清理无关文件' % (path, dir)
     with open(path + '/' + dir + '/' + files[0]) as f:
         return f.read()
+
 
 def _extractVol(structure, solids, materials, elements, func=None, call=False, clear=False):
     # 仅内部调用
@@ -119,6 +122,7 @@ def _defineVol(name, volume, func=None, call=False, clear=False):
     newVol.property = volume.tag
     return newVol
 
+
 def _m2ev(raw, flag):
     # 仅内部调用
     # 将MeV转换为eV
@@ -145,29 +149,53 @@ def _m2ev(raw, flag):
         result.append(tmp)
     return result
 
-def _getName(mode, mid, i, func=None, call=False, clear=False):
-    if func:
-        assert type(call) == bool, '内部异常，请重新下载软件包'
-        assert type(clear) == bool, '内部异常，请重新下载软件包'
-    if call:
-        func(clear)
-    return mode.search(mid[i]).group(0)[6:-1]
 
-def _getEnergy(mode, mid, i, func=None, call=False, clear=False):
+def _getName(mode, mid_i, func=None, call=False, clear=False):
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
-    return float(mode.search(mid[i]).group(0)[16:])
+    return mode.search(mid_i).group(0)[6:-1]
 
-def _getVolume(mode, mid, i, func=None, call=False, clear=False):
+
+def _getEnergy(mode, mid_i, func=None, call=False, clear=False):
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
-    return float(mode.search(mid[i]).group(0)[14:])
+    return float(mode.search(mid_i).group(0)[16:])
+
+
+def _getVolume(mode, mid_i, func=None, call=False, clear=False):
+    if func:
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
+    if call:
+        func(clear)
+    return float(mode.search(mid_i).group(0)[14:])
+
+
+def _getSpectrum(mid_i, func=None, call=False, clear=False):
+    if func:
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
+    if call:
+        func(clear)
+    lines = mid_i.splitlines()
+    begin, end = 0, 0
+    for i in range(len(lines)):
+        if lines[i].find('mean') != -1:
+            begin = i
+        if lines[i].find('huge') != -1:
+            end = i
+    if begin and end:
+        mean = [lines[i].split()[1] for i in range(begin + 2, end)]
+    else:
+        raise ValueError('未找到关键字')
+    return mean
+
 
 def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
     # 读取FISPACT输出文件并解析出所有材料的光谱分布
@@ -204,7 +232,9 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
         # 每次回调告知进度
         allItemList = list(map(_getAllItem, pathList, dirs, funList, callList, clearList))
         gammaList = list(map(_extractGamma, allItemList, gModeFList, gModeSList, funList, callList, clearList))
-        disList = list(map(_extractDis, allItemList, maxFlagList, dModeFList, dModeSList, dModeTList, dModeLList, funList, callList, clearList))
+        disList = list(
+            map(_extractDis, allItemList, maxFlagList, dModeFList, dModeSList, dModeTList, dModeLList, funList,
+                callList, clearList))
     else:
         allItemList = list(map(_getAllItem, pathList, dirs))
         gammaList = list(map(_extractGamma, allItemList, gModeFList, gModeSList))
@@ -212,6 +242,7 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
     allDistributes = dict(zip(dirs, zip(gammaList, disList)))
 
     return allDistributes
+
 
 def readg(path, funcTime=None, funcOne=None, interval=100):
     # 读取GDML文件并解析出各材料物质信息
@@ -289,6 +320,7 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     allStructure = dict(zip(names, vols))
     return allStructure
 
+
 def readj(path, funcTime=None, funcOne=None, interval=100):
     # 读取JMCT输出文件并解析出各材料物质信息
     # path--input--JMCT输出文件位置
@@ -313,14 +345,14 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
     mid = mode.findall(allItem)
     # 储存关心的几何体数量
     neutron.cellNum = len(mid)
-    midList = [mid] * neutron.cellNum
-    iList = [i for i in range(neutron.cellNum)]
     nameMode = re.compile(r'cell: (.+?),', re.S)
     nameModeList = [nameMode] * neutron.cellNum
     eneMode = re.compile(r'total +\d.\d+e[+-]\d{2,3}')
     eneModeList = [eneMode] * neutron.cellNum
     volMode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
     volModeList = [volMode] * neutron.cellNum
+    speMode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
+    speModeList = [speMode] * neutron.cellNum
     if funcTime:
         callTime = max(neutron.cellNum // interval, 1)
         # 回调告知总调用次数
@@ -330,13 +362,16 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         clearList = [False] * neutron.cellNum
         clearList[0] = True
         # 每次回调告知进度
-        name = list(map(_getName, nameModeList, midList, iList, funList, callList, clearList))
-        energy = list(map(_getEnergy, eneModeList, midList, iList, funList, callList, clearList))
-        volume = list(map(_getVolume, volModeList, midList, iList, funList, callList, clearList))
+        name = list(map(_getName, nameModeList, mid, funList, callList, clearList))
+        energy = list(map(_getEnergy, eneModeList, mid, funList, callList, clearList))
+        volume = list(map(_getVolume, volModeList, mid, funList, callList, clearList))
+        spectrum = list(map(_getSpectrum, mid, funList, callList, clearList))
     else:
-        name = list(map(_getName, nameModeList, midList, iList))
-        energy = list(map(_getEnergy, eneModeList, midList, iList))
-        volume = list(map(_getVolume, volModeList, midList, iList))
+        name = list(map(_getName, nameModeList, mid))
+        energy = list(map(_getEnergy, eneModeList, mid))
+        volume = list(map(_getVolume, volModeList, mid))
+        spectrum = list(map(_getSpectrum, mid))
+
 
     deleteInx = -1
     try:
@@ -349,3 +384,9 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         volume.pop(deleteInx)
     neutron.cellInfo = dict(zip(name, zip(energy, volume)))
     return neutron
+
+
+if __name__ == '__main__':
+    path = r'G:\git\JFmiddler\testcase\j2f\neutron.OUT'
+    readj(path)
+    pass
