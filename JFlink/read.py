@@ -382,11 +382,7 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         name.pop(deleteInx)
         energy.pop(deleteInx)
         volume.pop(deleteInx)
-    neutron.cellInfo = dict(zip(name, zip(energy, volume)))
+        spectrum.pop(deleteInx)
+    neutron.cellInfo = dict(zip(name, zip(energy, volume, spectrum)))  # 可读性太差,为什么用字典？
+    neutron.cellInfo2 = zip(name, energy, volume, spectrum)
     return neutron
-
-
-if __name__ == '__main__':
-    path = r'G:\git\JFmiddler\testcase\j2f\neutron.OUT'
-    readj(path)
-    pass

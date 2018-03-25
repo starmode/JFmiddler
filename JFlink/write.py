@@ -22,6 +22,7 @@ def _mkdir(path):
     else:
         return False
 
+
 def _collapx(text, cell, path, func=None, call=False, clear=False):
     # 仅内部调用
     # 生成FISPACT输入文件collapx.i
@@ -42,6 +43,7 @@ def _collapx(text, cell, path, func=None, call=False, clear=False):
     text = mode.sub('Irradiation of ' + cell, text)
     with open(path + '/' + cell + '/collapx.i', 'w') as f:
         f.write(text)
+
 
 def _arrayx(text, cell, path, func=None, call=False, clear=False):
     # 仅内部调用
@@ -64,6 +66,7 @@ def _arrayx(text, cell, path, func=None, call=False, clear=False):
     with open(path + '/' + cell + '/arrayx.i', 'w') as f:
         f.write(text)
 
+
 def _printlib(text, cell, path, func=None, call=False, clear=False):
     # 仅内部调用
     # 生成FISPACT输入文件printlib.i
@@ -84,6 +87,7 @@ def _printlib(text, cell, path, func=None, call=False, clear=False):
     text = mode.sub('Irradiation of ' + cell, text)
     with open(path + '/' + cell + '/printlib.i', 'w') as f:
         f.write(text)
+
 
 def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=False, clear=False):
     # 仅内部调用
@@ -120,7 +124,8 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     tmp = float(allStructure[cell].matD) * float(neutron.cellInfo[cell][1])
     # 字符串mass
     mass = '%E' % tmp
-    elements = [' %s %f\n' % (ele[element[2]], 100 * eleDensity[element[0]] / allDensity)for element in allStructure[cell].matGre]
+    elements = [' %s %f\n' % (ele[element[2]], 100 * eleDensity[element[0]] / allDensity) for element in
+                allStructure[cell].matGre]
     tmp = ['%d\n' % len(allStructure[cell].matGre)]
     tmp.extend(elements)
     elements = tmp
@@ -143,6 +148,24 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
 
     with open(path + '/' + cell + '/input.i', 'w') as f:
         f.write(text)
+
+
+def _fluxes(cellInfo_i, path, func=None, call=False, clear=False):
+    cell = cellInfo_i[0]
+    assert type(cell) == str, '材料名称不合法'
+    assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
+    if func:
+        assert type(call) == bool, '内部异常，请重新下载软件包'
+        assert type(clear) == bool, '内部异常，请重新下载软件包'
+    if call:
+        func(clear)
+    _mkdir(path + '/' + cell)
+    fluxes = cellInfo_i[3]
+    fluxes.reverse()
+    fluxes = map(lambda s: s + '\n', fluxes)
+    with open(path + '/' + cell + '/fluxes', 'w') as f:
+        f.writelines(fluxes)
+
 
 def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=False, clear=False):
     # 仅内部调用
@@ -169,7 +192,7 @@ def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=F
     tmp.append('%s%sprobability                        = %e\n' % (pre, split, possibility))
     tmp.append('%s%scell_name                          = \"%s\"\n' % (pre, split, cell))
     tmp.append('%s%sprobability_of_energy_distribution = 1\n' % (pre, split))
-    tmp.append('%s%senergy_distribution                = \"dist_%d\" \n' % (pre, split,  i))
+    tmp.append('%s%senergy_distribution                = \"dist_%d\" \n' % (pre, split, i))
     tmp.append('%s%sdist_%d {\n' % (pre, split, i))
     tmp.append('%s%sdistribution_type  = \"piecewise_uniform_spectrum\"\n' % (pre, split * 2))
     tmp.append('%s%ssegments           = %s\n' % (pre, split * 2, segments))
@@ -177,7 +200,9 @@ def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=F
     tmp.append('%s%s}\n%s}\n' % (pre, split, pre))
     return ''.join(tmp)
 
-def writef(path, genRate, neutron, allStructure, _inputText = defaultInput, _collapxText = defaultCollapx, _arrayxText = defaultArrayx, _printlibText = defaultPrintlib, funcTime=None, funcOne=None, interval=100):
+
+def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _collapxText=defaultCollapx,
+           _arrayxText=defaultArrayx, _printlibText=defaultPrintlib, funcTime=None, funcOne=None, interval=100):
     # 生成FISPACT输入文件
     # ?text--input--初始化文件内容
     # neutron--input--由JMCT输出文件读取的所有材料物质信息
@@ -202,9 +227,11 @@ def writef(path, genRate, neutron, allStructure, _inputText = defaultInput, _col
         clearList = [False] * length
         clearList[0] = True
         # 每次回调告知进度
-        list(map(_input, inputTextList, neutronList, allStructureList, keys, genRateList, pathList, funList, callList, clearList))
+        list(map(_input, inputTextList, neutronList, allStructureList, keys, genRateList, pathList, funList, callList,
+                 clearList))
         list(map(_collapx, collapxTextList, keys, pathList, funList, callList, clearList))
         list(map(_arrayx, arrayxTextList, keys, pathList, funList, callList, clearList))
+        list(map(_fluxes, neutron.cellInfo2, pathList, funList, callList, clearList))
         if _printlibText:
             printlibList = [_printlibText] * length
             list(map(_printlib, printlibList, keys, pathList))
@@ -212,9 +239,11 @@ def writef(path, genRate, neutron, allStructure, _inputText = defaultInput, _col
         list(map(_input, inputTextList, neutronList, allStructureList, keys, genRateList, pathList))
         list(map(_collapx, collapxTextList, keys, pathList))
         list(map(_arrayx, arrayxTextList, keys, pathList))
+        list(map(_fluxes, neutron.cellInfo2, pathList))
         if _printlibText:
             printlibList = [_printlibText] * length
             list(map(_printlib, printlibList, keys, pathList))
+
 
 def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, interval=100):
     # 生成JMCT输入文件
@@ -235,7 +264,7 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
     tmp = ['number_of_source = %d\n' % numOfStus]
     tmp.append('%sparticle_type    = 2\n' % pre)
     length = len(neutron.cellInfo)
-    numList = [i for i in range(length)]
+    numList = list(range(length))
     neutronList = [neutron] * length
     allDisList = [allDistributions] * length
     preList = [pre] * length
@@ -249,7 +278,9 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
         clearList = [False] * length
         clearList[0] = True
         # 每次回调告知进度
-        tmp.extend(list(map(_genSource, neutron.cellInfo.keys(), numList, neutronList, allDisList, preList, splitList, funList, callList, clearList)))
+        tmp.extend(list(
+            map(_genSource, neutron.cellInfo.keys(), numList, neutronList, allDisList, preList, splitList, funList,
+                callList, clearList)))
     else:
         tmp.extend(list(map(_genSource, neutron.cellInfo.keys(), numList, neutronList, allDisList, preList, splitList)))
 
