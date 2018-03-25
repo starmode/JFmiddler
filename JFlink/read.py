@@ -77,7 +77,7 @@ def _getAllItem(path, dir, func=None, call=False, clear=False):
 
     files = os.listdir(path + '/' + dir)
     files = list(filter(lambda name: name[-2:] == '.o', files))
-    assert len(files) == 1, '%s + ' / ' + %s下存在多个.o文件，请清理无关文件' % (path, dir)
+    assert len(files) == 1, '%s/%s下存在多个.o文件，请清理无关文件' % (path, dir)
     with open(path + '/' + dir + '/' + files[0]) as f:
         return f.read()
 
@@ -351,8 +351,6 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
     eneModeList = [eneMode] * neutron.cellNum
     volMode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
     volModeList = [volMode] * neutron.cellNum
-    speMode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
-    speModeList = [speMode] * neutron.cellNum
     if funcTime:
         callTime = max(neutron.cellNum // interval, 1)
         # 回调告知总调用次数
