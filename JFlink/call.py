@@ -4,6 +4,7 @@ from pathlib import Path
 from subprocess import Popen, PIPE
 from time import sleep
 from .model import defaultFILES
+from .subprocess_args import subprocess_args
 
 
 def copy(src: Path, dst: Path):
@@ -20,7 +21,7 @@ class CallJm:
         _gpath = _input.parent
 
         def _run():
-            _p = Popen(['jmct', str(_input)], cwd=str(_gpath), stdout=PIPE)
+            _p = Popen(['jmct', str(_input)], cwd=str(_gpath), stdout=PIPE, **subprocess_args())
             self.pid = _p.pid
             while True:
                 line = _p.stdout.readline()
@@ -58,7 +59,7 @@ class CallFis:
         def _run(msg):
             if self.workalone or not self.isInterruptionRequested():
                 info(msg, 3)
-                _p = Popen(str(fisppath), cwd=str(outdir), stdout=PIPE)
+                _p = Popen(str(fisppath), cwd=str(outdir), **subprocess_args())
                 self.pid = _p.pid
                 while True:
                     line = _p.stdout.readline()
