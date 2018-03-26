@@ -56,31 +56,46 @@ pip install somepackage
 ```
 
 即可安装所需要的包，其中"somepackage"是所需要的包的名称。
-在这里，我们需要的包是pyqt5和JFlink，所以需要分别键入命令：
 
-**windows:**
+1. __如果您希望使用程序包自带的JFlink包__
 
-```shell
-pip install JFlink
-pip install pyqt5
-```
+   在这里，我们需要的包是pyqt5和lxml，所以需要分别键入命令：
 
-**linux:**
+   **windows:**
 
-```shell
-sudo apt install pip3
-pip3 install JFlink
-pip3 install pyqt5
-```
+   ```powershell
+   pip install lxml
+   pip install pyqt5
+   ```
 
-这两个包就会自动开始下载并安装完成。
+   **linux:**
 
-如遇提示称pip版本不够新，需要升级版本，则键入命令：
-```shell
-pip install -U pip
-```
+   ```shell
+   sudo apt install pip3
+   pip3 install lxml
+   pip3 install pyqt5
+   ```
 
-可升级pip版本。
+2. __如果您希望从pypi获取最新的JFlink包__
+
+   在这里，我们需要的包是pyqt5和JFlink(事实上，lxml会被自动安装)，所以需要分别键入命令：
+
+   **windows:**
+
+   ```shell
+   pip install JFlink
+   pip install pyqt5
+   ```
+
+   **linux:**
+
+   ```shell
+   sudo apt install pip3
+   pip3 install JFlink
+   pip3 install pyqt5
+   ```
+
+   ​
 
 至此，本程序的运行环境配置完成。
 
@@ -299,16 +314,16 @@ _此部分对于软件包的二次开发有一定帮助_
 +-- model.py
 +-- read.py
 +-- write.py
-+-- setup.py
++-- __init__.py
 ```
 
-| 模块  | 描述                                  | 接口              |
-| ----- | ------------------------------------- | ----------------- |
-| call  | 用于调用JMCT和FISPACT的工具集         | jmct/fisp         |
-| model | 用于记录转换过程中的类和必要的常量    | 无                |
-| read  | 用于读取JMCT和FISPACT输出文件的工具集 | readf/readg/readf |
-| write | 用于生成JMCT和FISPACT输入文件的工具集 | writej/writef     |
-| setup | 用于生成软件包的工具                  | 无                |
+| 模块      | 描述                                  | 接口              |
+| --------- | ------------------------------------- | ----------------- |
+| call      | 用于调用JMCT和FISPACT的工具集         | jmct/fisp         |
+| model     | 用于记录转换过程中的类和必要的常量    | 无                |
+| read      | 用于读取JMCT和FISPACT输出文件的工具集 | readf/readg/readf |
+| write     | 用于生成JMCT和FISPACT输入文件的工具集 | writej/writef     |
+| \__init__ | 软件包入口                            | 无                |
 
 前端界面JFwizard
 
