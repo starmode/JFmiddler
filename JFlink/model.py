@@ -66,7 +66,7 @@ ele = ['', 'H', 'HE', 'LI', 'BE', 'B', 'C', 'N', 'O', 'F', 'NE', 'NA', 'MG', 'AL
        'IR', 'PT', 'AU', 'HG', 'TL', 'PB', 'BI', 'PO', 'AT', 'RN', 'FR', 'RA', 'AC', 'TH', 'PA', 'U', 'NP', 'PU', 'AM',
        'CM', 'BK', 'CF', 'ES', 'FM']
 defaultInput = 'NOHEAD\nMONITOR 1\nAINP\nFISPACT\n* {title}\nDENSITY {density}\nMASS {mass} {elements}\nMIND ' \
-               '1.0\nHALF\nGRAPH 2 0 0 1 2\n{flux}\nATOMS\nLEVEL 100 1\nTIME 1.0\nHALF\nDOSE 1\nATOMS\nNOSTABLE\nLEVEL ' \
+               '1.0\nHALF\nGRAPH 2 0 0 1 2\nFLUX {flux}\nATOMS\nLEVEL 100 1\nTIME 1.0\nHALF\nDOSE 1\nATOMS\nNOSTABLE\nLEVEL ' \
                '20 1\nFLUX 0.\nZERO\nTIME 1.0 HOURS ATOMS\nEND\n* END\n/*\n '
 defaultCollapx = 'MONITOR 1\nCOLLAPSE 175\nFISPACT\n* {title}\nEND\n* END ' \
                  'OF RUN\n/*\n '

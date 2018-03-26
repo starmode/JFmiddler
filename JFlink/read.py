@@ -208,38 +208,30 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
     dirs = os.listdir(path)
     length = len(dirs)
 
-    maxFlagList = [maxFlag] * length
-    pathList = [path] * length
     gModeF = re.compile(r'Total gammas \(per cc per second\) {6}\d\.\d{5}E[+-]\d{2}')
-    gModeFList = [gModeF] * length
     gModeS = re.compile(r'\d.\d+E[+-]\d*')
-    gModeSList = [gModeS] * length
     dModeF = re.compile(r'\(0.0 -0.01 {2}MeV\).+?DOSE', re.S)
-    dModeFList = [dModeF] * length
-    dModeSList = gModeSList
     dModeT = re.compile(r'\(\d+.\d+ *-+>?\d*.*\d* *MeV\)')
-    dModeTList = [dModeT] * length
     dModeL = re.compile(r'\d{1,2}\.\d{1,2}')
-    dModeLList = [dModeL] * length
     if funcTime:
         callTime = max(length // interval, 1)
         # 回调告知总调用次数
         funcOne(length // callTime, length)
-        funList = [funcTime] * length
         callList = [True if i % callTime == 0 or i == 0 else False for i in range(length)]
         clearList = [False] * length
         clearList[0] = True
         # 每次回调告知进度
-        allItemList = list(map(_getAllItem, pathList, dirs, funList, callList, clearList))
-        gammaList = list(map(_extractGamma, allItemList, gModeFList, gModeSList, funList, callList, clearList))
-        disList = list(
-            map(_extractDis, allItemList, maxFlagList, dModeFList, dModeSList, dModeTList, dModeLList, funList,
-                callList, clearList))
+        allItemList = [_getAllItem(path, dirs[i], funcTime, callList[i], clearList[i]) for i in range(length)]
+        gammaList = [_extractGamma(allItemList[i], gModeF, gModeS, funcTime, callList[i], clearList[i]) for i in
+                     range(length)]
+        disList = [
+            _extractDis(allItemList[i], maxFlag, dModeF, gModeS, dModeT, dModeL, funcTime, callList[i], clearList[i])
+            for i in range(length)]
     else:
-        allItemList = list(map(_getAllItem, pathList, dirs))
-        gammaList = list(map(_extractGamma, allItemList, gModeFList, gModeSList))
-        disList = list(map(_extractDis, allItemList, maxFlagList, dModeFList, dModeSList, dModeTList, dModeLList))
-    allDistributes = dict(zip(dirs, zip(gammaList, disList)))
+        allItemList = [_getAllItem(path, dirs[i]) for i in range(length)]
+        gammaList = [_extractGamma(allItemList[i], gModeF, gModeS) for i in range(length)]
+        disList = [_extractDis(allItemList[i], maxFlag, dModeF, gModeS, dModeT, dModeL) for i in range(length)]
+    allDistributes = dict(zip(dirs, tuple(zip(gammaList, disList))))
 
     return allDistributes
 
@@ -275,7 +267,7 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
             mat.xpath('@Z')) == 0 else [(
             zElements[int(mat.xpath('@Z')[0])], float(mat.xpath('D/@value')[0]))] for mat in matTree]
 
-    materials = dict(zip(matName, zip(matD, matEles)))
+    materials = dict(zip(matName, tuple(zip(matD, matEles))))
 
     # 获取栅元定义
     solid = root.xpath('./solids')[0]
@@ -303,9 +295,10 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     matList = [materials] * strucLen
     eleList = [elements] * strucLen
     if funcTime:
-        vols = list(map(_extractVol, structures, solidList, matList, eleList, funList, callList, clearList))
+        vols = [_extractVol(structures[i], solids, materials, elements, funcTime, callList[i], clearList[i]) for i in
+                range(strucLen)]
     else:
-        vols = list(map(_extractVol, structures, solidList, matList, eleList))
+        vols = [_extractVol(structures[i], solids, materials, elements) for i in range(strucLen)]
     names = list(map(lambda structure: structure.xpath('@name')[0][6:], structures))
 
     deleteInx = -1
@@ -370,7 +363,6 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         volume = list(map(_getVolume, volModeList, mid))
         spectrum = list(map(_getSpectrum, mid))
 
-
     deleteInx = -1
     try:
         deleteInx = name.index('World')
@@ -382,5 +374,4 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         volume.pop(deleteInx)
         spectrum.pop(deleteInx)
     neutron.cellInfo = dict(zip(name, zip(energy, volume, spectrum)))  # 可读性太差,为什么用字典？
-    neutron.cellInfo2 = zip(name, energy, volume, spectrum)
     return neutron

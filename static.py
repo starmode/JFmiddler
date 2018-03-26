@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-
+import ctypes
+import platform
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        if 'Windows' in platform.platform():
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('JFWizard.1.0.0')
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap("ICON.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)

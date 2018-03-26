@@ -103,7 +103,7 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     assert type(genRate) == float or type(genRate) == int, '光子产生速度不合法'
 
     assert type(text) == str, 'FISPACT文件内容不合法'
-    assert type(cell) == str, '材料名称不合法'
+    assert type(cell) == str, '材料序号不合法'
     assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
@@ -113,6 +113,7 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     _mkdir(path + '/' + cell)
     eleDensity = {}
     allDensity = 0.
+
     for element in allStructure[cell].matGre:
         tmp = element[1] * element[3] / Avogadro
         allDensity += tmp
@@ -150,9 +151,8 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
         f.write(text)
 
 
-def _fluxes(cellInfo_i, path, func=None, call=False, clear=False):
-    cell = cellInfo_i[0]
-    assert type(cell) == str, '材料名称不合法'
+def _fluxes(cellInfo, path, cell, func=None, call=False, clear=False):
+    assert type(cell) == str, '材料名称不合法%s'%cell
     assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
@@ -160,7 +160,7 @@ def _fluxes(cellInfo_i, path, func=None, call=False, clear=False):
     if call:
         func(clear)
     _mkdir(path + '/' + cell)
-    fluxes = cellInfo_i[3]
+    fluxes = cellInfo[2]
     fluxes.reverse()
     fluxes = map(lambda s: s + '\n', fluxes)
     with open(path + '/' + cell + '/fluxes', 'w') as f:
@@ -209,40 +209,30 @@ def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _colla
     # allStructure--input--由GDML文件读取的所有材料物质信息
     # genRate--input--光子产生速度
     # path--input--FISPACT输入文件顶层路径
-    keys = neutron.cellInfo.keys()
+    keys = tuple(neutron.cellInfo.keys())
     length = len(keys)
-    inputTextList = [_inputText] * length
-    collapxTextList = [_collapxText] * length
-    arrayxTextList = [_arrayxText] * length
-    neutronList = [neutron] * length
-    allStructureList = [allStructure] * length
-    genRateList = [genRate] * length
-    pathList = [path] * length
     if funcTime:
         callTime = max(length // interval, 1)
         # 回调告知总调用次数
         funcOne(length // callTime, length)
-        funList = [funcTime] * length
         callList = [True if i % callTime == 0 or i == 0 else False for i in range(length)]
         clearList = [False] * length
         clearList[0] = True
+
         # 每次回调告知进度
-        list(map(_input, inputTextList, neutronList, allStructureList, keys, genRateList, pathList, funList, callList,
-                 clearList))
-        list(map(_collapx, collapxTextList, keys, pathList, funList, callList, clearList))
-        list(map(_arrayx, arrayxTextList, keys, pathList, funList, callList, clearList))
-        list(map(_fluxes, neutron.cellInfo2, pathList, funList, callList, clearList))
+        [_input(_inputText, neutron, allStructure, keys[i], genRate, path, funcTime, callList[i], clearList[i]) for i in range(length)]
+        [_collapx(_collapxText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
+        [_arrayx(_arrayxText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
+        [_fluxes(neutron.cellInfo[keys[i]], path, keys[i], funcTime, callList[i], clearList[i]) for i in range(length)]
         if _printlibText:
-            printlibList = [_printlibText] * length
-            list(map(_printlib, printlibList, keys, pathList))
+            [_printlib(_printlibText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
     else:
-        list(map(_input, inputTextList, neutronList, allStructureList, keys, genRateList, pathList))
-        list(map(_collapx, collapxTextList, keys, pathList))
-        list(map(_arrayx, arrayxTextList, keys, pathList))
-        list(map(_fluxes, neutron.cellInfo2, pathList))
+        [_input(_inputText, neutron, allStructure, keys[i], genRate, path) for i in range(length)]
+        [_collapx(_collapxText, keys[i], path) for i in range(length)]
+        [_arrayx(_arrayxText, keys[i], path) for i in range(length)]
+        [_fluxes(neutron.cellInfo[keys[i]], path, keys[i]) for i in range(length)]
         if _printlibText:
-            printlibList = [_printlibText] * length
-            list(map(_printlib, printlibList, keys, pathList))
+            [_printlib(_printlibText, keys[i], path) for i in range(length)]
 
 
 def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, interval=100):
@@ -264,11 +254,7 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
     tmp = ['number_of_source = %d\n' % numOfStus]
     tmp.append('%sparticle_type    = 2\n' % pre)
     length = len(neutron.cellInfo)
-    numList = list(range(length))
-    neutronList = [neutron] * length
-    allDisList = [allDistributions] * length
-    preList = [pre] * length
-    splitList = [split] * length
+    keys = tuple(neutron.cellInfo.keys())
     if funcTime:
         callTime = max(length // interval, 1)
         # 回调告知总调用次数
@@ -278,11 +264,10 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
         clearList = [False] * length
         clearList[0] = True
         # 每次回调告知进度
-        tmp.extend(list(
-            map(_genSource, neutron.cellInfo.keys(), numList, neutronList, allDisList, preList, splitList, funList,
-                callList, clearList)))
+        tmp.extend([_genSource(keys[i], i, neutron, allDistributions, pre, split, funcTime, callList[i], clearList[i]) for i in range(length)])
     else:
-        tmp.extend(list(map(_genSource, neutron.cellInfo.keys(), numList, neutronList, allDisList, preList, splitList)))
+        tmp.extend(
+            [_genSource(keys[i], i, neutron, allDistributions, pre, split) for i in range(length)])
 
     tmp = ''.join(tmp)
     text = mode.sub(tmp, text)
