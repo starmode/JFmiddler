@@ -103,7 +103,7 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     assert type(genRate) == float or type(genRate) == int, '光子产生速度不合法'
 
     assert type(text) == str, 'FISPACT文件内容不合法'
-    assert type(cell) == str, '材料序号不合法'
+    assert type(cell) == str, '材料名称不合法'
     assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'

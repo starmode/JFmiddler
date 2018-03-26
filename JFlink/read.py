@@ -373,5 +373,5 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         energy.pop(deleteInx)
         volume.pop(deleteInx)
         spectrum.pop(deleteInx)
-    neutron.cellInfo = dict(zip(name, zip(energy, volume, spectrum)))  # 可读性太差,为什么用字典？
+    neutron.cellInfo = dict(zip(name, tuple(zip(energy, volume, spectrum))))
     return neutron

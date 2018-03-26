@@ -723,7 +723,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "JFWizard"))
         self.JtoFChose.setText(_translate("MainWindow", "JMCTtoFISP"))
-        self.GenTip.setText(_translate("MainWindow", "光子单位时间产额(小数/科学记数法):"))
+        self.GenTip.setText(_translate("MainWindow", "中子单位时间产额(小数/科学记数法):"))
         self.JOutFIleTipU.setText(_translate("MainWindow", "JMCT输出文件位置:"))
         self.JOutFilePickU.setText(_translate("MainWindow", "浏览"))
         self.GFileTip.setText(_translate("MainWindow", "GDML文件位置:"))

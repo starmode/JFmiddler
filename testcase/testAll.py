@@ -65,9 +65,28 @@ class TestJ2F(unittest.TestCase):
             act = f.read()
         self.assertEqual(ori, act)
 
+class TestF2J(unittest.TestCase):
+    def setUp(self):
+        os.mkdir('./f2j/output/')
+        neutron = read.readj('./f2j/neutron.OUT')
+        dis = read.readf('./f2j/fisp', 20.)
+        with open('./f2j/model.input') as f:
+            model = f.read()
+        write.writej('./f2j/output/model_new.input', model, neutron, dis)
+
+    def tearDown(self):
+        shutil.rmtree('./f2j/output')
+
+    def test_JtoF_output(self):
+        with open('./f2j/model_new.input') as f:
+            ori = f.read()
+        with open('./f2j/output/model_new.input') as f:
+            act = f.read()
+        self.assertEqual(ori, act)
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(TestJ2F())
+    suite.addTest(TestF2J())
     runner = unittest.TextTestRunner()
     runner.run(suite)
