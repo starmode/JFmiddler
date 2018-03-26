@@ -21,7 +21,7 @@ class CallJm:
         _gpath = _input.parent
 
         def _run():
-            _p = Popen(['jmct', str(_input)], cwd=str(_gpath), stdout=PIPE, **subprocess_args())
+            _p = Popen(['jmct', str(_input)], cwd=str(_gpath), **subprocess_args())
             self.pid = _p.pid
             while True:
                 line = _p.stdout.readline()
