@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import shutil
 from pathlib import Path
-from subprocess import Popen, PIPE
+from subprocess import Popen
 from time import sleep
 from .model import defaultFILES
 from .subprocess_args import subprocess_args
@@ -81,6 +81,9 @@ class CallFis:
             return
         eaf = Path(self.env[1].strip()).resolve()
         indir = Path(_indir).resolve()
+        if not indir.is_dir():
+            info('无效目录: ', indir)
+            return
 
         # 可选功能：指定输出目录
         if _outdir is None:

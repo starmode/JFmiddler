@@ -35,8 +35,8 @@ def _collapx(text, cell, path, func=None, call=False, clear=False):
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
-    if call:
-        func(clear)
+        if call:
+            func(clear)
 
     _mkdir(path + '/' + cell)
     mode = re.compile('{[ \t\n]*title[ \t\n]*}')
@@ -57,8 +57,8 @@ def _arrayx(text, cell, path, func=None, call=False, clear=False):
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
-    if call:
-        func(clear)
+        if call:
+            func(clear)
 
     _mkdir(path + '/' + cell)
     mode = re.compile('{[ \t\n]*title[ \t\n]*}')
@@ -79,8 +79,8 @@ def _printlib(text, cell, path, func=None, call=False, clear=False):
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
-    if call:
-        func(clear)
+        if call:
+            func(clear)
 
     _mkdir(path + '/' + cell)
     mode = re.compile('{[ \t\n]*title[ \t\n]*}')
@@ -108,8 +108,8 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
-    if call:
-        func(clear)
+        if call:
+            func(clear)
     _mkdir(path + '/' + cell)
     eleDensity = {}
     allDensity = 0.
@@ -157,8 +157,8 @@ def _fluxes(cellInfo, path, cell, func=None, call=False, clear=False):
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
-    if call:
-        func(clear)
+        if call:
+            func(clear)
     _mkdir(path + '/' + cell)
     fluxes = cellInfo[2]
     fluxes.reverse()
@@ -211,28 +211,19 @@ def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _colla
     # path--input--FISPACT输入文件顶层路径
     keys = tuple(neutron.cellInfo.keys())
     length = len(keys)
+    callTime = max(length // interval, 1)
     if funcTime:
-        callTime = max(length // interval, 1)
-        # 回调告知总调用次数
         funcOne(length // callTime, length)
-        callList = [True if i % callTime == 0 or i == 0 else False for i in range(length)]
-        clearList = [False] * length
-        clearList[0] = True
-
-        # 每次回调告知进度
-        [_input(_inputText, neutron, allStructure, keys[i], genRate, path, funcTime, callList[i], clearList[i]) for i in range(length)]
-        [_collapx(_collapxText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
-        [_arrayx(_arrayxText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
-        [_fluxes(neutron.cellInfo[keys[i]], path, keys[i], funcTime, callList[i], clearList[i]) for i in range(length)]
+    clearList = [False] * length
+    clearList[0] = True
+    for i in range(length):
+        call = True if i % callTime == 0 or i == 0 else False
+        _input(_inputText, neutron, allStructure, keys[i], genRate, path, funcTime, call, clearList[i])
+        _collapx(_collapxText, keys[i], path, funcTime, call, clearList[i])
+        _arrayx(_arrayxText, keys[i], path, funcTime, call, clearList[i])
+        _fluxes(neutron.cellInfo[keys[i]], path, keys[i], funcTime, call, clearList[i])
         if _printlibText:
-            [_printlib(_printlibText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
-    else:
-        [_input(_inputText, neutron, allStructure, keys[i], genRate, path) for i in range(length)]
-        [_collapx(_collapxText, keys[i], path) for i in range(length)]
-        [_arrayx(_arrayxText, keys[i], path) for i in range(length)]
-        [_fluxes(neutron.cellInfo[keys[i]], path, keys[i]) for i in range(length)]
-        if _printlibText:
-            [_printlib(_printlibText, keys[i], path) for i in range(length)]
+            _printlib(_printlibText, keys[i], path, funcTime, call, clearList[i])
 
 
 def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, interval=100):
