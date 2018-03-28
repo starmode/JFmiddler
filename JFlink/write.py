@@ -214,16 +214,24 @@ def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _colla
     callTime = max(length // interval, 1)
     if funcTime:
         funcOne(length // callTime, length)
+    callList = [True if i % callTime == 0 or i == 0 else False for i in range(length)]
     clearList = [False] * length
     clearList[0] = True
-    for i in range(length):
-        call = True if i % callTime == 0 or i == 0 else False
-        _input(_inputText, neutron, allStructure, keys[i], genRate, path, funcTime, call, clearList[i])
-        _collapx(_collapxText, keys[i], path, funcTime, call, clearList[i])
-        _arrayx(_arrayxText, keys[i], path, funcTime, call, clearList[i])
-        _fluxes(neutron.cellInfo[keys[i]], path, keys[i], funcTime, call, clearList[i])
+    if funcTime:
+        [(_input(_inputText, neutron, allStructure, keys[i], genRate, path, funcTime, callList[i], clearList[i]),
+          _collapx(_collapxText, keys[i], path, funcTime, callList[i], clearList[i]),
+          _arrayx(_arrayxText, keys[i], path, funcTime, callList[i], clearList[i]),
+          _fluxes(neutron.cellInfo[keys[i]], path, keys[i], funcTime, callList[i], clearList[i])) for i in
+         range(length)]
         if _printlibText:
-            _printlib(_printlibText, keys[i], path, funcTime, call, clearList[i])
+            [_printlib(_printlibText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
+    else:
+        [(_input(_inputText, neutron, allStructure, keys[i], genRate, path),
+          _collapx(_collapxText, keys[i], path),
+          _arrayx(_arrayxText, keys[i], path),
+          _fluxes(neutron.cellInfo[keys[i]], path, keys[i])) for i in range(length)]
+        if _printlibText:
+            [_printlib(_printlibText, keys[i], path) for i in range(length)]
 
 
 def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, interval=100):
@@ -257,8 +265,7 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
         # 每次回调告知进度
         tmp.extend([_genSource(keys[i], i, neutron, allDistributions, pre, split, funcTime, callList[i], clearList[i]) for i in range(length)])
     else:
-        tmp.extend(
-            [_genSource(keys[i], i, neutron, allDistributions, pre, split) for i in range(length)])
+        tmp.extend([_genSource(keys[i], i, neutron, allDistributions, pre, split) for i in range(length)])
 
     tmp = ''.join(tmp)
     text = mode.sub(tmp, text)

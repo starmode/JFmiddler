@@ -157,6 +157,7 @@ class CallFis:
         self.clean(outdir)
 
     def clean(self, path):
-        for file in ['input', 'output', 'FILES']:
-            if (path / file).is_file():
-                (path / file).unlink()
+        # for file in ['input', 'output', 'FILES']:
+        #     if (path / file).is_file():
+        #         (path / file).unlink()
+        [(path / file).unlink() for file in ['input', 'output', 'FILES'] if (path / file).is_file()]

@@ -291,9 +291,6 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     # 补充栅元的物质信息和空间信息
     structures = root.xpath('./structure/volume')
     strucLen = len(structures)
-    solidList = [solids] * strucLen
-    matList = [materials] * strucLen
-    eleList = [elements] * strucLen
     if funcTime:
         vols = [_extractVol(structures[i], solids, materials, elements, funcTime, callList[i], clearList[i]) for i in
                 range(strucLen)]
@@ -302,7 +299,6 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     names = list(map(lambda structure: structure.xpath('@name')[0][6:], structures))
 
     deleteInx = -1
-
     try:
         deleteInx = names.index('')
     except ValueError:
