@@ -42,14 +42,6 @@ class Fis(QThread, CallFis):
         if self.pid != 0:
             os.kill(self.pid, 9)
 
-    def clean2(self, path, flag=0):
-        for file in path.iterdir():
-            if file.name in ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx'] or (flag and file.suffix == '.o'):
-                (path / file).unlink()
-
-    # def cleanall(self, path):
-    #     self.clean2(path, 1)
-
 
 class Jm(QThread, CallJm):
     siginfo = pyqtSignal(str, int)

@@ -1,9 +1,13 @@
 from JFlink.read import *
 from JFlink.write import *
 from JFlink.call import CallFis
+import shutil
 import os
 
 if __name__ == '__main__':
+    if os.path.isdir(r'./mix'):
+        shutil.rmtree(r'./mix')
+    shutil.copytree(r'./mix0', r'./mix')
     # 1: j2f
     jin = r'./mix/jmct/neutron.OUT'
     neutron = readj(jin)
@@ -19,4 +23,5 @@ if __name__ == '__main__':
     #     p = os.path.join(fpath, _dir)
     #     if os.path.isdir(p):
     #         callf.fisp(p)
-    [callf.fisp(os.path.join(fpath, _dir)) for _dir in os.listdir(fpath) if os.path.isdir(os.path.join(fpath, _dir))]
+    [callf.fisp(os.path.join(fpath, _dir), clean=1) for _dir in os.listdir(fpath) if
+     os.path.isdir(os.path.join(fpath, _dir))]

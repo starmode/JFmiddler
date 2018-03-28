@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd" > 
+ <define> 
+  <constant name="PI" value="3.14159265358979" /> 
+  <constant name="TWOPI" value="6.28318530717959" /> 
+  <constant name="HALFPI" value="1.5707963267949" /> 
+  <position name="center" unit="mm" x="0" y="0" z="0" /> 
+  <rotation name="identity" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_SS316" unit="mm" x="100" y="0" z="0" /> 
+  <rotation name="Rot_Vol_S_SS316" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_AL6061" unit="mm" x="210" y="0" z="0" /> 
+  <rotation name="Rot_Vol_S_AL6061" unit="radian" x="0" y="0" z="0" /> 
+  <position name="Pos_Vol_S_CU" unit="mm" x="230" y="0" z="0" /> 
+  <rotation name="Rot_Vol_S_CU" unit="radian" x="0" y="0" z="0" /> 
+ </define> 
+ <materials> 
+  <element Z="8" formula="O" name="Oxygen" > 
+   <atom value="16" /> 
+  </element> 
+  <element Z="7" formula="N" name="Nitrogen" > 
+   <atom value="14.01" /> 
+  </element> 
+  <material name="Air" > 
+   <D value="0.00129" /> 
+   <fraction n="0.3" ref="Oxygen" /> 
+   <fraction n="0.7" ref="Nitrogen" /> 
+  </material> 
+  <element Z="26" formula="026" name="E026000" > 
+   <atom value="55.8468" /> 
+  </element> 
+  <element Z="24" formula="024" name="E024000" > 
+   <atom value="51.9961" /> 
+  </element> 
+  <element Z="28" formula="028" name="E028000" > 
+   <atom value="58.6934" /> 
+  </element> 
+  <element Z="25" formula="025" name="E025055" > 
+   <atom value="54.938" /> 
+  </element> 
+  <element Z="14" formula="014" name="E014000" > 
+   <atom value="28.0855" /> 
+  </element> 
+  <element Z="15" formula="015" name="E015031" > 
+   <atom value="30.9738" /> 
+  </element> 
+  <element Z="16" formula="016" name="E016000" > 
+   <atom value="32.0644" /> 
+  </element> 
+  <element Z="6" formula="006" name="E006012" > 
+   <atom value="12" /> 
+  </element> 
+  <material name="M00000003" > 
+   <D value="1" /> 
+   <fraction n="0.0549899" ref="E026000" /> 
+   <fraction n="0.016636" ref="E024000" /> 
+   <fraction n="0.0122814" ref="E028000" /> 
+   <fraction n="0.00174946" ref="E025055" /> 
+   <fraction n="0.00171106" ref="E014000" /> 
+   <fraction n="5.43026e-005" ref="E015031" /> 
+   <fraction n="4.49619e-005" ref="E016000" /> 
+   <fraction n="0.00012014" ref="E006012" /> 
+  </material> 
+  <element Z="13" formula="013" name="E013027" > 
+   <atom value="26.9815" /> 
+  </element> 
+  <element Z="29" formula="029" name="E029000" > 
+   <atom value="63.5456" /> 
+  </element> 
+  <element Z="12" formula="012" name="E012000" > 
+   <atom value="24.3051" /> 
+  </element> 
+  <element Z="22" formula="022" name="E022000" > 
+   <atom value="47.8784" /> 
+  </element> 
+  <element Z="30" formula="030" name="E030000" > 
+   <atom value="65.3964" /> 
+  </element> 
+  <material name="M00000002" > 
+   <D value="1" /> 
+   <fraction n="0.000218898" ref="E026000" /> 
+   <fraction n="4.76826e-005" ref="E025055" /> 
+   <fraction n="0.00049745" ref="E014000" /> 
+   <fraction n="0.000117554" ref="E024000" /> 
+   <fraction n="0.0625572" ref="E013027" /> 
+   <fraction n="4.12237e-005" ref="E029000" /> 
+   <fraction n="0.000574825" ref="E012000" /> 
+   <fraction n="5.47133e-005" ref="E022000" /> 
+   <fraction n="6.67618e-005" ref="E030000" /> 
+  </material> 
+  <material Z="29" name="M00000001_Z029000" > 
+   <D value="0.0849114" /> 
+   <atom value="29" /> 
+  </material> 
+ </materials> 
+ <solids> 
+  <box aunit="radian" lunit="mm" name="WorldBox" x="10000" y="10000" z="10000" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_SS316" x="200" y="20" z="20" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_AL6061" x="20" y="100" z="100" /> 
+  <box aunit="radian" lunit="mm" name="Sol_S_CU" x="20" y="100" z="100" /> 
+ </solids> 
+ <structure> 
+  <volume name="Vol_S_SS316" > 
+   <materialref ref="M00000003" /> 
+   <solidref ref="Sol_S_SS316" /> 
+  </volume> 
+  <volume name="Vol_S_AL6061" > 
+   <materialref ref="M00000002" /> 
+   <solidref ref="Sol_S_AL6061" /> 
+  </volume> 
+  <volume name="Vol_S_CU" > 
+   <materialref ref="M00000001_Z029000" /> 
+   <solidref ref="Sol_S_CU" /> 
+  </volume> 
+  <volume name="World" > 
+   <materialref ref="Air" /> 
+   <solidref ref="WorldBox" /> 
+   <physvol> 
+    <volumeref ref="Vol_S_SS316" /> 
+    <positionref ref="Pos_Vol_S_SS316" /> 
+    <rotationref ref="Rot_Vol_S_SS316" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_AL6061" /> 
+    <positionref ref="Pos_Vol_S_AL6061" /> 
+    <rotationref ref="Rot_Vol_S_AL6061" /> 
+   </physvol> 
+   <physvol> 
+    <volumeref ref="Vol_S_CU" /> 
+    <positionref ref="Pos_Vol_S_CU" /> 
+    <rotationref ref="Rot_Vol_S_CU" /> 
+   </physvol> 
+  </volume> 
+ </structure> 
+ <setup name="Default" version="1.0" > 
+  <world ref="World" /> 
+ </setup> 
+</gdml> 
