@@ -30,8 +30,6 @@ class Fis(QThread, CallFis):
                     count += 1
                     self.siginfo.emit('[%d/%d]%s' % (count, len(_dirs), str(_path)), 0)
                     self.fisp(_path, info=self.siginfo.emit)
-                    # 清理工作目录
-                    self.clean2(_path)
         except Exception as e:
             self.siginfo.emit(format_exc(), 0)
         finally:
