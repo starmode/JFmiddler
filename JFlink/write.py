@@ -2,9 +2,8 @@
 # 输入：文件地址，neutron，allStructure
 # 输出：无
 
-import os
-import re
-
+from os import makedirs, path as _path
+from re import compile
 from .model import Data, ele, Avogadro, defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
 
 
@@ -16,8 +15,8 @@ def _mkdir(path):
     assert type(path) == str, '%s路径不合法' % path
     path = path.strip()
     path = path.rstrip("\\")
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not _path.exists(path):
+        makedirs(path)
         return True
     else:
         return False
@@ -39,7 +38,7 @@ def _collapx(text, cell, path, func=None, call=False, clear=False):
             func(clear)
 
     _mkdir(path + '/' + cell)
-    mode = re.compile('{[ \t\n]*title[ \t\n]*}')
+    mode = compile('{[ \t\n]*title[ \t\n]*}')
     text = mode.sub('Irradiation of ' + cell, text)
     with open(path + '/' + cell + '/collapx.i', 'w') as f:
         f.write(text)
@@ -61,7 +60,7 @@ def _arrayx(text, cell, path, func=None, call=False, clear=False):
             func(clear)
 
     _mkdir(path + '/' + cell)
-    mode = re.compile('{[ \t\n]*title[ \t\n]*}')
+    mode = compile('{[ \t\n]*title[ \t\n]*}')
     text = mode.sub('Irradiation of ' + cell, text)
     with open(path + '/' + cell + '/arrayx.i', 'w') as f:
         f.write(text)
@@ -83,7 +82,7 @@ def _printlib(text, cell, path, func=None, call=False, clear=False):
             func(clear)
 
     _mkdir(path + '/' + cell)
-    mode = re.compile('{[ \t\n]*title[ \t\n]*}')
+    mode = compile('{[ \t\n]*title[ \t\n]*}')
     text = mode.sub('Irradiation of ' + cell, text)
     with open(path + '/' + cell + '/printlib.i', 'w') as f:
         f.write(text)
@@ -136,15 +135,15 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     flux = '%E' % (neutron.cellInfo[cell][0] * genRate)
 
     # 替换
-    mode = re.compile('{[ \t\n]*title[ \t\n]*}')
+    mode = compile('{[ \t\n]*title[ \t\n]*}')
     text = mode.sub('Irradiation of ' + cell, text)
-    mode = re.compile('{[ \t\n]*mass[ \t\n]*}')
+    mode = compile('{[ \t\n]*mass[ \t\n]*}')
     text = mode.sub(mass, text)
-    mode = re.compile('{[ \t\n]*density[ \t\n]*}')
+    mode = compile('{[ \t\n]*density[ \t\n]*}')
     text = mode.sub(density, text)
-    mode = re.compile('{[ \t\n]*flux[ \t\n]*}')
+    mode = compile('{[ \t\n]*flux[ \t\n]*}')
     text = mode.sub(flux, text)
-    mode = re.compile('{[ \t\n]*elements[ \t\n]*}')
+    mode = compile('{[ \t\n]*elements[ \t\n]*}')
     text = mode.sub(elements, text)
 
     with open(path + '/' + cell + '/input.i', 'w') as f:
@@ -241,7 +240,7 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
     # allStructure--input--由GDML文件读取的所有材料物质信息
     # split--input--括号缩进
     split = ' ' * 3
-    mode = re.compile('{[ \t\n]*source[ \t\n]*}')
+    mode = compile('{[ \t\n]*source[ \t\n]*}')
 
     try:
         pos = mode.search(text).start()

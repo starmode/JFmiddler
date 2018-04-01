@@ -1,6 +1,5 @@
 import subprocess
-import os
-import os.path
+from os import environ
 
 
 # Create a set of arguments which make a ``subprocess.Popen`` (and
@@ -23,7 +22,7 @@ def subprocess_args(include_stdout=True):
         si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         # Windows doesn't search the path by default. Pass it an environment so
         # it will.
-        env = os.environ
+        env = environ
     else:
         si = None
         env = None

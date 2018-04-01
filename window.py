@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
-import re
-import platform
+from os import listdir, path, mkdir, remove
+from re import sub
+from platform import system
 import configparser
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow
 from PyQt5.QtCore import QDateTime, QTime, Qt
-from JFlink.model import Data, defaultInput, defaultArrayx, defaultCollapx, defaultPrintlib
 from static import Ui_MainWindow
 from worker import Fis, Jm, JtoF, FtoJ
 
@@ -132,7 +131,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def pickPath(self):
         try:
-            if os.path.isfile('./tmp/wiz.ini'):
+            if path.isfile('./tmp/wiz.ini'):
                 with open('./tmp/wiz.ini', 'r', encoding='utf-8-sig') as f:
                     self.config.read_file(f)
                 if 'turn' in self.config.sections():
@@ -159,8 +158,8 @@ class Dynamics(QMainWindow, Ui_MainWindow):
 
     def saveAll(self):
         now = QDateTime.currentDateTime()
-        if not os.path.exists('./tmp'):
-            os.mkdir('./tmp')
+        if not path.exists('./tmp'):
+            mkdir('./tmp')
         with open('./tmp/log-%s.log' % now.toString('yyyy-MM-dd-hh-mm-ss-zzz'), 'w') as f:
             f.write(self._InfoText)
 
@@ -188,11 +187,11 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         with open('./tmp/wiz.ini', 'w', encoding='utf-8-sig') as f:
             self.config.write(f)
 
-        logs = [i for i in os.listdir('./tmp') if i[-4:] == '.log']
+        logs = [i for i in listdir('./tmp') if i[-4:] == '.log']
         sorted(logs)
         if len(logs) > self._logNum:
             for i in range(0, len(logs) - self._logNum):
-                os.remove(r'./tmp/%s' % logs[i])
+                remove(r'./tmp/%s' % logs[i])
 
     def reSize(self):
         screenrect = self.__desktop.screenGeometry()
@@ -386,7 +385,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.FWorkPathR.setText(self._LastRoute)
 
     def openFInstall(self):
-        if 'Windows' in platform.system():
+        if 'Windows' in system():
             self._LastRoute, ok = QFileDialog.getOpenFileName(self, "选择文件", self._LastRoute,
                                                               "FISPACT Binary File (*.exe);;All Files (*)")
         else:
@@ -424,7 +423,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         elif mode == 1:
             self._InfoText += '...%s' % text
         elif mode == 2:
-            self._InfoText = re.sub('\d+(/\d+)$', r'%d\1' % text, self._InfoText)
+            self._InfoText = sub('\d+(/\d+)$', r'%d\1' % text, self._InfoText)
         elif mode == 3:
             if len(self._InfoText) > 0 and self._InfoText[-1] != '\n':
                 self._InfoText += '\n'
@@ -441,7 +440,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.info('错误：未指定FISPACT工作目录', 0)
             else:
                 self.info('从 %s 读取FISPACT输入文件' % _FISPWork, 0)
-                dirs = os.listdir(_FISPWork)
+                dirs = listdir(_FISPWork)
                 tmp = list(filter(lambda name: name[-2:] == '.i', dirs))
                 # 是否找到至少一个文件
                 found = False

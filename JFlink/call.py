@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import shutil
+from shutil import copy as _copy
 from pathlib import Path
 from subprocess import Popen
 from time import sleep
@@ -8,7 +8,7 @@ from .subprocess_args import subprocess_args
 
 
 def copy(src: Path, dst: Path):
-    shutil.copy(src, dst)
+    _copy(src, dst)
 
 
 class CallJm:

@@ -2,8 +2,8 @@
 # 输入：文件地址
 # 输出：list[model.energyDis *24]
 
-import re
-import os
+from re import compile, S
+from os import listdir
 from lxml import etree
 from .model import energyDis, Data, Volume
 
@@ -75,7 +75,7 @@ def _getAllItem(path, dir, func=None, call=False, clear=False):
     if call:
         func(clear)
 
-    files = os.listdir(path + '/' + dir)
+    files = listdir(path + '/' + dir)
     files = list(filter(lambda name: name[-2:] == '.o', files))
     assert len(files) == 1, '%s/%s下存在多个.o文件，请清理无关文件' % (path, dir)
     with open(path + '/' + dir + '/' + files[0]) as f:
@@ -140,11 +140,11 @@ def _m2ev(raw, flag):
             raw[i] = float(tmp[0]) * (10 ** (6 + int(tmp[1])))
         tmp = '%E' % raw[i]
         tmp = tmp.replace('+', '')
-        mode = re.compile(r'E0+$')
+        mode = compile(r'E0+$')
         tmp = mode.sub('', tmp)
-        mode = re.compile(r'E0+')
+        mode = compile(r'E0+')
         tmp = mode.sub('E', tmp)
-        mode = re.compile(r'E-0+')
+        mode = compile(r'E-0+')
         tmp = mode.sub('E-', tmp)
         result.append(tmp)
     return result
@@ -205,14 +205,14 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
     if type(maxFlag) == int:
         maxFlag = float(maxFlag)
 
-    dirs = os.listdir(path)
+    dirs = listdir(path)
     length = len(dirs)
 
-    gModeF = re.compile(r'Total gammas \(per cc per second\) {6}\d\.\d{5}E[+-]\d{2}')
-    gModeS = re.compile(r'\d.\d+E[+-]\d*')
-    dModeF = re.compile(r'\(0.0 -0.01 {2}MeV\).+?DOSE', re.S)
-    dModeT = re.compile(r'\(\d+.\d+ *-+>?\d*.*\d* *MeV\)')
-    dModeL = re.compile(r'\d{1,2}\.\d{1,2}')
+    gModeF = compile(r'Total gammas \(per cc per second\) {6}\d\.\d{5}E[+-]\d{2}')
+    gModeS = compile(r'\d.\d+E[+-]\d*')
+    dModeF = compile(r'\(0.0 -0.01 {2}MeV\).+?DOSE', S)
+    dModeT = compile(r'\(\d+.\d+ *-+>?\d*.*\d* *MeV\)')
+    dModeL = compile(r'\d{1,2}\.\d{1,2}')
     if funcTime:
         callTime = max(length // interval, 1)
         # 回调告知总调用次数
@@ -319,26 +319,26 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
     with open(path, 'r') as f:
         allItem = f.read()
 
-    mode = re.compile(r'energy_bin[ \de\-,=.]+')
+    mode = compile(r'energy_bin[ \de\-,=.]+')
     mid = mode.search(allItem).group(0)
     mid = mid.replace(' ', '')
     mid = mid.strip('energy_bin=')
-    mode = re.compile(r'^/c+$')
+    mode = compile(r'^/c+$')
     mid = mode.sub('', mid)
     mid = mid.split(',')
     neutron.eneBin = _m2ev(mid, 'e')
     neutron.eneNum = len(neutron.eneBin)
 
     # 几何体相关信息储存
-    mode = re.compile('Tally4_0,(.+?)---', re.S)
+    mode = compile('Tally4_0,(.+?)---', S)
     mid = mode.findall(allItem)
     # 储存关心的几何体数量
     neutron.cellNum = len(mid)
-    nameMode = re.compile(r'cell: (.+?),', re.S)
+    nameMode = compile(r'cell: (.+?),', S)
     nameModeList = [nameMode] * neutron.cellNum
-    eneMode = re.compile(r'total +\d.\d+e[+-]\d{2,3}')
+    eneMode = compile(r'total +\d.\d+e[+-]\d{2,3}')
     eneModeList = [eneMode] * neutron.cellNum
-    volMode = re.compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
+    volMode = compile(r'volume\(cm\^3\): \d+.\d+e?[+-]?\d{0,2}')
     volModeList = [volMode] * neutron.cellNum
     if funcTime:
         callTime = max(neutron.cellNum // interval, 1)

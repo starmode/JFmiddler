@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
-import traceback
-import pathlib
+from os import kill
+from traceback import format_exc
+from pathlib import Path
 from PyQt5.QtCore import QThread, pyqtSignal
 from JFlink.read import readj, readg, readf
 from JFlink.write import writef, writej
@@ -22,7 +22,7 @@ class Fis(QThread, CallFis):
         count = 0
         self.siginfo.emit('调用Fispact中...', 0)
         try:
-            p = pathlib.Path(self.case.strip())
+            p = Path(self.case.strip())
             _dirs = [_ for _ in p.iterdir() if _.is_dir()]
             for _dir in _dirs:
                 _path = p.resolve() / _dir
@@ -33,14 +33,14 @@ class Fis(QThread, CallFis):
                     # 清理工作目录
                     self.clean2(_path)
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
         finally:
             self.siginfo.emit('调用结束', 0)
             self.sigend.emit()
 
     def kill(self):
         if self.pid != 0:
-            os.kill(self.pid, 9)
+            kill(self.pid, 9)
 
 
 class Jm(QThread, CallJm):
@@ -56,13 +56,13 @@ class Jm(QThread, CallJm):
         try:
             self.jmct(self.JInPath, info=self.siginfo.emit)
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
         self.siginfo.emit('调用结束', 0)
         self.sigend.emit()
 
     def kill(self):
         if self.pid != 0:
-            os.kill(self.pid, 9)
+            kill(self.pid, 9)
 
 
 class JtoF(QThread):
@@ -91,7 +91,7 @@ class JtoF(QThread):
             self.sigend.emit()
             return
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
         self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathU, 0)
@@ -106,7 +106,7 @@ class JtoF(QThread):
             self.sigend.emit()
             return
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
         self.siginfo.emit('读取GDML结构文件 %s' % self.GPath, 0)
@@ -117,7 +117,7 @@ class JtoF(QThread):
             self.sigend.emit()
             return
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
 
@@ -126,7 +126,7 @@ class JtoF(QThread):
             writef(self.FPath, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
                    self.signal1.emit, self.signal2.emit)
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
         self.siginfo.emit('文件转换完成', 0)
@@ -154,7 +154,7 @@ class FtoJ(QThread):
         try:
             maxFlag = float(self.Max)
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
         self.siginfo.emit('读取JMCT输出文件 %s' % self.JPathD, 0)
@@ -169,7 +169,7 @@ class FtoJ(QThread):
             self.sigend.emit()
             return
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
         self.siginfo.emit('读取FISPACT输出文件 %s' % self.FPath, 0)
@@ -180,10 +180,10 @@ class FtoJ(QThread):
             self.sigend.emit()
             return
         except Exception as e:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
-        tmp = pathlib.Path(self.JModel)
+        tmp = Path(self.JModel)
         if self.Remain:
             newPath = tmp.with_name(tmp.stem + '_new.input')
         else:
@@ -196,7 +196,7 @@ class FtoJ(QThread):
             self.sigend.emit()
             return
         except Exception:
-            self.siginfo.emit(traceback.format_exc(), 0)
+            self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
             return
         self.siginfo.emit('文件转换完成', 0)
