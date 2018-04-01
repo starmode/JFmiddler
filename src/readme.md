@@ -526,3 +526,14 @@ A：JFwizard和JFlink均为开源软件，可以从[github](https://github.com)�
 * [JFwizard主页](https://github.com/starmode/JFwizard) 				
 * [JFlink主页](https://github.com/starmode/JFlink/archive/master.zip)
 * JFlink可以[如此](#12)从pypi获取
+
+
+
+Q：运行二进制程序出现类似于【无法启动此程序，因为计算机中丢失api-ms-win-crt-runtime-l1-1-0.dll】或类似错误，这是为什么？
+
+A：一般在win7或更低版本windows下运行程序会出现这种问题。因为程序在win10下打包，会依赖一些win10下的动态链接库。建议使用win10运行，但如果您坚持使用win7，您可以选择以下任何一种做法：
+
+ * 安装KB2999226、KB3118401更新之一
+ * 安装Visual Studio 2015
+ * 使用源码方式运行
+
