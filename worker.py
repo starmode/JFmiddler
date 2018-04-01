@@ -175,6 +175,7 @@ class FtoJ(QThread):
         self.siginfo.emit('读取FISPACT输出文件 %s' % self.FPath, 0)
         try:
             distributes = readf(self.FPath, maxFlag, self.signal1.emit, self.signal2.emit)
+
         except FileNotFoundError as e:
             self.siginfo.emit('错误：FISPACT输出文件位置无效 ->' + repr(e), 0)
             self.sigend.emit()

@@ -536,6 +536,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.f2j.JModel = self.JModelPath.text()
                 self.f2j.JText = self.JFileEdit.toPlainText()
                 self.f2j.Max = self.MaxFlag.text()
+                self.f2j.Remain = self.RemainJOut.isChecked()
 
                 self.allEnableL(2)
                 self.StartL.setText('中止')
