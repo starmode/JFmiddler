@@ -3,6 +3,7 @@
 # 输出：list[model.energyDis *24]
 
 from re import compile, S
+from os.path import isdir
 from os import listdir
 from lxml import etree
 from .model import energyDis, Data, Volume
@@ -206,6 +207,8 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
         maxFlag = float(maxFlag)
 
     dirs = listdir(path)
+    dirs = [d for d in dirs if isdir(path+'/'+d)]
+    dirs = [d for d in dirs if '.o' in [i[-2:] for i in listdir(path+'/'+d)]]
     length = len(dirs)
 
     gModeF = compile(r'Total gammas \(per cc per second\) {6}\d\.\d{5}E[+-]\d{2}')
