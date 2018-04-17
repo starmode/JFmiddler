@@ -51,7 +51,7 @@ class CallFis:
         self.group = ['', '', '']
         self.workalone = True
 
-    def fisp(self, _indir, _outdir=None, info=print, clean=1):
+    def fisp(self, _indir, _outdir=None, info=print, cleancode=1):
         def _copy(_src: Path, _dst: Path):
             if indir != outdir:
                 copy(_src, _dst)
@@ -133,12 +133,12 @@ class CallFis:
         copy(indir / 'collapx.i', outdir / 'input')
         if _run('正在处理 collapx.i ...') != 0:
             # info('失败！')
-            self.clean(outdir, clean)
+            self.cleancode(outdir, cleancode)
             return
         copy(indir / 'arrayx.i', outdir / 'input')
         if _run('正在处理 arrayx.i ...') != 0:
             # info('失败！')
-            self.clean(outdir, clean)
+            self.clean(outdir, cleancode)
             return
 
         # 遍历.i文件，执行程序
@@ -150,21 +150,21 @@ class CallFis:
                 copy(indir / _input, outdir / 'input')
                 if _run('正在处理 ' + str(_input) + ' ...') != 0:
                     # info('失败！')
-                    self.clean(outdir)
+                    self.clean(outdir, cleancode)
                     return
                 copy(outdir / 'output', outdir.joinpath(name + '.o'))
                 info('执行成功，输出：' + str(outdir.joinpath(name + '.o')), 3)
-        self.clean(outdir, clean)
+        self.clean(outdir, cleancode)
 
     def clean(self, path, flag=0):
         path = Path(path)
         if not path.is_dir():
-            raise FileNotFoundError('Path %s in not found' % str(path))
+            raise FileNotFoundError('Path %s is not found' % str(path))
         if flag >= 0:
             cleanlist = ['input', 'output', 'FILES']
             [(path / file).unlink() for file in cleanlist if (path / file).is_file()]
         if flag >= 1:
-            cleanlist = ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx']
+            cleanlist = ['arrayx', 'collapx', 'graph', 'halfunc', 'summaryx', 'printlib.o']
             [(path / file).unlink() for file in cleanlist if (path / file).is_file()]
         if flag >= 2:
             [(path / file).unlink() for file in path.iterdir() if file.suffix == '.o']

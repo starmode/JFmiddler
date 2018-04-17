@@ -38,7 +38,10 @@ class Fis(QThread, CallFis):
 
     def kill(self):
         if self.pid != 0:
-            kill(self.pid, 9)
+            try:
+                kill(self.pid, 9)
+            except:
+                pass
 
 
 class Jm(QThread, CallJm):
