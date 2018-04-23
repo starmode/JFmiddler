@@ -88,7 +88,7 @@ def _printlib(text, cell, path, func=None, call=False, clear=False):
         f.write(text)
 
 
-def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=False, clear=False):
+def _input(text, neutron, allStructure, cell, genRate, path, digital, func=None, call=False, clear=False):
     # 仅内部调用
     # 生成FISPACT输入文件input.i
     # text--input--初始化文件内容
@@ -123,8 +123,8 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     # 写入MASS
     tmp = float(allStructure[cell].matD) * float(neutron.cellInfo[cell][1])
     # 字符串mass
-    mass = '%E' % tmp
-    elements = [' %s %f\n' % (ele[element[2]], 100 * eleDensity[element[0]] / allDensity) for element in
+    mass = '%.*E' % (digital, tmp)
+    elements = [' %s %.*f\n' % (ele[element[2]], digital, 100 * eleDensity[element[0]] / allDensity) for element in
                 allStructure[cell].matGre]
     tmp = ['%d\n' % len(allStructure[cell].matGre)]
     tmp.extend(elements)
@@ -132,7 +132,7 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
     # 字符串elements
     elements = ''.join(elements)[:-1]
     # 计算中子通量
-    flux = '%E' % (neutron.cellInfo[cell][0] * genRate)
+    flux = '%.*E' % (digital, neutron.cellInfo[cell][0] * genRate)
 
     # 替换
     mode = compile('{[ \t\n]*title[ \t\n]*}')
@@ -151,7 +151,7 @@ def _input(text, neutron, allStructure, cell, genRate, path, func=None, call=Fal
 
 
 def _fluxes(cellInfo, path, cell, func=None, call=False, clear=False):
-    assert type(cell) == str, '材料名称不合法%s'%cell
+    assert type(cell) == str, '材料名称不合法%s' % cell
     assert type(path) == str, 'FISPACT输入文件路径%s不合法' % path
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
@@ -166,9 +166,11 @@ def _fluxes(cellInfo, path, cell, func=None, call=False, clear=False):
         f.writelines(fluxes)
 
 
-def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=False, clear=False):
+def _genSource(cell, i, neutron, allDistributions, pre, split, digital_type, func=None, call=False, clear=False):
     # 仅内部调用
     # 用于map操作
+    # type = ['sci/dem', 5] 表示方式:科学/小数 位数
+    print(type, call)
     if func:
         assert type(call) == bool, '内部异常，请重新下载软件包'
         assert type(clear) == bool, '内部异常，请重新下载软件包'
@@ -182,7 +184,10 @@ def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=F
     possibility = allDistributions[cell][0] * neutron.cellInfo[cell][1]
     for distribution in distributions:
         segments.append('%.2f, %.2f, ' % (distribution.leftBound, distribution.rightBound))
-        samProb.append('%e, ' % distribution.perc)
+        if digital_type[0] == 'sci':
+            samProb.append('%.*e, ' % (digital_type[1], distribution.perc))
+        elif digital_type[0] == 'dem':
+            samProb.append('%.*f, ' % (digital_type[1], distribution.perc))
     segments = ''.join(segments)
     samProb = ''.join(samProb)
     segments = segments[:-2]
@@ -201,7 +206,8 @@ def _genSource(cell, i, neutron, allDistributions, pre, split, func=None, call=F
 
 
 def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _collapxText=defaultCollapx,
-           _arrayxText=defaultArrayx, _printlibText=defaultPrintlib, funcTime=None, funcOne=None, interval=100):
+           _arrayxText=defaultArrayx, _printlibText=defaultPrintlib, digital=5, funcTime=None, funcOne=None,
+           interval=100):
     # 生成FISPACT输入文件
     # ?text--input--初始化文件内容
     # neutron--input--由JMCT输出文件读取的所有材料物质信息
@@ -217,15 +223,15 @@ def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _colla
     clearList = [False] * length
     clearList[0] = True
     if funcTime:
-        [(_input(_inputText, neutron, allStructure, keys[i], genRate, path, funcTime, callList[i], clearList[i]),
-          _collapx(_collapxText, keys[i], path, funcTime, callList[i], clearList[i]),
-          _arrayx(_arrayxText, keys[i], path, funcTime, callList[i], clearList[i]),
+        [(_input(_inputText, neutron, allStructure, keys[i], genRate, path, digital),
+          _collapx(_collapxText, keys[i], path),
+          _arrayx(_arrayxText, keys[i], path),
           _fluxes(neutron.cellInfo[keys[i]], path, keys[i], funcTime, callList[i], clearList[i])) for i in
          range(length)]
         if _printlibText:
             [_printlib(_printlibText, keys[i], path, funcTime, callList[i], clearList[i]) for i in range(length)]
     else:
-        [(_input(_inputText, neutron, allStructure, keys[i], genRate, path),
+        [(_input(_inputText, neutron, allStructure, keys[i], genRate, path, digital),
           _collapx(_collapxText, keys[i], path),
           _arrayx(_arrayxText, keys[i], path),
           _fluxes(neutron.cellInfo[keys[i]], path, keys[i])) for i in range(length)]
@@ -233,12 +239,14 @@ def writef(path, genRate, neutron, allStructure, _inputText=defaultInput, _colla
             [_printlib(_printlibText, keys[i], path) for i in range(length)]
 
 
-def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, interval=100):
+def writej(path, text, neutron, allDistributions, type=None, funcTime=None, funcOne=None, interval=100):
     # 生成JMCT输入文件
     # path--input--JMCT输入文件位置
     # neutron--input--由JMCT输出文件读取的所有材料物质信息
     # allStructure--input--由GDML文件读取的所有材料物质信息
     # split--input--括号缩进
+    if type is None:
+        type = ['sci', 5]
     split = ' ' * 3
     mode = compile('{[ \t\n]*source[ \t\n]*}')
 
@@ -257,14 +265,15 @@ def writej(path, text, neutron, allDistributions, funcTime=None, funcOne=None, i
         callTime = max(length // interval, 1)
         # 回调告知总调用次数
         funcOne(length // callTime, neutron.cellNum)
-        funList = [funcTime] * length
         callList = [True if i % callTime == 0 or i == 0 else False for i in range(length)]
         clearList = [False] * length
         clearList[0] = True
         # 每次回调告知进度
-        tmp.extend([_genSource(keys[i], i, neutron, allDistributions, pre, split, funcTime, callList[i], clearList[i]) for i in range(length)])
+        tmp.extend(
+            [_genSource(keys[i], i, neutron, allDistributions, pre, split, type, funcTime, callList[i], clearList[i])
+             for i in range(length)])
     else:
-        tmp.extend([_genSource(keys[i], i, neutron, allDistributions, pre, split) for i in range(length)])
+        tmp.extend([_genSource(keys[i], i, neutron, allDistributions, pre, split, type) for i in range(length)])
 
     tmp = ''.join(tmp)
     text = mode.sub(tmp, text)

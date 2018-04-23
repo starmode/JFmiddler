@@ -82,6 +82,7 @@ class JtoF(QThread):
         self.IText = ''
         self.PText = ''
         self.GenRate = ''
+        self.digital = 5
 
     def run(self):
         self.siginfo.emit('执行JMCT --> FISPACT', 0)
@@ -125,7 +126,7 @@ class JtoF(QThread):
         self.siginfo.emit('将FISPACT输入文件写入 %s' % self.FPath, 0)
         try:
             writef(self.FPath, _GenRate, _neutron, _structure, self.IText, self.CText, self.AText, self.PText,
-                   self.signal1.emit, self.signal2.emit)
+                   self.digital, self.signal1.emit, self.signal2.emit)
         except Exception as e:
             self.siginfo.emit(format_exc(), 0)
             self.sigend.emit()
@@ -148,6 +149,8 @@ class FtoJ(QThread):
         self.JText = ''
         self.Max = ''
         self.Remain = True
+        self.choose = -1
+        self.type = ['sci', 5]
 
     def run(self):
         self.siginfo.emit('执行FISPACT --> JMCT', 0)
@@ -175,7 +178,7 @@ class FtoJ(QThread):
             return
         self.siginfo.emit('读取FISPACT输出文件 %s' % self.FPath, 0)
         try:
-            distributes = readf(self.FPath, maxFlag, self.signal1.emit, self.signal2.emit)
+            distributes = readf(self.FPath, maxFlag, self.choose, self.signal1.emit, self.signal2.emit)
 
         except FileNotFoundError as e:
             self.siginfo.emit('错误：FISPACT输出文件位置无效 ->' + repr(e), 0)
@@ -192,7 +195,7 @@ class FtoJ(QThread):
             newPath = tmp.with_name(tmp.stem + '.input')
         self.siginfo.emit('将新的JMCT输入文件写入 %s' % newPath, 0)
         try:
-            writej(newPath, self.JText, neutron, distributes, self.signal1.emit, self.signal2.emit)
+            writej(newPath, self.JText, neutron, distributes, self.type, self.signal1.emit, self.signal2.emit)
         except AttributeError as e:
             self.siginfo.emit('错误：JMCT模板文件不含有{source}关键字 -> ' + repr(e), 0)
             self.sigend.emit()

@@ -8,10 +8,10 @@ from PyQt5.QtWidgets import QFileDialog, QApplication, QMainWindow
 from PyQt5.QtCore import QDateTime, QTime, Qt
 from static import Ui_MainWindow
 from worker import Fis, Jm, JtoF, FtoJ
+from JFlink.read import getFNum
 
 
 class Dynamics(QMainWindow, Ui_MainWindow):
-
     def __init__(self):
         super(Dynamics, self).__init__()
         self.setupUi(self)
@@ -143,6 +143,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.FWorkPathD.setText(self.config['turn']['fpathd'])
                     self.JOutFilePathD.setText(self.config['turn']['jpathd'])
                     self.JModelPath.setText(self.config['turn']['jmodel'])
+
+                    self.comboBox.setCurrentIndex(int(self.config['turn']['type']))
+                    self.spinBox.setValue(int(self.config['turn']['digital']))
                 if 'call' in self.config.sections():
                     self.FPath.setText(self.config['call']['fispact'])
                     self.EPath.setText(self.config['call']['eaf'])
@@ -178,6 +181,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
         self.config['turn']['fpathd'] = self.FWorkPathD.text()
         self.config['turn']['jpathd'] = self.JOutFilePathD.text()
         self.config['turn']['jmodel'] = self.JModelPath.text()
+
+        self.config['turn']['type'] = str(self.comboBox.currentIndex())
+        self.config['turn']['digital'] = str(self.spinBox.value())
 
         self.config['call']['fispact'] = self.FPath.text()
         self.config['call']['eaf'] = self.EPath.text()
@@ -375,7 +381,6 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.FWorkPathD.setText(self._LastRoute)
                 self.FWorkPathR.setText(self._LastRoute)
 
-
     def openFDirDown(self):
         self._LastRoute = QFileDialog.getExistingDirectory(self, "选择文件夹", self._LastRoute)
         if self._LastRoute != '':
@@ -478,6 +483,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     self.info('未找到input.i', 1)
                 if not found:
                     self.info('错误：工作目录下没有发现任何有效文件', 0)
+
         elif self._ToDoL is False:
             path = self.JModelPath.text()
             if path == '':
@@ -488,6 +494,12 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                     with open(path) as f:
                         text = f.read()
                     self.JFileEdit.setText(text)
+                    # 判断冷却阶段条目并输出
+
+                    length = getFNum(self.FWorkPathD.text())
+                    self.info('已发现%d个冷却阶段，请指定需要使用的冷却阶段\n-1表示使用最后一个阶段\n0表示使用活化阶段' % (length - 1))
+                    self.spinBox_2.setMaximum(length - 1)
+                    self.spinBox_2.setValue(-1)
                 except FileNotFoundError as e:
                     self.info('错误：JMCT模板文件位置无效 -> ' + repr(e), 0)
                     return
@@ -515,6 +527,7 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.j2f.IText = self.IFileEdit.toPlainText()
                 self.j2f.PText = self.PFileEdit.toPlainText()
                 self.j2f.GenRate = self.GenRate.text()
+                self.j2f.digital = self.spinBox.value()
 
                 self.allEnableL(2)
                 self.StartL.setText('中止')
@@ -537,6 +550,9 @@ class Dynamics(QMainWindow, Ui_MainWindow):
                 self.f2j.JText = self.JFileEdit.toPlainText()
                 self.f2j.Max = self.MaxFlag.text()
                 self.f2j.Remain = self.RemainJOut.isChecked()
+                self.f2j.choose = self.spinBox_2.value()
+                self.f2j.type[0] = ['sci', 'dem'][self.comboBox.currentIndex()]
+                self.f2j.type[1] = self.spinBox.value()
 
                 self.allEnableL(2)
                 self.StartL.setText('中止')

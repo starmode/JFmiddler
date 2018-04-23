@@ -9,7 +9,7 @@ from lxml import etree
 from .model import energyDis, Data, Volume
 
 
-def _extractDis(allItem, maxFlag, modeF, modeS, modeT, modeL, func=None, call=False, clear=False):
+def _extractDis(choose, allItem, maxFlag, modeF, modeS, modeT, modeL, func=None, call=False, clear=False):
     # 仅内部调用
     # 用于map操作
     # 从FISPACT输出文件特定的文本中解析出光谱
@@ -25,7 +25,11 @@ def _extractDis(allItem, maxFlag, modeF, modeS, modeT, modeL, func=None, call=Fa
         func(clear)
 
     distributes = []
-    targetPart = modeF.findall(allItem)[-1]
+    result = modeF.findall(allItem)
+    if choose < len(result):
+        targetPart = result[choose]
+    else:
+        raise OverflowError('选择的冷却块序号超出界限')
 
     items = modeS.findall(targetPart)
     items = [items[i] for i in range(len(items)) if i % 2 == 1]
@@ -42,7 +46,7 @@ def _extractDis(allItem, maxFlag, modeF, modeS, modeT, modeL, func=None, call=Fa
     return distributes
 
 
-def _extractGamma(allItem, modeF, modeS, func=None, call=False, clear=False):
+def _extractGamma(choose, allItem, modeF, modeS, func=None, call=False, clear=False):
     # 仅内部调用
     # 用于map操作
     # 从FISPACT输出文件特定的文本中解析出光子产额
@@ -54,10 +58,13 @@ def _extractGamma(allItem, modeF, modeS, func=None, call=False, clear=False):
         assert type(clear) == bool, '内部异常，请重新下载软件包'
     if call:
         func(clear)
+    result = modeF.findall(allItem)
+    if choose < len(result):
+        targetPart = result[choose]
+    else:
+        raise OverflowError('选择的冷却块序号超出界限')
 
-    tmp = modeF.findall(allItem)[-1]
-
-    gamma = float(modeS.search(tmp).group(0))
+    gamma = float(modeS.search(targetPart).group(0))
     return gamma
 
 
@@ -198,7 +205,22 @@ def _getSpectrum(mid_i, func=None, call=False, clear=False):
     return mean
 
 
-def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
+def getFNum(path):
+    dirs = listdir(path)
+    dirs = [d for d in dirs if isdir(path + '/' + d)]
+    dirs = [d for d in dirs if '.o' in [i[-2:] for i in listdir(path + '/' + d)]]
+    length = len(dirs)
+    modeF = compile(r'Total gammas \(per cc per second\) {6}\d\.\d{5}E[+-]\d{2}')
+    itemList = [_getAllItem(path, dirs[i]) for i in range(length)]
+    result = [len(modeF.findall(item)) for item in itemList]
+    leng = result[0]
+    for i in range(1, len(result)):
+        if result[i] != result[0]:
+            raise IndexError('fispact输出%s与%s存在不同的冷却阶段数，请检查' % (dirs[0], dirs[i]))
+    return leng
+
+
+def readf(path, maxFlag=20., choose=1, funcTime=None, funcOne=None, interval=100):
     # 读取FISPACT输出文件并解析出所有材料的光谱分布
     # path--input--FISPACT输出文件顶层目录
     # maxFlag--input--光子分布无穷大等效值
@@ -207,8 +229,8 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
         maxFlag = float(maxFlag)
 
     dirs = listdir(path)
-    dirs = [d for d in dirs if isdir(path+'/'+d)]
-    dirs = [d for d in dirs if '.o' in [i[-2:] for i in listdir(path+'/'+d)]]
+    dirs = [d for d in dirs if isdir(path + '/' + d)]
+    dirs = [d for d in dirs if '.o' in [i[-2:] for i in listdir(path + '/' + d)]]
     length = len(dirs)
 
     gModeF = compile(r'Total gammas \(per cc per second\) {6}\d\.\d{5}E[+-]\d{2}')
@@ -225,15 +247,16 @@ def readf(path, maxFlag=20., funcTime=None, funcOne=None, interval=100):
         clearList[0] = True
         # 每次回调告知进度
         allItemList = [_getAllItem(path, dirs[i], funcTime, callList[i], clearList[i]) for i in range(length)]
-        gammaList = [_extractGamma(allItemList[i], gModeF, gModeS, funcTime, callList[i], clearList[i]) for i in
+        gammaList = [_extractGamma(choose, allItemList[i], gModeF, gModeS, funcTime, callList[i], clearList[i]) for i in
                      range(length)]
         disList = [
-            _extractDis(allItemList[i], maxFlag, dModeF, gModeS, dModeT, dModeL, funcTime, callList[i], clearList[i])
+            _extractDis(choose, allItemList[i], maxFlag, dModeF, gModeS, dModeT, dModeL, funcTime, callList[i],
+                        clearList[i])
             for i in range(length)]
     else:
         allItemList = [_getAllItem(path, dirs[i]) for i in range(length)]
-        gammaList = [_extractGamma(allItemList[i], gModeF, gModeS) for i in range(length)]
-        disList = [_extractDis(allItemList[i], maxFlag, dModeF, gModeS, dModeT, dModeL) for i in range(length)]
+        gammaList = [_extractGamma(choose, allItemList[i], gModeF, gModeS) for i in range(length)]
+        disList = [_extractDis(choose, allItemList[i], maxFlag, dModeF, gModeS, dModeT, dModeL) for i in range(length)]
     allDistributes = dict(zip(dirs, tuple(zip(gammaList, disList))))
 
     return allDistributes
