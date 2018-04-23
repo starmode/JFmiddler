@@ -87,7 +87,9 @@ def _getAllItem(path, dir, func=None, call=False, clear=False):
     files = list(filter(lambda name: name[-2:] == '.o', files))
     assert len(files) == 1, '%s/%s下存在多个.o文件，请清理无关文件' % (path, dir)
     with open(path + '/' + dir + '/' + files[0]) as f:
-        return f.read()
+        allitem = f.read()
+    pos = allitem.find('NUMBER OF ITERATIONS')
+    return allitem[pos:]
 
 
 def _extractVol(structure, solids, materials, elements, func=None, call=False, clear=False):
