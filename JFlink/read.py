@@ -277,7 +277,6 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     eleTree = root.xpath('./materials/element')
     eleName = [ele.xpath('@name')[0] for ele in eleTree]
     # 序号0-3为int原子序数，double原子质量，string 原子简称
-    # eleInf = [(ele.xpath('@Z')[0],ele.xpath('atom/@value')[0],ele.xpath('@formula')[0]) for ele in eleTree ]
     # 暂定不需要formula
     eleInf = [(int(ele.xpath('@Z')[0]), float(ele.xpath('atom/@value')[0])) for ele in eleTree]
     elements = dict(zip(eleName, eleInf))
@@ -286,14 +285,28 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
     tmp = [e[0] for e in eleInf]
     zElements = dict(zip(tmp, eleName))
     # 获取材料定义
-    # 对于无引用的材料，定义同名新元素，假装引用
+
     matTree = root.xpath('./materials/material')
     matName = [mat.xpath('@name')[0] for mat in matTree]
     matD = [mat.xpath('D/@value')[0] for mat in matTree]
-    matEles = [
-        [(fac.xpath('@ref')[0], float(fac.xpath('@n')[0])) for fac in mat.xpath('fraction')] if len(
-            mat.xpath('@Z')) == 0 else [(
-            zElements[int(mat.xpath('@Z')[0])], float(mat.xpath('D/@value')[0]))] for mat in matTree]
+
+    matEles = []
+    for mat in matTree:
+        if len(mat.xpath('@Z')) == 0:
+            # material由多种元素构成
+            matEles.append([(fac.xpath('@ref')[0], float(fac.xpath('@n')[0])) for fac in mat.xpath('fraction')])
+        elif int(mat.xpath('@Z')[0]) in zElements:
+            # material由一种已定义的元素构成
+            matEles.append([(zElements[int(mat.xpath('@Z')[0])], float(mat.xpath('D/@value')[0]))])
+
+
+        else:
+            # material由一种未定义的元素构成
+            # 对于无引用的材料，定义同名新元素，假装引用
+            eleName = mat.xpath('@name')[0]
+            eleInf = (int(mat.xpath('@Z')[0]), float(mat.xpath('atom/@value')[0]))
+            elements[eleName] = eleInf
+            matEles.append([(eleName, float(mat.xpath('D/@value')[0]))])
 
     materials = dict(zip(matName, tuple(zip(matD, matEles))))
 
@@ -326,14 +339,8 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
         vols = [_extractVol(structures[i], solids, materials, elements) for i in range(strucLen)]
     names = list(map(lambda structure: structure.xpath('@name')[0][6:], structures))
 
-    deleteInx = -1
-    try:
-        deleteInx = names.index('')
-    except ValueError:
-        raise
-    if deleteInx > -1:
-        names.pop(deleteInx)
-        vols.pop(deleteInx)
+    if 'World' in names:
+        names.remove('World')
     allStructure = dict(zip(names, vols))
     return allStructure
 
@@ -387,15 +394,7 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         volume = list(map(_getVolume, volModeList, mid))
         spectrum = list(map(_getSpectrum, mid))
 
-    deleteInx = -1
-    try:
-        deleteInx = name.index('World')
-    except ValueError:
-        raise
-    if deleteInx > -1:
-        name.pop(deleteInx)
-        energy.pop(deleteInx)
-        volume.pop(deleteInx)
-        spectrum.pop(deleteInx)
+    if 'World' in name:
+        name.remove('World')
     neutron.cellInfo = dict(zip(name, tuple(zip(energy, volume, spectrum))))
     return neutron
