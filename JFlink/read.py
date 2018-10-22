@@ -339,9 +339,9 @@ def readg(path, funcTime=None, funcOne=None, interval=100):
         vols = [_extractVol(structures[i], solids, materials, elements) for i in range(strucLen)]
     names = list(map(lambda structure: structure.xpath('@name')[0][6:], structures))
 
-    if 'World' in names:
-        names.remove('World')
     allStructure = dict(zip(names, vols))
+    if 'World' in names:
+        allStructure.pop('World')
     return allStructure
 
 
@@ -394,7 +394,7 @@ def readj(path, funcTime=None, funcOne=None, interval=100):
         volume = list(map(_getVolume, volModeList, mid))
         spectrum = list(map(_getSpectrum, mid))
 
-    if 'World' in name:
-        name.remove('World')
     neutron.cellInfo = dict(zip(name, tuple(zip(energy, volume, spectrum))))
+    if 'World' in name:
+        neutron.cellInfo.pop('World')
     return neutron
